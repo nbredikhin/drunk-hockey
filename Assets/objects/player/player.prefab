@@ -90,7 +90,7 @@ MonoBehaviour:
   maxVelocity: .400000006
   shadowPrefab: {fileID: 102544, guid: 42d3e9909149c8a4d938a92af962add0, type: 2}
   isPlayerOne: 1
-  joystickSensitivity: .00999999978
+  joystickSensitivity: .0199999996
 --- !u!212 &21277896
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -130,7 +130,7 @@ Prefab:
       objectReference: {fileID: 102544, guid: 42d3e9909149c8a4d938a92af962add0, type: 2}
     - target: {fileID: 0}
       propertyPath: joystickSensitivity
-      value: .00999999978
+      value: .0199999996
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

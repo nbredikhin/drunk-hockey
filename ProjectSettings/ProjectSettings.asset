@@ -85,7 +85,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleIdentifier: com.Company.ProductName
+  bundleIdentifier: com.wherry.drunkhockey
   bundleVersion: 1.0
   preloadedAssets: []
   metroEnableIndependentInputSource: 0
@@ -164,7 +164,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: 736e8d3996a00b1478ee8663ffa0c36b, type: 3}
+      m_Icon: {fileID: 2800000, guid: 2e76e753c39092b44be94913ad44d1df, type: 3}
       m_Width: 128
       m_Height: 128
   m_BuildTargetBatching: []
@@ -368,7 +368,7 @@ PlayerSettings:
   metroPhoneSplashScreenImage: 
   metroPhoneSplashScreenImage140: 
   metroPhoneSplashScreenImage240: 
-  metroTileShortName: 
+  metroTileShortName: Drunk Hockey
   metroCommandLineArgsFile: 
   metroTileShowName: 0
   metroMediumTileShowName: 0

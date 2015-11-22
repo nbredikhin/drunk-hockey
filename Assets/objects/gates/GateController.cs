@@ -26,7 +26,7 @@ public class GateController : MonoBehaviour
     {
         if (collision.gameObject.name == "puck")
         {
-            Application.LoadLevel(0);
+            Application.LoadLevel("Game");
         }
     }
 }
