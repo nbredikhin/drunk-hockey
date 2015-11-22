@@ -2,6 +2,9 @@
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {
+    protected Vector3 spawnPosition;
+    protected Vector3 spawnRotation;
+
     public float angularVelocity = 500f;
     public float maxVelocity = 0.4f;
 
@@ -18,12 +21,21 @@ public class PlayerController : MonoBehaviour {
     
 
 	void Start () {
+        spawnPosition = transform.position;
+        spawnRotation = transform.rotation.eulerAngles;
+
         rigidbody = GetComponent<Rigidbody2D>();
 
         if (shadowPrefab)
         {
             shadow = Instantiate(shadowPrefab);
         }
+    }
+
+    public void Respawn()
+    {
+        transform.position = spawnPosition;
+        transform.rotation = Quaternion.Euler(spawnRotation);
     }
 
 	void Update () {

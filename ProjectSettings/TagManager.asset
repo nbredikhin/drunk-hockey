@@ -15,7 +15,7 @@ TagManager:
   - 
   - Bounds
   - Players
-  - 
+  - UI
   - 
   - 
   - 
@@ -49,4 +49,7 @@ TagManager:
     locked: 0
   - name: Objects
     uniqueID: 964388137
+    locked: 0
+  - name: UI
+    uniqueID: 691341537
     locked: 0

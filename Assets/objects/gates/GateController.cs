@@ -19,6 +19,7 @@ public class GateController : MonoBehaviour
     void Update()
     {
         rigidbody.MovePosition(spawnPosition);
+        rigidbody.velocity = Vector2.zero;
         rigidbody.MoveRotation(spawnAngle);
     }
 
@@ -26,7 +27,7 @@ public class GateController : MonoBehaviour
     {
         if (collision.gameObject.name == "puck")
         {
-            Application.LoadLevel("Game");
+            Camera.main.SendMessage("OnGoal", isPlayerOne);
         }
     }
 }
