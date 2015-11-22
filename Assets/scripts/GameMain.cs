@@ -47,6 +47,11 @@ public class GameMain : MonoBehaviour {
         scoreManager.gameObject.SetActive(false);
     }
 
+    public void OnPlayerWon(bool isPlayerOne)
+    {
+
+    }
+
     public void OnGoal(bool isPlayerOne)
     {
         if (isPlayerOne)
@@ -57,12 +62,27 @@ public class GameMain : MonoBehaviour {
         {
             score1++;
         }
-        Debug.LogFormat("{0}:{1}", score1, score2);
-        scoreManager.gameObject.SetActive(true);
-        scoreManager.ShowScore(score1, score2);
+
+        // Скрыть игроков и шайбу
         puck.SetActive(false);
         player1.SetActive(false);
         player2.SetActive(false);
+
+        // Проверить победу
+        if (score1 >= 5)
+        {
+            OnPlayerWon(true);
+            return; 
+        }
+        else if (score2 >= 5)
+        {
+            OnPlayerWon(false);
+            return;
+        }
+        
+        // Если никто не победил - вывод счёта
+        scoreManager.gameObject.SetActive(true);
+        scoreManager.ShowScore(score1, score2);
 
         respawnDelay = respawnTime;
     }

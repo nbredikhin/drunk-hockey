@@ -334,6 +334,7 @@ GameObject:
   - 61: {fileID: 941514588}
   - 198: {fileID: 941514590}
   - 199: {fileID: 941514589}
+  - 58: {fileID: 941514591}
   m_Layer: 0
   m_Name: puck
   m_TagString: Untagged
@@ -1497,6 +1498,19 @@ ParticleSystem:
     subEmitterCollision1: {fileID: 0}
     subEmitterDeath: {fileID: 0}
     subEmitterDeath1: {fileID: 0}
+--- !u!58 &941514591
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 941514584}
+  m_Enabled: 0
+  m_Material: {fileID: 6200000, guid: 678dcfbe5a8bd95428ec4d83858769f4, type: 2}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: .0250000004
 --- !u!1 &1089722288
 GameObject:
   m_ObjectHideFlags: 0
@@ -1506,7 +1520,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 1089722290}
   - 212: {fileID: 1089722289}
-  m_Layer: 5
+  m_Layer: 10
   m_Name: score1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1560,7 +1574,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 1303580176}
   - 212: {fileID: 1303580177}
-  m_Layer: 5
+  m_Layer: 10
   m_Name: score2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1777,7 +1791,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 1808850913}
   - 212: {fileID: 1808850914}
-  m_Layer: 5
+  m_Layer: 10
   m_Name: colon
   m_TagString: Untagged
   m_Icon: {fileID: 0}

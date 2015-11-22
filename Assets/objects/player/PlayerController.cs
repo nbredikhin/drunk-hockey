@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : MonoBehaviour
+{
     protected Vector3 spawnPosition;
     protected Vector3 spawnRotation;
 
@@ -18,9 +19,10 @@ public class PlayerController : MonoBehaviour {
     protected int joystickFingerID = -1;
     protected Vector2 joystickOrigin = Vector2.zero;
     public float joystickSensitivity = 1f;
-    
 
-	void Start () {
+
+    void Start()
+    {
         spawnPosition = transform.position;
         spawnRotation = transform.rotation.eulerAngles;
 
@@ -38,7 +40,8 @@ public class PlayerController : MonoBehaviour {
         transform.rotation = Quaternion.Euler(spawnRotation);
     }
 
-	void Update () {
+    void Update()
+    {
         rigidbody.angularVelocity = angularVelocity;
 
         if (Input.touchSupported)
@@ -70,7 +73,7 @@ public class PlayerController : MonoBehaviour {
             joystickOrigin = touch.position;
         }
         else if (touch.fingerId == joystickFingerID)
-        { 
+        {
             if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
             {
                 joystickFingerID = -1;
@@ -95,5 +98,18 @@ public class PlayerController : MonoBehaviour {
     public void GoToPointScreen(Vector2 point)
     {
         SetPlayerVelocity((Camera.main.ScreenToWorldPoint(point) - transform.position) * 5f);
+    }
+
+    public void OnDisable()
+    {
+        shadow.SetActive(false);
+    }
+
+    public void OnEnable()
+    {
+        if (shadow)
+        {
+            shadow.SetActive(true);
+        }
     }
 }
