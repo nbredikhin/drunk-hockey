@@ -140,7 +140,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 160346, guid: 59b6903f00cbb5443913f96cc978a678, type: 2}
       propertyPath: m_Name
-      value: player1
+      value: playerOne
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 59b6903f00cbb5443913f96cc978a678, type: 2}
@@ -527,7 +527,7 @@ ParticleSystem:
   moveWithTransform: 0
   autoRandomSeed: 1
   scalingMode: 2
-  randomSeed: -527218158
+  randomSeed: -1584095782
   InitialModule:
     serializedVersion: 2
     enabled: 1
@@ -2255,7 +2255,7 @@ GameObject:
   - 4: {fileID: 1089722290}
   - 212: {fileID: 1089722289}
   m_Layer: 10
-  m_Name: score1
+  m_Name: playerOneScore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2317,7 +2317,7 @@ GameObject:
   - 4: {fileID: 1303580176}
   - 212: {fileID: 1303580177}
   m_Layer: 10
-  m_Name: score2
+  m_Name: playerTwoScore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2481,6 +2481,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   respawnTime: 3
+  scoreToWin: 5
 --- !u!1 &1552530522
 GameObject:
   m_ObjectHideFlags: 0
@@ -2637,7 +2638,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 160346, guid: 59b6903f00cbb5443913f96cc978a678, type: 2}
       propertyPath: m_Name
-      value: player2
+      value: playerTwo
       objectReference: {fileID: 0}
     - target: {fileID: 11468014, guid: 59b6903f00cbb5443913f96cc978a678, type: 2}
       propertyPath: isPlayerOne

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class CameraController : MonoBehaviour
 {
@@ -11,11 +10,11 @@ public class CameraController : MonoBehaviour
 
         var area = GameObject.Find("area");
         var areaSprite = area.GetComponent<SpriteRenderer>();
+        // Выставление масштаба поля. Магические константы значат что-то магическое
         float sizeFitHorizontal = areaSprite.bounds.size.x * 1.04f * Screen.height / Screen.width * 0.5f;
         float sizeFitVertical = (areaSprite.bounds.size.y * 1.01f) / 2f;
         Camera.main.orthographicSize = Mathf.Max(sizeFitHorizontal, sizeFitVertical);
     }
-
 
     void Update()
     {
