@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CameraController : MonoBehaviour {
+public class CameraController : MonoBehaviour
+{
     private float originalRotation;
 
-    void Start () {
+    void Start()
+    {
         originalRotation = transform.eulerAngles.z;
 
         var area = GameObject.Find("area");
@@ -15,7 +17,8 @@ public class CameraController : MonoBehaviour {
     }
 
 
-	void Update () {
+    void Update()
+    {
         transform.rotation = Quaternion.Euler(0f, 0f, originalRotation + Mathf.Sin(Time.time));
-	}
+    }
 }

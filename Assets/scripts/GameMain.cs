@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GameMain : MonoBehaviour {
+public class GameMain : MonoBehaviour
+{
     protected GameObject puck;
     protected GameObject player1;
     protected GameObject player2;
@@ -13,7 +14,8 @@ public class GameMain : MonoBehaviour {
     public float respawnTime = 3f;
     protected float respawnDelay = 0f;
 
-    void Start() { 
+    void Start()
+    {
         player1 = GameObject.Find("player1");
         player2 = GameObject.Find("player2");
         puck = GameObject.Find("puck");
@@ -21,8 +23,9 @@ public class GameMain : MonoBehaviour {
         scoreManager.gameObject.SetActive(false);
     }
 
-	void Update () {
-	    if (respawnDelay > 0)
+    void Update()
+    {
+        if (respawnDelay > 0)
         {
             respawnDelay -= Time.deltaTime;
             if (respawnDelay <= 0)
@@ -30,8 +33,8 @@ public class GameMain : MonoBehaviour {
                 Respawn();
             }
         }
-	}
-    
+    }
+
     public void Respawn()
     {
         // Игроки
@@ -72,14 +75,14 @@ public class GameMain : MonoBehaviour {
         if (score1 >= 5)
         {
             OnPlayerWon(true);
-            return; 
+            return;
         }
         else if (score2 >= 5)
         {
             OnPlayerWon(false);
             return;
         }
-        
+
         // Если никто не победил - вывод счёта
         scoreManager.gameObject.SetActive(true);
         scoreManager.ShowScore(score1, score2);

@@ -102,7 +102,10 @@ public class PlayerController : MonoBehaviour
 
     public void OnDisable()
     {
-        shadow.SetActive(false);
+        if (shadow)
+        {
+            shadow.SetActive(false);
+        }
     }
 
     public void OnEnable()

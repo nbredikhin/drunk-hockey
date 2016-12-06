@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ScoreManager : MonoBehaviour {
+public class ScoreManager : MonoBehaviour
+{
     public Sprite[] numbersSprites;
     public SpriteRenderer number1;
     public SpriteRenderer number2;
@@ -9,7 +10,8 @@ public class ScoreManager : MonoBehaviour {
     private Color color;
     private float colorLerpValue;
 
-    void Start () {
+    void Start()
+    {
         color = new Color(0f, 0f, 0f, 0f);
         colorLerpValue = 0f;
     }
