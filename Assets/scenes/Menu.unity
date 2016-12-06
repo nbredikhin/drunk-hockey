@@ -730,6 +730,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 918c9ccf6d5335446b9968d18fc3dd8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxSlideDistance: 0.2
+  slideSpeed: 1.5
 --- !u!1 &1055576220
 GameObject:
   m_ObjectHideFlags: 0
