@@ -4,18 +4,13 @@ using UnityEngine.SceneManagement;
 public class Menu : MonoBehaviour
 {
 
-    void SingleplayerButtonClick()
+    public void SingleplayerButtonClick()
     {
         SceneManager.LoadScene("Game");
     }
 
-    void MultiplayerButtonClick()
+    public void MultiplayerButtonClick()
     {
         SceneManager.LoadScene("Game");
-    }
-
-    void SettingsButtonClick()
-    {
-
     }
 }
