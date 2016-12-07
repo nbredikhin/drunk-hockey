@@ -1,28 +1,34 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class GameMain : MonoBehaviour {
+public class GameMain : MonoBehaviour
+{
     protected GameObject puck;
-    protected GameObject player1;
-    protected GameObject player2;
+    protected GameObject playerOne;
+    protected GameObject playerTwo;
     protected ScoreManager scoreManager;
 
-    protected int score1 = 0;
-    protected int score2 = 0;
+    protected int playerOneScore = 0;
+    protected int playerTwoScore = 0;
 
     public float respawnTime = 3f;
     protected float respawnDelay = 0f;
 
-    void Start() { 
-        player1 = GameObject.Find("player1");
-        player2 = GameObject.Find("player2");
+    public int scoreToWin = 5;
+
+    void Start()
+    {
+        playerOne = GameObject.Find("playerOne");
+        playerTwo = GameObject.Find("playerTwo");
+
         puck = GameObject.Find("puck");
+        
         scoreManager = GameObject.Find("score").GetComponent<ScoreManager>();
         scoreManager.gameObject.SetActive(false);
     }
 
-	void Update () {
-	    if (respawnDelay > 0)
+    void Update()
+    {
+        if (respawnDelay > 0)
         {
             respawnDelay -= Time.deltaTime;
             if (respawnDelay <= 0)
@@ -30,16 +36,23 @@ public class GameMain : MonoBehaviour {
                 Respawn();
             }
         }
-	}
-    
+    }
+
+    void SetPlayersActive(bool isActive)
+    {
+        Debug.Assert(playerOne && playerTwo);
+        
+        playerOne.SetActive(isActive);
+        playerTwo.SetActive(isActive);
+    }
+
     public void Respawn()
     {
-        // Игроки
-        player1.SetActive(true);
-        player2.SetActive(true);
-        player1.SendMessage("Respawn");
-        player2.SendMessage("Respawn");
-        // Шайба
+        // Респавн игроков
+        SetPlayersActive(true);
+        playerOne.SendMessage("Respawn");
+        playerTwo.SendMessage("Respawn");
+        // Респавн шайбы
         puck.SetActive(true);
         puck.transform.position = Vector2.zero;
         puck.transform.rotation = Quaternion.Euler(Vector3.zero);
@@ -49,40 +62,38 @@ public class GameMain : MonoBehaviour {
 
     public void OnPlayerWon(bool isPlayerOne)
     {
-
+        // Отладочное сообщение о том, какой игрок выиграл
+        Debug.Log(string.Format("{0} player won!", isPlayerOne ? "Red" : "Blue"));
     }
 
     public void OnGoal(bool isPlayerOne)
     {
+        // isPlayerOne -- это игрок, в чьи ворота забили шайбу
         if (isPlayerOne)
         {
-            score2++;
+            playerTwoScore++;
         }
         else
         {
-            score1++;
+            playerOneScore++;
         }
 
         // Скрыть игроков и шайбу
+        SetPlayersActive(false);
         puck.SetActive(false);
-        player1.SetActive(false);
-        player2.SetActive(false);
 
         // Проверить победу
-        if (score1 >= 5)
+        bool isPlayerOneWon = playerOneScore >= scoreToWin;
+        bool isPlayerTwoWon = playerTwoScore >= scoreToWin;
+        if (isPlayerOneWon || isPlayerTwoWon)
         {
-            OnPlayerWon(true);
-            return; 
-        }
-        else if (score2 >= 5)
-        {
-            OnPlayerWon(false);
+            OnPlayerWon(isPlayerOneWon);
             return;
         }
-        
+
         // Если никто не победил - вывод счёта
         scoreManager.gameObject.SetActive(true);
-        scoreManager.ShowScore(score1, score2);
+        scoreManager.ShowScore(playerOneScore, playerTwoScore);
 
         respawnDelay = respawnTime;
     }

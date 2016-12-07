@@ -1,21 +1,28 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class CameraController : MonoBehaviour {
-    private float originalRotation;
+public class CameraController : MonoBehaviour
+{
+    public float horizontalScale = 0.04f;
+    public float verticalScale = 0.01f;
+    private float initialRotation;
 
-    void Start () {
-        originalRotation = transform.eulerAngles.z;
+    void Start()
+    {
+        initialRotation = transform.eulerAngles.z;
 
         var area = GameObject.Find("area");
         var areaSprite = area.GetComponent<SpriteRenderer>();
-        float sizeFitHorizontal = areaSprite.bounds.size.x * 1.04f * Screen.height / Screen.width * 0.5f;
-        float sizeFitVertical = (areaSprite.bounds.size.y * 1.01f) / 2f;
-        Camera.main.orthographicSize = Mathf.Max(sizeFitHorizontal, sizeFitVertical);
+        // Выставление масштаба поля
+        float sizeFitHorizontal = areaSprite.bounds.size.x *
+                                  (1.0f + horizontalScale) / Camera.main.aspect;
+        float sizeFitVertical = (areaSprite.bounds.size.y *
+                                (1.0f + verticalScale));
+        Camera.main.orthographicSize = Mathf.Max(sizeFitHorizontal,
+                                                 sizeFitVertical) * 0.5f;
     }
 
-
-	void Update () {
-        transform.rotation = Quaternion.Euler(0f, 0f, originalRotation + Mathf.Sin(Time.time));
-	}
+    void Update()
+    {
+        transform.rotation = Quaternion.Euler(0f, 0f, initialRotation + Mathf.Sin(Time.time));
+    }
 }

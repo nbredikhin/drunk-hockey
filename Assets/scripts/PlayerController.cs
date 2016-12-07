@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
@@ -48,7 +47,9 @@ public class PlayerController : MonoBehaviour
         {
             foreach (var touch in Input.touches)
             {
-                if (isPlayerOne && touch.position.x <= Screen.width / 2f || !isPlayerOne && touch.position.x >= Screen.width / 2f)
+                // Что здесь происходит?..
+                if (( isPlayerOne && touch.position.x <= Screen.width / 2f) ||
+                    (!isPlayerOne && touch.position.x  > Screen.width / 2f))
                 {
                     UpdateJoystickTouch(touch);
                 }
@@ -102,7 +103,10 @@ public class PlayerController : MonoBehaviour
 
     public void OnDisable()
     {
-        shadow.SetActive(false);
+        if (shadow)
+        {
+            shadow.SetActive(false);
+        }
     }
 
     public void OnEnable()
