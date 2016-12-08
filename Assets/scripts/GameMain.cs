@@ -2,6 +2,8 @@
 
 public class GameMain : MonoBehaviour
 {
+    public static bool isMultiplayerGame = false;
+
     protected GameObject puck;
     protected GameObject playerOne;
     protected GameObject playerTwo;
@@ -21,7 +23,7 @@ public class GameMain : MonoBehaviour
         playerTwo = GameObject.Find("playerTwo");
 
         puck = GameObject.Find("puck");
-        
+
         scoreManager = GameObject.Find("score").GetComponent<ScoreManager>();
         scoreManager.gameObject.SetActive(false);
     }
@@ -41,7 +43,7 @@ public class GameMain : MonoBehaviour
     void SetPlayersActive(bool isActive)
     {
         Debug.Assert(playerOne && playerTwo);
-        
+
         playerOne.SetActive(isActive);
         playerTwo.SetActive(isActive);
     }
