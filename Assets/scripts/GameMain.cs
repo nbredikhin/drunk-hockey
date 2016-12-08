@@ -103,10 +103,10 @@ public class GameMain : MonoBehaviour
         respawnDelay = respawnTime;
     }
 
-    public Vector2 GetPuckPosition()
+    public GameObject GetPuck()
     {
         Debug.Assert(puck);
 
-        return puck.transform.position;
+        return puck;
     }
 }

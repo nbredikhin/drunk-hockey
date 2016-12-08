@@ -6,8 +6,12 @@ public class PlayerController : MonoBehaviour
     protected Vector3 spawnRotation;
 
     public float angularVelocity = 500f;
-    public float maxVelocity = 0.4f;
-    public bool isAIControlled = false;
+    public float maxVelocity     = 0.4f;
+
+    protected const float AI_PUCK_SPEED_PANIC_TRESHOLD = 3.0f;
+    public bool isAIControlled   = false;
+    public float AIPanicChance   = 0.5f;
+    public int AIReactionDelayMS = 100;
 
     public GameObject shadowPrefab;
     protected GameObject shadow;
@@ -32,6 +36,13 @@ public class PlayerController : MonoBehaviour
         if (shadowPrefab)
         {
             shadow = Instantiate(shadowPrefab);
+        }
+
+        if (isAIControlled)
+        {
+            maxVelocity = AIDifficulty.AIPlayerVelocity;
+            AIPanicChance = AIDifficulty.AIPlayerPanicChance;
+            AIReactionDelayMS = AIDifficulty.AIPlayerReactionDelayMS;
         }
 
         gameMain = Camera.main.GetComponent<GameMain>();
@@ -107,8 +118,8 @@ public class PlayerController : MonoBehaviour
 
     public void AIUpdate()
     {
-        var puckPosition = gameMain.GetPuckPosition();
-        GoToPointScreen(Camera.main.WorldToScreenPoint(puckPosition));
+        var puck = gameMain.GetPuck();
+        GoToPointScreen(Camera.main.WorldToScreenPoint(puck.transform.position));
     }
 
     public void SetPlayerVelocity(Vector2 velocity)
