@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 
     public float angularVelocity = 500f;
     public float maxVelocity = 0.4f;
+    public bool isAIControlled = false;
 
     public GameObject shadowPrefab;
     protected GameObject shadow;
@@ -15,10 +16,11 @@ public class PlayerController : MonoBehaviour
     new private Rigidbody2D rigidbody;
     public bool isPlayerOne = false;
 
+    public float joystickSensitivity = 1f;
     protected int joystickFingerID = -1;
     protected Vector2 joystickOrigin = Vector2.zero;
-    public float joystickSensitivity = 1f;
 
+    protected GameMain gameMain;
 
     void Start()
     {
@@ -31,6 +33,9 @@ public class PlayerController : MonoBehaviour
         {
             shadow = Instantiate(shadowPrefab);
         }
+
+        gameMain = Camera.main.GetComponent<GameMain>();
+        Debug.Assert(gameMain);
     }
 
     public void Respawn()
@@ -43,11 +48,25 @@ public class PlayerController : MonoBehaviour
     {
         rigidbody.angularVelocity = angularVelocity;
 
+        if (isAIControlled)
+        {
+            AIUpdate();
+        }
+        else
+        {
+            PlayerUpdate();
+        }
+
+        shadow.transform.position = rigidbody.worldCenterOfMass;
+    }
+
+#region Мультиплеер
+    public void PlayerUpdate()
+    {
         if (Input.touchSupported)
         {
             foreach (var touch in Input.touches)
             {
-                // Что здесь происходит?..
                 if (( isPlayerOne && touch.position.x <= Screen.width / 2f) ||
                     (!isPlayerOne && touch.position.x  > Screen.width / 2f))
                 {
@@ -62,8 +81,6 @@ public class PlayerController : MonoBehaviour
                 GoToPointScreen(Input.mousePosition);
             }
         }
-
-        shadow.transform.position = rigidbody.worldCenterOfMass;
     }
 
     public void UpdateJoystickTouch(Touch touch)
@@ -85,6 +102,13 @@ public class PlayerController : MonoBehaviour
                 SetPlayerVelocity((touch.position - joystickOrigin) * joystickSensitivity);
             }
         }
+    }
+#endregion
+
+    public void AIUpdate()
+    {
+        var puckPosition = gameMain.GetPuckPosition();
+        GoToPointScreen(Camera.main.WorldToScreenPoint(puckPosition));
     }
 
     public void SetPlayerVelocity(Vector2 velocity)
