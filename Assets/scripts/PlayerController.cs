@@ -6,12 +6,12 @@ public class PlayerController : MonoBehaviour
     protected Vector3 spawnRotation;
 
     public float angularVelocity = 500f;
-    public float maxVelocity     = 0.4f;
+    public float maxVelocity = 0.4f;
 
     protected const float AI_PUCK_SPEED_PANIC_TRESHOLD = 3.0f;
-    public bool isAIControlled   = false;
-    public float AIPanicChance   = 0.5f;
-    public int AIReactionDelayMS = 100;
+    protected Delay AIReactionDelay;
+    public bool isAIControlled = false;
+    public float AIPanicChance = 0.5f;
 
     public GameObject shadowPrefab;
     protected GameObject shadow;
@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour
     protected Vector2 joystickOrigin = Vector2.zero;
 
     protected GameMain gameMain;
+    protected Delay timer;
 
     void Start()
     {
@@ -42,9 +43,11 @@ public class PlayerController : MonoBehaviour
         {
             maxVelocity = AIDifficulty.AIPlayerVelocity;
             AIPanicChance = AIDifficulty.AIPlayerPanicChance;
-            AIReactionDelayMS = AIDifficulty.AIPlayerReactionDelayMS;
+            AIReactionDelay = DelayManager.CreateDelay(
+                                    AIDifficulty.AIPlayerReactionDelayMS,
+                                    true);
+            Debug.Assert(AIReactionDelay != null);
         }
-
         gameMain = Camera.main.GetComponent<GameMain>();
         Debug.Assert(gameMain);
     }
@@ -61,7 +64,11 @@ public class PlayerController : MonoBehaviour
 
         if (isAIControlled)
         {
-            AIUpdate();
+            if (AIReactionDelay.IsCompleted)
+            {
+                AIUpdate();
+                AIReactionDelay.Reset();
+            }
         }
         else
         {
@@ -71,15 +78,15 @@ public class PlayerController : MonoBehaviour
         shadow.transform.position = rigidbody.worldCenterOfMass;
     }
 
-#region Мультиплеер
+    #region Мультиплеер
     public void PlayerUpdate()
     {
         if (Input.touchSupported)
         {
             foreach (var touch in Input.touches)
             {
-                if (( isPlayerOne && touch.position.x <= Screen.width / 2f) ||
-                    (!isPlayerOne && touch.position.x  > Screen.width / 2f))
+                if ((isPlayerOne && touch.position.x <= Screen.width / 2f) ||
+                    (!isPlayerOne && touch.position.x > Screen.width / 2f))
                 {
                     UpdateJoystickTouch(touch);
                 }
@@ -114,11 +121,19 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-#endregion
+    #endregion
 
     public void AIUpdate()
     {
         var puck = gameMain.GetPuck();
+        var puckVelocity = puck.GetComponent<Rigidbody2D>().velocity;
+
+        Debug.Assert(puck);
+
+        if (puckVelocity.magnitude >= AI_PUCK_SPEED_PANIC_TRESHOLD)
+        {
+            // TODO: panic
+        }
         GoToPointScreen(Camera.main.WorldToScreenPoint(puck.transform.position));
     }
 
@@ -142,6 +157,10 @@ public class PlayerController : MonoBehaviour
         {
             shadow.SetActive(false);
         }
+        if (isAIControlled)
+        {
+            AIReactionDelay.Active = false;
+        }
     }
 
     public void OnEnable()
@@ -149,6 +168,11 @@ public class PlayerController : MonoBehaviour
         if (shadow)
         {
             shadow.SetActive(true);
+        }
+        if (isAIControlled)
+        {
+            AIReactionDelay.Reset();
+            AIReactionDelay.Active = true;
         }
     }
 }
