@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     public float angularVelocity = 500f;
     public float maxVelocity = 0.4f;
 
-    protected const float AI_PUCK_SPEED_PANIC_TRESHOLD = 3.0f;
+    protected const float AI_PUCK_SPEED_PANIC_TRESHOLD = 2f;
     protected Delay AIReactionDelay;
     public bool isAIControlled = false;
     public float AIPanicChance = 0.5f;
@@ -130,11 +130,18 @@ public class PlayerController : MonoBehaviour
 
         Debug.Assert(puck);
 
+        var posToMove = puck.transform.position;
         if (puckVelocity.magnitude >= AI_PUCK_SPEED_PANIC_TRESHOLD)
         {
-            // TODO: panic
+            bool needPanic = Random.Range(0.0f, 1.0f) < AIPanicChance;
+            if (needPanic)
+            {
+                Debug.Log("AI Player: OMG PANIC PANIC!!!");
+                posToMove = Random.insideUnitCircle *
+                                Camera.main.orthographicSize;
+            }
         }
-        GoToPointScreen(Camera.main.WorldToScreenPoint(puck.transform.position));
+        GoToPointScreen(Camera.main.WorldToScreenPoint(posToMove));
     }
 
     public void SetPlayerVelocity(Vector2 velocity)

@@ -5,10 +5,10 @@ public static class AIDifficulty
         LevelEasy = 0,
         LevelNormal,
         LevelHard,
-        LevelFastAsShit
+        LevelHardAsBalls
     }
 
-    static AIDifficultyLevel difficulty = AIDifficultyLevel.LevelFastAsShit;
+    static AIDifficultyLevel difficulty = AIDifficultyLevel.LevelEasy;
 
     static readonly float[] AIPlayerVelocityByDifficulty =
     {
