@@ -3,10 +3,15 @@ using UnityEngine;
 
 public class DelayManager : MonoBehaviour
 {
-    protected static DelayManager instance;
+    private static DelayManager instance;     // Реализация менеджера таймеров -
+                                              // это паттерн синглтон, поэтому
+                                              // в классе статическим полем мы
+                                              // делаем собственно объект этого
+                                              // класса
+    private List<Delay> delays;               // Список всех таймеров в текущей
+                                              // сцене
 
-    public List<Delay> delays;
-
+    // Создает новый объект с менеджером таймеров
     private static GameObject ConstructPrefab()
     {
         var gameObject = new GameObject();
@@ -17,6 +22,8 @@ public class DelayManager : MonoBehaviour
 
     public static DelayManager Instance
     {
+        // Логика такова -- если текущий Instance не задан, мы ищем такой объект
+        // на сцене. Если не нашли -- создаем новый.
         get
         {
             if (instance == null)
@@ -34,6 +41,7 @@ public class DelayManager : MonoBehaviour
         }
     }
 
+    // Добавляет новый таймер в менеджер таймеров
     public static Delay CreateDelay(int delayMS, bool startRightNow = false)
     {
         return Instance.CreateDelayInternal(delayMS, startRightNow);
@@ -55,6 +63,10 @@ public class DelayManager : MonoBehaviour
 
     void OnDestroy()
     {
+        foreach (var delay in delays)
+        {
+            delay.Destroy();
+        }
         delays.Clear();
     }
 

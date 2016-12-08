@@ -8,10 +8,11 @@ public class PlayerController : MonoBehaviour
     public float angularVelocity = 500f;
     public float maxVelocity = 0.4f;
 
+    // Скорость шайбы, после которой может начаться "паника" у игрока
     protected const float AI_PUCK_SPEED_PANIC_TRESHOLD = 2f;
-    protected Delay AIReactionDelay;
     public bool isAIControlled = false;
     public float AIPanicChance = 0.5f;
+    protected Delay AIReactionDelay;
 
     public GameObject shadowPrefab;
     protected GameObject shadow;
@@ -20,9 +21,9 @@ public class PlayerController : MonoBehaviour
     new private Rigidbody2D rigidbody;
     public bool isPlayerOne = false;
 
-    public float joystickSensitivity = 1f;
-    protected int joystickFingerID = -1;
     protected Vector2 joystickOrigin = Vector2.zero;
+    protected int joystickFingerID = -1;
+    public float joystickSensitivity = 1f;
 
     protected GameMain gameMain;
     protected Delay timer;
@@ -62,6 +63,9 @@ public class PlayerController : MonoBehaviour
     {
         rigidbody.angularVelocity = angularVelocity;
 
+        // Так как этот файл универсален для любого режима игры, необходимо
+        // по-разному управлять игроком. Для этого есть две функции
+        // AIUpdate() -- для AI -- и PlayerUpdate() для пользовательского ввода
         if (isAIControlled)
         {
             if (AIReactionDelay.IsCompleted)
@@ -78,7 +82,6 @@ public class PlayerController : MonoBehaviour
         shadow.transform.position = rigidbody.worldCenterOfMass;
     }
 
-    #region Мультиплеер
     public void PlayerUpdate()
     {
         if (Input.touchSupported)
@@ -121,7 +124,6 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-    #endregion
 
     public void AIUpdate()
     {
@@ -137,6 +139,7 @@ public class PlayerController : MonoBehaviour
             if (needPanic)
             {
                 Debug.Log("AI Player: OMG PANIC PANIC!!!");
+                // Выбириаем случайную точку примерно в поле зрения камеры
                 posToMove = Random.insideUnitCircle *
                                 Camera.main.orthographicSize;
             }

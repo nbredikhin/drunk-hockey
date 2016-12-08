@@ -1,20 +1,22 @@
 using UnityEngine;
-using UnityEditor;
 
 public class Delay
 {
     private const int MSEC_IN_SEC = 1000;
 
-    private int  delayMS;
-    private bool active;
-    private int  currentDelayMS;
-    private bool toDelete;
+    private int  delayMS;          // Общее время таймера
+    private bool active;           // Флаг активности таймера
+    private int  currentDelayMS;   // Текущее время таймера
+    private bool toDelete;         // Флаг, говорящий об удалении таймера
 
     public int DelayMS
     {
         get { return delayMS; }
         set
         {
+            // Для того, чтобы поставить новое значение времени, мы должны
+            // остановить и сбросить таймер, и лишь после выставления нового
+            // значения запустить его по-новой
             active = false;
             delayMS = value;
             Reset();
@@ -30,6 +32,7 @@ public class Delay
 
     public bool IsCompleted
     {
+        // Мы игнориуем завершение таймера, если он не активен
         get { return (currentDelayMS >= delayMS) && active; }
     }
 
