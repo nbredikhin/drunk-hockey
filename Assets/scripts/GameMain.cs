@@ -25,6 +25,9 @@ public class GameMain : MonoBehaviour
 
         puck = GameObject.Find("puck");
 
+        playerTwo.GetComponent<PlayerController>().isAIControlled =
+                                                            !isMultiplayerGame;
+
         scoreManager = GameObject.Find("score").GetComponent<ScoreManager>();
         scoreManager.gameObject.SetActive(false);
 
@@ -116,5 +119,12 @@ public class GameMain : MonoBehaviour
         scoreManager.ShowScore(playerOneScore, playerTwoScore);
 
         respawnDelay = respawnTime;
+    }
+
+    public GameObject GetPuck()
+    {
+        Debug.Assert(puck);
+
+        return puck;
     }
 }

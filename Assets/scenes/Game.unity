@@ -2346,7 +2346,7 @@ ParticleSystem:
           time: 0
           value: 0
           inSlope: 0
-          outSlope: 0
+          outSlope: 2
           tangentMode: 0
         - serializedVersion: 2
           time: 1
@@ -2487,12 +2487,12 @@ ParticleSystem:
           time: 0
           value: 1
           inSlope: 0
-          outSlope: 0
+          outSlope: 2
           tangentMode: 0
         - serializedVersion: 2
           time: 1
           value: 1
-          inSlope: 0
+          inSlope: 2
           outSlope: 0
           tangentMode: 0
         m_PreInfinity: 2
@@ -3630,7 +3630,7 @@ Camera:
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 0
-  m_OcclusionCulling: 1
+  m_OcclusionCulling: 0
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
   m_StereoMirrorMode: 0
@@ -3912,6 +3912,14 @@ Prefab:
     - target: {fileID: 11468014, guid: 59b6903f00cbb5443913f96cc978a678, type: 2}
       propertyPath: isPlayerOne
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5075260, guid: 59b6903f00cbb5443913f96cc978a678, type: 2}
+      propertyPath: m_CollisionDetection
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5075260, guid: 59b6903f00cbb5443913f96cc978a678, type: 2}
+      propertyPath: m_Interpolate
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 59b6903f00cbb5443913f96cc978a678, type: 2}

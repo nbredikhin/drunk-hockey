@@ -8,6 +8,12 @@ public class PlayerController : MonoBehaviour
     public float angularVelocity = 500f;
     public float maxVelocity = 0.4f;
 
+    // Скорость шайбы, после которой может начаться "паника" у игрока
+    protected const float AI_PUCK_SPEED_PANIC_TRESHOLD = 2f;
+    public bool isAIControlled = false;
+    public float AIPanicChance = 0.5f;
+    protected Delay AIReactionDelay;
+
     public GameObject shadowPrefab;
     protected GameObject shadow;
     protected Vector3 shadowOffset = new Vector3(-0.025f, -0.02f, 0f);
@@ -15,10 +21,12 @@ public class PlayerController : MonoBehaviour
     new private Rigidbody2D rigidbody;
     public bool isPlayerOne = false;
 
-    protected int joystickFingerID = -1;
     protected Vector2 joystickOrigin = Vector2.zero;
+    protected int joystickFingerID = -1;
     public float joystickSensitivity = 1f;
 
+    protected GameMain gameMain;
+    protected Delay timer;
 
     void Start()
     {
@@ -31,6 +39,18 @@ public class PlayerController : MonoBehaviour
         {
             shadow = Instantiate(shadowPrefab);
         }
+
+        if (isAIControlled)
+        {
+            maxVelocity = AIDifficulty.AIPlayerVelocity;
+            AIPanicChance = AIDifficulty.AIPlayerPanicChance;
+            AIReactionDelay = DelayManager.CreateDelay(
+                                    AIDifficulty.AIPlayerReactionDelayMS,
+                                    true);
+            Debug.Assert(AIReactionDelay != null);
+        }
+        gameMain = Camera.main.GetComponent<GameMain>();
+        Debug.Assert(gameMain);
     }
 
     public void Respawn()
@@ -43,13 +63,33 @@ public class PlayerController : MonoBehaviour
     {
         rigidbody.angularVelocity = angularVelocity;
 
+        // Так как этот файл универсален для любого режима игры, необходимо
+        // по-разному управлять игроком. Для этого есть две функции
+        // AIUpdate() -- для AI -- и PlayerUpdate() для пользовательского ввода
+        if (isAIControlled)
+        {
+            if (AIReactionDelay.IsCompleted)
+            {
+                AIUpdate();
+                AIReactionDelay.Reset();
+            }
+        }
+        else
+        {
+            PlayerUpdate();
+        }
+
+        shadow.transform.position = rigidbody.worldCenterOfMass;
+    }
+
+    public void PlayerUpdate()
+    {
         if (Input.touchSupported)
         {
             foreach (var touch in Input.touches)
             {
-                // Что здесь происходит?..
-                if (( isPlayerOne && touch.position.x <= Screen.width / 2f) ||
-                    (!isPlayerOne && touch.position.x  > Screen.width / 2f))
+                if ((isPlayerOne && touch.position.x <= Screen.width / 2f) ||
+                    (!isPlayerOne && touch.position.x > Screen.width / 2f))
                 {
                     UpdateJoystickTouch(touch);
                 }
@@ -62,8 +102,6 @@ public class PlayerController : MonoBehaviour
                 GoToPointScreen(Input.mousePosition);
             }
         }
-
-        shadow.transform.position = rigidbody.worldCenterOfMass;
     }
 
     public void UpdateJoystickTouch(Touch touch)
@@ -87,6 +125,28 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void AIUpdate()
+    {
+        var puck = gameMain.GetPuck();
+        var puckVelocity = puck.GetComponent<Rigidbody2D>().velocity;
+
+        Debug.Assert(puck);
+
+        var posToMove = puck.transform.position;
+        if (puckVelocity.magnitude >= AI_PUCK_SPEED_PANIC_TRESHOLD)
+        {
+            bool needPanic = Random.Range(0.0f, 1.0f) < AIPanicChance;
+            if (needPanic)
+            {
+                Debug.Log("AI Player: OMG PANIC PANIC!!!");
+                // Выбириаем случайную точку примерно в поле зрения камеры
+                posToMove = Random.insideUnitCircle *
+                                Camera.main.orthographicSize;
+            }
+        }
+        GoToPointScreen(Camera.main.WorldToScreenPoint(posToMove));
+    }
+
     public void SetPlayerVelocity(Vector2 velocity)
     {
         rigidbody.velocity = velocity;
@@ -107,6 +167,10 @@ public class PlayerController : MonoBehaviour
         {
             shadow.SetActive(false);
         }
+        if (isAIControlled)
+        {
+            AIReactionDelay.Active = false;
+        }
     }
 
     public void OnEnable()
@@ -114,6 +178,11 @@ public class PlayerController : MonoBehaviour
         if (shadow)
         {
             shadow.SetActive(true);
+        }
+        if (isAIControlled)
+        {
+            AIReactionDelay.Reset();
+            AIReactionDelay.Active = true;
         }
     }
 }
