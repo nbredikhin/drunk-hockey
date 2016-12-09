@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Delay
 {
-    private const int MSEC_IN_SEC = 1000;
+    public const int MSEC_IN_SEC = 1000;
 
     private int  delayMS;          // Общее время таймера
     private bool active;           // Флаг активности таймера
@@ -27,7 +27,11 @@ public class Delay
     public bool Active
     {
         get { return active; }
-        set { active = value; }
+        set
+        {
+            active = value;
+            Reset();
+        }
     }
 
     public bool IsCompleted

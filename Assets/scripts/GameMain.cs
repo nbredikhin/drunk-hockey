@@ -13,8 +13,8 @@ public class GameMain : MonoBehaviour
     protected int playerOneScore = 0;
     protected int playerTwoScore = 0;
 
-    public float respawnTime = 3f;
-    protected float respawnDelay = 0f;
+    public int respawnTimeMS = 3000;
+    protected Delay respawnDelay;
 
     public int scoreToWin = 5;
 
@@ -33,17 +33,17 @@ public class GameMain : MonoBehaviour
 
         resultsScreen = GameObject.Find("Canvas").GetComponent<ResultsScreen>();
         resultsScreen.gameObject.SetActive(false);
+
+        respawnDelay = DelayManager.CreateDelay(respawnTimeMS);
+        Debug.Assert(respawnDelay != null);
     }
 
     void Update()
     {
-        if (respawnDelay > 0)
+        if (respawnDelay.IsCompleted)
         {
-            respawnDelay -= Time.deltaTime;
-            if (respawnDelay <= 0)
-            {
-                Respawn();
-            }
+            Respawn();
+            respawnDelay.Active = false;
         }
     }
 
@@ -117,8 +117,7 @@ public class GameMain : MonoBehaviour
         // Если никто не победил - вывод счёта
         scoreManager.gameObject.SetActive(true);
         scoreManager.ShowScore(playerOneScore, playerTwoScore);
-
-        respawnDelay = respawnTime;
+        respawnDelay.Active = true;
     }
 
     public GameObject GetPuck()
