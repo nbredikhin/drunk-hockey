@@ -7,6 +7,7 @@ public class GameMain : MonoBehaviour
     protected GameObject puck;
     protected GameObject playerOne;
     protected GameObject playerTwo;
+    protected ResultsScreen resultsScreen;
     protected ScoreManager scoreManager;
 
     protected int playerOneScore = 0;
@@ -29,6 +30,9 @@ public class GameMain : MonoBehaviour
 
         scoreManager = GameObject.Find("score").GetComponent<ScoreManager>();
         scoreManager.gameObject.SetActive(false);
+
+        resultsScreen = GameObject.Find("Canvas").GetComponent<ResultsScreen>();
+        resultsScreen.gameObject.SetActive(false);
     }
 
     void Update()
@@ -63,12 +67,26 @@ public class GameMain : MonoBehaviour
         puck.transform.rotation = Quaternion.Euler(Vector3.zero);
         // Скрыть счёт
         scoreManager.gameObject.SetActive(false);
+        resultsScreen.gameObject.SetActive(false);
+    }
+
+    public void PlayAgain()
+    {
+        playerOneScore = 0;
+        playerTwoScore = 0;
+        Respawn();
     }
 
     public void OnPlayerWon(bool isPlayerOne)
     {
         // Отладочное сообщение о том, какой игрок выиграл
         Debug.Log(string.Format("{0} player won!", isPlayerOne ? "Red" : "Blue"));
+
+        scoreManager.gameObject.SetActive(true);
+        scoreManager.ShowScore(playerOneScore, playerTwoScore);
+        scoreManager.MoveScoreToTop();
+
+        resultsScreen.gameObject.SetActive(true);
     }
 
     public void OnGoal(bool isPlayerOne)
