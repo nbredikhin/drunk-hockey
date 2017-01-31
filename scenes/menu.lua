@@ -58,7 +58,44 @@ function scene:create(event)
         if event.params.firstTime then
             transition.from(button, { time = 500, alpha = 0, delay = 250 * i + 800, xScale = 0.1, yScale = 0.1, transition = easing.inOutCubic})
         end
+
+        buttons[i].button = button
     end
+    self.buttons = buttons
+
+    self.difficultyButtons = {
+        { difficulty = "easy", label = "Easy" },
+        { difficulty = "easy", label = "Normal" },
+        { difficulty = "easy", label = "Hard" },
+    }
+    buttonY = display.contentCenterY
+    for i, b in ipairs(self.difficultyButtons) do
+        local button = widget.newButton({
+            x = display.contentCenterX, 
+            y = buttonY,
+            width = buttonWidth,
+            height = buttonHeight,
+
+            fontSize = 7,
+            label = b.label,
+            labelColor = { default = {1, 1, 1} },
+            labelYOffset = -0.8,
+
+            defaultFile = "assets/ui/button.png",
+            onRelease = function ()
+                scene:startGameWithDifficulty(b.difficulty)
+            end
+        })
+        buttonY = buttonY + buttonHeight + 1
+        group:insert(button)
+        button.alpha = 0
+
+        if event.params.firstTime then
+            transition.from(button, { time = 500, alpha = 0, delay = 250 * i + 800, xScale = 0.1, yScale = 0.1, transition = easing.inOutCubic})
+        end
+
+        self.difficultyButtons[i].button = button
+    end    
 end
 
 function scene:show(event)
@@ -68,9 +105,25 @@ function scene:show(event)
     self.loaded = true
 end
 
+function scene:startGameWithDifficulty(difficulty)
+    local params = {
+        gamemode   = "singleplayer",
+        difficulty = difficulty
+    }
+    composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft", params = params})
+end
+
 function scene:menuButtonPressed(name)
     if name == "singleplayer" then
-        composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft", params = { gamemode = "singleplayer" }})
+        -- composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft", params = { gamemode = "singleplayer" }})
+        transition.to(self.buttons[1].button, { transition=easing.outBack, time = 800, delta = true, y = -20, alpha = -1, xScale = 0.1})
+        transition.to(self.buttons[2].button, { transition=easing.outBack, time = 700, delta = true, y = 30.5})
+
+        for i, b in ipairs(self.difficultyButtons) do
+            b.button.xScale = 0.1
+            b.button.yScale = 0.1
+            transition.to(b.button, { transition=easing.outBack, delay = (i - 1) * 200, time = 300, delta = false, xScale = 1, yScale = 1, alpha = 1})
+        end
     elseif name == "multiplayer" then
         composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft", params = { gamemode = "multiplayer" }})
     end
