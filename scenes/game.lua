@@ -7,13 +7,14 @@ local Player   = require("game.Player")
 local Puck     = require("game.Puck")
 local Gates    = require("game.Gates")
 local Joystick = require("game.Joystick")
+local Bot      = require("game.Bot")
 
 local GameUI   = require("game.ui.GameUI")
 
 physics.start()
 physics.setGravity(0, 0)
 if DEBUG.drawPhysics then
-    physics.setDrawMode("hybrid") 
+    physics.setDrawMode("hybrid")
 end
 
 local scene = composer.newScene()
@@ -35,7 +36,7 @@ function scene:create(event)
 
     -- Шайба
     self.puck = Puck()
-    group:insert(self.puck)    
+    group:insert(self.puck)
 
     -- Игроки
     self.players = {}
@@ -63,7 +64,7 @@ function scene:create(event)
         self.uiManagers[1] = GameUI("red")
         self.uiManagers[1].x = display.contentCenterX
         self.uiManagers[1].y = display.contentCenterY * 1.3
-        group:insert(self.uiManagers[1])        
+        group:insert(self.uiManagers[1])
 
         self.uiManagers[2] = GameUI("blue")
         self.uiManagers[2].x = display.contentCenterX
@@ -74,13 +75,14 @@ function scene:create(event)
         -- Два джойстика
         self.joysticks[2] = Joystick()
         self.joysticks[1].side = "bottom"
-        self.joysticks[2].side = "top"        
+        self.joysticks[2].side = "top"
     elseif event.params.gamemode == "singleplayer" then
         self.uiManagers[1] = GameUI("blue")
         self.uiManagers[1].x = display.contentCenterX
         self.uiManagers[1].y = display.contentCenterY
-        group:insert(self.uiManagers[1])        
-        -- self.joysticks[2] = Joystick()
+        group:insert(self.uiManagers[1])
+        -- TODO: поставить difficulty
+        self.joysticks[2] = Bot(self.puck, self.players[2], difficulty.easy)
     end
 
     -- Тряска камеры
@@ -177,7 +179,7 @@ function scene:enterFrame()
         self.view.y = (math.random() - 0.5) * self.currentShakeMultiplier * self.shakePower
         self.currentShakeMultiplier = self.currentShakeMultiplier * 0.9
     end
-    
+
     if not self.playersFrozen then
         -- Управление игроками
         for i, joystick in ipairs(self.joysticks) do
@@ -186,17 +188,16 @@ function scene:enterFrame()
                 self.players[i]:move(joystick.inputX, joystick.inputY)
             end
         end
-        -- Управление AI
 
         -- Обновление игроков
         for i, player in ipairs(self.players) do
             player:update()
-        end        
+        end
     end
 
     for i, gate in ipairs(self.gates) do
         gate:update()
-    end    
+    end
 end
 
 function scene:touch(event)

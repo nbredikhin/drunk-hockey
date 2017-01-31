@@ -1,12 +1,17 @@
 DEBUG = {
-    skipMenu = false,
+    skipMenu = true,
     skipIntro = false,
-    drawPhysics = false
+    drawPhysics = false,
+
+    Log = function (s, ...)
+        local str = string.format(s, ...)
+        print(str)
+    end
 }
 
 local composer = require "composer"
 
-composer.recycleOnSceneChange = true 
+composer.recycleOnSceneChange = true
 
 display.setStatusBar(display.HiddenStatusBar)
 display.setDefault("magTextureFilter", "nearest")
@@ -50,7 +55,7 @@ end
 
 -- Load menu
 if DEBUG.skipMenu then
-    composer.gotoScene("scenes.game", { params = { gamemode = "multiplayer" } })
+    composer.gotoScene("scenes.game", { params = { gamemode = "singleplayer" } })
 else
     composer.gotoScene("scenes.intro", { effect = "fade", time = 1000 })
 end
