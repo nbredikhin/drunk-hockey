@@ -70,7 +70,9 @@ end
 
 function scene:menuButtonPressed(name)
     if name == "singleplayer" then
-        composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft"})
+        composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft", params = { gamemode = "singleplayer" }})
+    elseif name == "multiplayer" then
+        composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft", params = { gamemode = "multiplayer" }})
     end
 end
 
