@@ -11,6 +11,10 @@ function scene:create(event)
     logo.height = logo.height * logoScale
     logo.x = display.contentCenterX
     logo.y = display.contentCenterY 
+
+    if DEBUG.skipIntro then
+        composer.gotoScene("scenes.menu")
+    end    
 end
 
 function scene:show(event)
@@ -20,9 +24,7 @@ function scene:show(event)
     self.loaded = true
 
     local delay = 1500
-    if DEBUG.skipIntro then
-        delay = 0
-    end
+
     timer.performWithDelay(delay, function ()
         composer.gotoScene("scenes.menu", { effect = "fade", time = 500, params = { firstTime = true }})
     end)
