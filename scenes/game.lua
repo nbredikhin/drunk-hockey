@@ -18,7 +18,11 @@ end
 
 local scene = composer.newScene()
 
-function scene:create()
+function scene:create(event)
+    if not event.params then
+        event.params = {}
+    end
+
     scene.gotoPreviousScene = "scenes.menu"
     local group = self.view
     local background = display.newImage("assets/background.png", display.contentCenterX, display.contentCenterY)
@@ -51,12 +55,33 @@ function scene:create()
     self.gates[2].rotation = 180
     group:insert(self.gates[2])
 
-    self.joystick = Joystick()
+    self.joysticks = { Joystick("full") }
 
-    self.ui = GameUI()
-    self.ui.x = display.contentCenterX
-    self.ui.y = display.contentCenterY
-    group:insert(self.ui)
+    self.uiManagers = {}
+    if event.params.gamemode == "multiplayer" then
+        -- Два UI
+        self.uiManagers[1] = GameUI("red")
+        self.uiManagers[1].x = display.contentCenterX
+        self.uiManagers[1].y = display.contentCenterY * 1.3
+        group:insert(self.uiManagers[1])        
+
+        self.uiManagers[2] = GameUI("blue")
+        self.uiManagers[2].x = display.contentCenterX
+        self.uiManagers[2].y = display.contentCenterY * 0.7
+        self.uiManagers[2].rotation = 180
+        group:insert(self.uiManagers[2])
+
+        -- Два джойстика
+        self.joysticks[2] = Joystick()
+        self.joysticks[1].side = "bottom"
+        self.joysticks[2].side = "top"        
+    elseif event.params.gamemode == "singleplayer" then
+        self.uiManagers[1] = GameUI("blue")
+        self.uiManagers[1].x = display.contentCenterX
+        self.uiManagers[1].y = display.contentCenterY
+        group:insert(self.uiManagers[1])        
+        -- self.joysticks[2] = Joystick()
+    end
 
     -- Тряска камеры
     self.currentShakeMultiplier = 0
@@ -80,15 +105,22 @@ function scene:respawn()
     self.players[1].x = display.contentCenterX
     self.players[1].y = display.contentCenterY + self.area.height * 0.32
     self.players[1]:setLinearVelocity(0, 0)
+    self.players[1].angularVelocity = 0
 
     self.players[2].x = display.contentCenterX
     self.players[2].y = display.contentCenterY - self.area.height * 0.32
     self.players[2]:setLinearVelocity(0, 0)
+    self.players[2].angularVelocity = 0
 end
 
 function scene:startCountdown()
     local scene = self
-    self.ui.countdown:show(function ()
+    local duration = 0
+    for i, ui in ipairs(self.uiManagers) do
+        duration = ui.countdown:show()
+    end
+
+    timer.performWithDelay(duration, function ()
         self:startRound()
     end)
 end
@@ -99,12 +131,19 @@ function scene:endRound(goalTo)
     else
         self.score[2] = self.score[2] + 1
     end
-    self.ui.score:show(unpack(self.score))
-    self.playersFrozen = true
+    for i, ui in ipairs(self.uiManagers) do
+        ui.score:show(unpack(self.score))
+    end
+
+    for i, joystick in ipairs(self.joysticks) do
+        joystick.alpha = 0
+    end
     self:respawn()
 
     timer.performWithDelay(2000, function ()
-        self.ui.score:hide()
+        for i, ui in ipairs(self.uiManagers) do
+            ui.score:hide()
+        end
     end)
 
     timer.performWithDelay(4500, function ()
@@ -138,20 +177,21 @@ function scene:enterFrame()
         self.view.y = (math.random() - 0.5) * self.currentShakeMultiplier * self.shakePower
         self.currentShakeMultiplier = self.currentShakeMultiplier * 0.9
     end
-
-    -- Управление игроками
+    
     if not self.playersFrozen then
-        self.joystick:update()
-        if self.joystick.active then
-            self.players[1]:move(self.joystick.inputX, self.joystick.inputY)
+        -- Управление игроками
+        for i, joystick in ipairs(self.joysticks) do
+            joystick:update()
+            if joystick.active then
+                self.players[i]:move(joystick.inputX, joystick.inputY)
+            end
         end
-    end
+        -- Управление AI
 
-    -- self.players[2]:move(self.puck.x - self.players[2].x, self.puck.y - self.players[2].y)
-
-    -- Обновление игроков
-    for i, player in ipairs(self.players) do
-        player:update()
+        -- Обновление игроков
+        for i, player in ipairs(self.players) do
+            player:update()
+        end        
     end
 
     for i, gate in ipairs(self.gates) do
@@ -160,7 +200,9 @@ function scene:enterFrame()
 end
 
 function scene:touch(event)
-    self.joystick:touch(event)
+    for i, joystick in ipairs(self.joysticks) do
+        joystick:touch(event)
+    end
 end
 
 function scene:shake(mul)

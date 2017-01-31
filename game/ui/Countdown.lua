@@ -22,13 +22,15 @@ local function show(self, callback)
         end
     end, 3)
     self.isVisible = true
+
+    return 900 * 3
 end
 
-local function constructor()
+local function constructor(colorName)
     local self = display.newGroup()
 
     self.numbers = {}
-    local imageSheet = graphics.newImageSheet("assets/ui/score.png", {
+    local imageSheet = graphics.newImageSheet("assets/ui/numbers.png", {
         width = 24, 
         height = 24,
         numFrames = 6
@@ -40,6 +42,11 @@ local function constructor()
         count = 6
     })
     self.number:setFrame(1)
+    if colorName == "blue" then
+        self.number:setFillColor(0.15, 0.4, 1)
+    else
+        self.number:setFillColor(1, 0.1, 0.1)
+    end
 
     self.isVisible = false
 

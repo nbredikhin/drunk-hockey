@@ -1,18 +1,24 @@
 local utils = require("lib.utils")
 
-local function touch(self, event)   
-    if self.id and event.id ~= self.id then
-        return
-    end     
+local function touch(self, event)
+    if event.phase == "began" then
+        if self.side == "top" and event.y > display.contentCenterY then
+            return
+        end
+        if self.side == "bottom" and event.y < display.contentCenterY then
+            return
+        end
+    end
+    -- elseif self.side == "bottom" and event.y < display.contentCenterY then
+    --     event.phase = "ended"
+    -- end
     if event.phase == "began" then
         self.sx = event.x
         self.sy = event.y
         self.targetAlpha = 0.2
-        self.id = event.id
         self.active = true
     elseif event.phase == "ended" then
         self.targetAlpha = 0
-        self.id = nil
         self.active = false
     end
 
@@ -44,7 +50,7 @@ local function update(self)
     end
 end
 
-local function constructor()
+local function constructor(side)
     local self = display.newImage("assets/joystick_arrow.png")
 
     self.alpha = 0
@@ -58,6 +64,11 @@ local function constructor()
 
     self.inputX = 0
     self.inputY = 0
+
+    if not side then
+        side = "full"
+    end
+    self.side = side
 
     self.maxDistance = 20
 

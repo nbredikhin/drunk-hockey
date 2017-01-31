@@ -33,11 +33,11 @@ local function hide(self)
     end)
 end
 
-local function constructor()
+local function constructor(colorName)
     local self = display.newGroup()
 
     self.numbers = {}
-    local imageSheet = graphics.newImageSheet("assets/ui/score.png", {
+    local imageSheet = graphics.newImageSheet("assets/ui/numbers.png", {
         width = 24, 
         height = 24,
         numFrames = 6
@@ -55,6 +55,16 @@ local function constructor()
     self.numbers[1].x = -self.numbers[1].width / 2
     self.numbers[2].x = self.numbers[2].width / 2
     self.colon = display.newImage(self, "assets/ui/colon.png")
+
+    if colorName == "blue" then
+        self.numbers[1]:setFillColor(0.15, 0.4, 1)
+        self.numbers[2]:setFillColor(0.15, 0.4, 1)
+        self.colon:setFillColor(0.15, 0.4, 1)
+    else
+        self.numbers[1]:setFillColor(1, 0.1, 0.1)
+        self.numbers[2]:setFillColor(1, 0.1, 0.1)
+        self.colon:setFillColor(1, 0.1, 0.1)
+    end
 
     self.isVisible = false
     self.show = show

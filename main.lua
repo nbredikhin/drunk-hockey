@@ -1,6 +1,6 @@
 DEBUG = {
-    skipMenu = false,
-    skipIntro = false,
+    skipMenu = true,
+    skipIntro = true,
     drawPhysics = false
 }
 
@@ -50,7 +50,7 @@ end
 
 -- Load menu
 if DEBUG.skipMenu then
-    composer.gotoScene("scenes.game")
+    composer.gotoScene("scenes.game", { params = { gamemode = "multiplayer" } })
 else
     composer.gotoScene("scenes.intro", { effect = "fade", time = 1000 })
 end
