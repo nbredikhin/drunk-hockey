@@ -37,7 +37,7 @@ function scene:create(event)
     local buttonHeight = buttonWidth * 0.220703125
     for i, b in ipairs(buttons) do
         local button = widget.newButton({
-            x = display.contentCenterX, 
+            x = display.contentCenterX,
             y = buttonY,
             width = buttonWidth,
             height = buttonHeight,
@@ -64,14 +64,14 @@ function scene:create(event)
     self.buttons = buttons
 
     self.difficultyButtons = {
-        { difficulty = "easy", label = "Easy" },
-        { difficulty = "easy", label = "Normal" },
-        { difficulty = "easy", label = "Hard" },
+        { difficulty = "easy",   label = "Easy" },
+        { difficulty = "medium", label = "Medium" },
+        { difficulty = "hard",   label = "Hard" },
     }
-    buttonY = display.contentCenterY
+    buttonY = display.contentCenterY - 5
     for i, b in ipairs(self.difficultyButtons) do
         local button = widget.newButton({
-            x = display.contentCenterX, 
+            x = display.contentCenterX,
             y = buttonY,
             width = buttonWidth,
             height = buttonHeight,
@@ -95,7 +95,7 @@ function scene:create(event)
         end
 
         self.difficultyButtons[i].button = button
-    end    
+    end
 end
 
 function scene:show(event)
@@ -105,19 +105,18 @@ function scene:show(event)
     self.loaded = true
 end
 
-function scene:startGameWithDifficulty(difficulty)
+function scene:startGameWithDifficulty(difficultyName)
     local params = {
         gamemode   = "singleplayer",
-        difficulty = difficulty
+        difficulty = difficultyName
     }
     composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft", params = params})
 end
 
 function scene:menuButtonPressed(name)
     if name == "singleplayer" then
-        -- composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft", params = { gamemode = "singleplayer" }})
         transition.to(self.buttons[1].button, { transition=easing.outBack, time = 800, delta = true, y = -20, alpha = -1, xScale = 0.1})
-        transition.to(self.buttons[2].button, { transition=easing.outBack, time = 700, delta = true, y = 30.5})
+        transition.to(self.buttons[2].button, { transition=easing.outBack, time = 700, delta = true, y = 25.5})
 
         for i, b in ipairs(self.difficultyButtons) do
             b.button.xScale = 0.1

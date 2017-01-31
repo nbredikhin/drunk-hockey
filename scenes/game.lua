@@ -23,6 +23,9 @@ function scene:create(event)
     if not event.params then
         event.params = {}
     end
+    if not event.params.difficulty then
+        event.params.difficulty = "easy"
+    end
 
     scene.gotoPreviousScene = "scenes.menu"
     local group = self.view
@@ -82,7 +85,7 @@ function scene:create(event)
         self.uiManagers[1].y = display.contentCenterY
         group:insert(self.uiManagers[1])
         -- TODO: поставить difficulty
-        self.joysticks[2] = Bot(self.puck, self.players[2], difficulty.easy)
+        self.joysticks[2] = Bot(self.puck, self.players[2], difficulty[event.params.difficulty])
     end
 
     -- Тряска камеры
