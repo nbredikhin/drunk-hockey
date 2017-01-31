@@ -25,9 +25,9 @@ local function constructor()
 
     -- Physics setup
     physics.addBody(self, {
-        density = 0.01,
-        bounce = 1, 
-        friction = 0, 
+        density = 0.05,
+        bounce = 1,
+        friction = 0,
         radius = 2.7
     })
     self.linearDamping = 0.2
@@ -39,6 +39,6 @@ local function constructor()
 
     self:addEventListener("collision")
     return self
-end 
+end
 
 return constructor
