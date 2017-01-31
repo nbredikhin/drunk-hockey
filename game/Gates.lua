@@ -10,9 +10,9 @@ end
 local function collision(self, event)
     if event.phase == "began" and event.other.isPuck and event.selfElement == 4 then
         local scene = composer.getScene(composer.getSceneName("current"))
-        if scene and scene.onGoal then
+        if scene and scene.endRound then
             timer.performWithDelay(1, function ()
-                scene:onGoal(self.colorName)
+                scene:endRound(self.colorName)
             end)
         end
     end

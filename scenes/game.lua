@@ -8,9 +8,13 @@ local Puck     = require("game.Puck")
 local Gates    = require("game.Gates")
 local Joystick = require("game.Joystick")
 
+local GameUI   = require("game.ui.GameUI")
+
 physics.start()
 physics.setGravity(0, 0)
--- physics.setDrawMode("hybrid")
+if DEBUG.drawPhysics then
+    physics.setDrawMode("hybrid") 
+end
 
 local scene = composer.newScene()
 
@@ -49,14 +53,27 @@ function scene:create()
 
     self.joystick = Joystick()
 
+    self.ui = GameUI()
+    self.ui.x = display.contentCenterX
+    self.ui.y = display.contentCenterY
+    group:insert(self.ui)
+
     -- Тряска камеры
     self.currentShakeMultiplier = 0
     self.shakePower = 4
 
+    self.playersFrozen = false
+
     self:respawn()
+    timer.performWithDelay(2000, function ()
+        self:startCountdown()
+    end)
+
+    self.score = {0, 0}
 end
 
 function scene:respawn()
+    self.playersFrozen = true
     self.puck.x, self.puck.y = display.contentCenterX, display.contentCenterY
     self.puck:setLinearVelocity(0, 0)
 
@@ -67,6 +84,36 @@ function scene:respawn()
     self.players[2].x = display.contentCenterX
     self.players[2].y = display.contentCenterY - self.area.height * 0.32
     self.players[2]:setLinearVelocity(0, 0)
+end
+
+function scene:startCountdown()
+    local scene = self
+    self.ui.countdown:show(function ()
+        self:startRound()
+    end)
+end
+
+function scene:endRound(goalTo)
+    if goalTo == "blue" then
+        self.score[1] = self.score[1] + 1
+    else
+        self.score[2] = self.score[2] + 1
+    end
+    self.ui.score:show(unpack(self.score))
+    self.playersFrozen = true
+    self:respawn()
+
+    timer.performWithDelay(2000, function ()
+        self.ui.score:hide()
+    end)
+
+    timer.performWithDelay(4500, function ()
+        self:startCountdown()
+    end)
+end
+
+function scene:startRound()
+    self.playersFrozen = false
 end
 
 function scene:onGoal(playerName)
@@ -82,6 +129,9 @@ function scene:show(event)
 end
 
 function scene:enterFrame()
+    if not self.currentShakeMultiplier then
+        return
+    end
     -- Тряска камеры
     if self.currentShakeMultiplier > 0 then
         self.view.x = (math.random() - 0.5) * self.currentShakeMultiplier * self.shakePower
@@ -90,9 +140,11 @@ function scene:enterFrame()
     end
 
     -- Управление игроками
-    self.joystick:update()
-    if self.joystick.active then
-        self.players[1]:move(self.joystick.inputX, self.joystick.inputY)
+    if not self.playersFrozen then
+        self.joystick:update()
+        if self.joystick.active then
+            self.players[1]:move(self.joystick.inputX, self.joystick.inputY)
+        end
     end
 
     -- self.players[2]:move(self.puck.x - self.players[2].x, self.puck.y - self.players[2].y)

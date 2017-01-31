@@ -24,7 +24,7 @@ function scene:create(event)
     logo.y = display.contentCenterY / 3
 
     if event.params.firstTime then
-        transition.from(logo, { time = 500, alpha = 0, xScale = 0.1, yScale = 0.1, transition= easing.inOutCubic})
+        transition.from(logo, { delay = 800, time = 500, alpha = 0, xScale = 0.1, yScale = 0.1, transition= easing.inOutCubic})
     end
 
     -- Menu buttons
@@ -56,7 +56,7 @@ function scene:create(event)
         group:insert(button)
 
         if event.params.firstTime then
-            transition.from(button, { time = 500, alpha = 0, delay = 250 * i, xScale = 0.1, yScale = 0.1, transition = easing.inOutCubic})
+            transition.from(button, { time = 500, alpha = 0, delay = 250 * i + 800, xScale = 0.1, yScale = 0.1, transition = easing.inOutCubic})
         end
     end
 end
