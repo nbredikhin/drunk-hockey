@@ -20,6 +20,21 @@ end
 
 local scene = composer.newScene()
 
+local function spawnBottle(event)
+    local self = event.source.params.self
+    local group = event.source.params.view
+
+    DEBUG.Log("Spawning a bottle " .. tostring(group))
+    group:insert(self.bottle)
+
+    local spawnTimer = timer.performWithDelay(
+        math.random(self.bottleSpawnDelayRange) + self.bottleSpawnDelayMin,
+        spawnBottle)
+    spawnTimer.params = {}
+    spawnTimer.params.view = self.view
+    spawnTimer.params.self = self
+end
+
 function scene:create(event)
     if not event.params then
         event.params = {}
@@ -27,6 +42,9 @@ function scene:create(event)
     if not event.params.difficulty then
         event.params.difficulty = "easy"
     end
+
+    self.bottleSpawnDelayMin   = 7 * 1000
+    self.bottleSpawnDelayRange = 10 * 1000
 
     scene.gotoPreviousScene = "scenes.menu"
     local group = self.view
@@ -42,8 +60,14 @@ function scene:create(event)
     self.puck = Puck()
     group:insert(self.puck)
 
+    -- Бутылка
     self.bottle = Bottle()
-    group:insert(self.bottle)
+    local spawnTimer = timer.performWithDelay(
+        math.random(self.bottleSpawnDelayRange) + self.bottleSpawnDelayMin,
+        spawnBottle)
+    spawnTimer.params = {}
+    spawnTimer.params.view = self.view
+    spawnTimer.params.self = self
 
     -- Игроки
     self.players = {}

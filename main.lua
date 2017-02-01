@@ -1,7 +1,7 @@
 DEBUG = {
     skipMenu = true,
     skipIntro = true,
-    drawPhysics = true,
+    drawPhysics = false,
 
     Log = function (s, ...)
         local str = string.format(s, ...)
