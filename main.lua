@@ -1,6 +1,6 @@
 DEBUG = {
     skipMenu = false,
-    skipIntro = true,
+    skipIntro = false,
     drawPhysics = false,
 
     Log = function (s, ...)
@@ -9,7 +9,9 @@ DEBUG = {
     end
 }
 
-local composer = require "composer"
+local composer  = require("composer")
+local ads       = require("lib.ads")
+local adsconfig = require("adsconfig") or {}
 
 composer.recycleOnSceneChange = true
 
@@ -52,6 +54,13 @@ for i, eventName in ipairs(passEvents) do
         end
     end)
 end
+
+-- Setup ads
+ads.init(adsconfig.provider, adsconfig.appId)
+ads.load(adsconfig.adType, { testMode = adsconfig.testMode })
+-- if ads.isLoaded() then
+--     ads.show(adsconfig.adType, { testMode = adsconfig.testMode })
+-- end
 
 -- Load menu
 if DEBUG.skipMenu then

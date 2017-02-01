@@ -1,5 +1,6 @@
 local composer = require("composer")
 local widget = require("widget")
+local ads = require("lib.ads")
 
 local scene = composer.newScene()
 
