@@ -1,6 +1,6 @@
 DEBUG = {
-    skipMenu = false,
-    skipIntro = false,
+    skipMenu = true,
+    skipIntro = true,
     drawPhysics = false,
 
     Log = function (s, ...)

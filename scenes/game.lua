@@ -59,24 +59,27 @@ function scene:create(event)
     self.gates[2].rotation = 180
     group:insert(self.gates[2])
 
-    self.joysticks = { Joystick("full") }
+    self.joysticks = {}
+    self.joysticks[1] = Joystick("full")
+    group:insert(self.joysticks[1])
 
     self.uiManagers = {}
     if event.params.gamemode == "multiplayer" then
         -- Два UI
-        self.uiManagers[1] = GameUI("red")
-        self.uiManagers[1].x = display.contentCenterX
-        self.uiManagers[1].y = display.contentCenterY * 1.3
-        group:insert(self.uiManagers[1])
-
-        self.uiManagers[2] = GameUI("blue")
+        self.uiManagers[2] = GameUI("blue", true)
         self.uiManagers[2].x = display.contentCenterX
         self.uiManagers[2].y = display.contentCenterY * 0.7
         self.uiManagers[2].rotation = 180
         group:insert(self.uiManagers[2])
 
+        self.uiManagers[1] = GameUI("red", true)
+        self.uiManagers[1].x = display.contentCenterX
+        self.uiManagers[1].y = display.contentCenterY * 1.3
+        group:insert(self.uiManagers[1])
+
         -- Два джойстика
         self.joysticks[2] = Joystick()
+        group:insert(self.joysticks[2])
         self.joysticks[1].side = "bottom"
         self.joysticks[2].side = "top"
     elseif event.params.gamemode == "singleplayer" then
@@ -88,16 +91,14 @@ function scene:create(event)
         self.joysticks[2] = Bot(self.puck, self.players[2], difficulty[event.params.difficulty])
     end
 
-    -- Тряска камеры
+    -- Camera shaking settings
     self.currentShakeMultiplier = 0
     self.shakePower = 4
-    self:respawn()
-    timer.performWithDelay(1500, function ()
-        self:startCountdown()
-    end)
 
-    self.score = {0, 0}
-    self.state = "waiting"
+    -- Goals to end game
+    self.maxGoals = 1
+
+    self:restartGame()
 end
 
 function scene:respawn()
@@ -118,6 +119,9 @@ function scene:respawn()
 end
 
 function scene:startCountdown()
+    if self.state == "countdown" then
+        return
+    end
     local scene = self
     local duration = 0
     for i, ui in ipairs(self.uiManagers) do
@@ -131,12 +135,47 @@ function scene:startCountdown()
     self.state = "countdown"
 end
 
+function scene:restartGame()
+    if self.state == "waiting" then
+        return
+    end
+    self.score = {0, 0}
+    for i, ui in ipairs(self.uiManagers) do
+        ui.winner:hide()
+    end
+    -- Launch game
+    self:respawn()
+    timer.performWithDelay(1500, function ()
+        self:startCountdown()
+    end)
+end
+
+function scene:endGame(winner)
+    self.state = "ended"
+
+    for i, ui in ipairs(self.uiManagers) do
+        ui.winner:show(winner, self.score)
+    end
+end
+
+-- Goal handling
 function scene:endRound(goalTo)
     if goalTo == "blue" then
         self.score[1] = self.score[1] + 1
     else
         self.score[2] = self.score[2] + 1
     end
+
+    self:respawn()
+
+    if self.score[1] >= self.maxGoals then
+        self:endGame("red")
+        return
+    elseif self.score[2] >= self.maxGoals then
+        self:endGame("blue")
+        return
+    end
+
     for i, ui in ipairs(self.uiManagers) do
         ui.score:show(unpack(self.score))
     end
@@ -144,7 +183,6 @@ function scene:endRound(goalTo)
     for i, joystick in ipairs(self.joysticks) do
         joystick.alpha = 0
     end
-    self:respawn()
 
     timer.performWithDelay(2000, function ()
         for i, ui in ipairs(self.uiManagers) do
@@ -155,8 +193,6 @@ function scene:endRound(goalTo)
     timer.performWithDelay(3500, function ()
         self:startCountdown()
     end)
-
-    self.state = "ended"
 end
 
 function scene:startRound()
