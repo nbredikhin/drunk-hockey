@@ -21,18 +21,18 @@ end
 local scene = composer.newScene()
 
 local function spawnBottle(event)
-    local self = event.source.params.self
-    local group = event.source.params.view
+    local scene = event.source.params.scene
+    scene:delayBottleSpawn()
+    -- If not spawned
+    if not scene.bottle.isVisible then
+        scene.bottle.isVisible = true
+        scene.bottle.x = math.random((scene.area.x + scene.area.width  * 0.15) +
+            scene.area.width  * 0.7 * math.random())
+        scene.bottle.y = math.random((scene.area.y + scene.area.height * 0.15) +
+            scene.area.height * 0.7 * math.random())
 
-    DEBUG.Log("Spawning a bottle " .. tostring(group))
-    group:insert(self.bottle)
-
-    local spawnTimer = timer.performWithDelay(
-        math.random(self.bottleSpawnDelayRange) + self.bottleSpawnDelayMin,
-        spawnBottle)
-    spawnTimer.params = {}
-    spawnTimer.params.view = self.view
-    spawnTimer.params.self = self
+        DEBUG.Log("Spawning a bottle")
+    end
 end
 
 function scene:create(event)
@@ -62,12 +62,9 @@ function scene:create(event)
 
     -- Бутылка
     self.bottle = Bottle()
-    local spawnTimer = timer.performWithDelay(
-        math.random(self.bottleSpawnDelayRange) + self.bottleSpawnDelayMin,
-        spawnBottle)
-    spawnTimer.params = {}
-    spawnTimer.params.view = self.view
-    spawnTimer.params.self = self
+    group:insert(self.bottle)
+    self.bottle.isVisible = false
+    self:delayBottleSpawn()
 
     -- Игроки
     self.players = {}
@@ -128,6 +125,16 @@ function scene:create(event)
     end)
 
     self.score = {0, 0}
+end
+
+function scene:delayBottleSpawn()
+    local spawnTimer = timer.performWithDelay(
+        math.random(self.bottleSpawnDelayRange) + self.bottleSpawnDelayMin,
+        spawnBottle)
+
+    spawnTimer.params = {
+        scene = self
+    }
 end
 
 function scene:respawn()

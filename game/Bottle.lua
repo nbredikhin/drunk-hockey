@@ -3,14 +3,14 @@ local physics  = require("physics")
 local utils    = require("lib.utils")
 
 local function colision(self, event)
+    if not self.isVisible then
+        return
+    end
     if event.phase == "began" and event.other.isPlayer then
         local player = event.other
-        self:removeSelf()
+        self.isVisible = false
         player:increaseRotationSpeed(self.speedUpRatio, self.speedUpDuration)
     end
-end
-
-local function respawn()
 end
 
 local function constructor()
@@ -26,9 +26,8 @@ local function constructor()
     self.speedUpDuration = 10000
     self.speedUpRatio = 2
 
-    self.respawn = respawn
-
     self.collision = colision
+
     self:addEventListener("collision")
     return self
 end
