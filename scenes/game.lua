@@ -8,6 +8,7 @@ local Puck     = require("game.Puck")
 local Gates    = require("game.Gates")
 local Joystick = require("game.Joystick")
 local Bot      = require("game.Bot")
+local Bottle   = require("game.Bottle")
 
 local GameUI   = require("game.ui.GameUI")
 
@@ -40,6 +41,9 @@ function scene:create(event)
     -- Шайба
     self.puck = Puck()
     group:insert(self.puck)
+
+    self.bottle = Bottle()
+    group:insert(self.bottle)
 
     -- Игроки
     self.players = {}
@@ -109,13 +113,11 @@ function scene:respawn()
 
     self.players[1].x = display.contentCenterX
     self.players[1].y = display.contentCenterY + self.area.height * 0.32
-    self.players[1]:setLinearVelocity(0, 0)
-    self.players[1].angularVelocity = 0
+    self.players[1]:reset()
 
     self.players[2].x = display.contentCenterX
     self.players[2].y = display.contentCenterY - self.area.height * 0.32
-    self.players[2]:setLinearVelocity(0, 0)
-    self.players[2].angularVelocity = 0
+    self.players[2]:reset()
 end
 
 function scene:startCountdown()

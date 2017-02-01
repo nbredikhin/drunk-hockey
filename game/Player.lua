@@ -1,5 +1,23 @@
 local physics = require("physics")
 
+local function increaseRotationSpeed(self, speedMultiplyer, timeout)
+    self.rotationSpeed = self.rotationSpeed * speedMultiplyer
+    self.resetSpeedTimer = timer.performWithDelay(timeout,
+        function()
+            self.rotationSpeed = self.defaultRotationSpeed
+        end)
+end
+
+local function reset(self)
+    self:setLinearVelocity(0, 0)
+    self.angularVelocity = 0
+    self.rotationSpeed = self.defaultRotationSpeed
+
+    if self.resetSpeedTimer ~= nil then
+        timer.cancel(self.resetSpeedTimer)
+    end
+end
+
 local function update(self)
     self.angularVelocity = self.rotationSpeed
     self.shadow.rotation = -self.rotation
@@ -18,19 +36,21 @@ local function constructor(colorName)
     local self = display.newGroup()
     self.shadow = display.newImage("assets/player_shadow.png")
     self:insert(self.shadow)
-        
+
     self.body = display.newImage("assets/player_".. colorName ..".png")
     self:insert(self.body)
     self.body.anchorX = 0.3
     self.body.anchorY = 0.7
 
+    self.defaultRotationSpeed = -500
+
     self.movementSpeed = 0.0008
-    self.rotationSpeed = -500
+    self.rotationSpeed = self.defaultRotationSpeed
 
     self.maxMovementSpeed = 25
 
     -- Physics setup
-    physics.addBody(self, 
+    physics.addBody(self,
     -- Stick body
     {
         bounce = 2,
@@ -44,17 +64,20 @@ local function constructor(colorName)
         }
     },
     -- Player's body
-    { 
+    {
         density = 0.03,
-        bounce = 0, 
-        radius = 4 
+        bounce = 0,
+        radius = 4
     })
     self.linearDamping = 5
+    self.isPlayer = true
 
     -- Methods
     self.update = update
     self.move   = move
+    self.increaseRotationSpeed = increaseRotationSpeed
+    self.reset = reset
     return self
-end 
+end
 
 return constructor
