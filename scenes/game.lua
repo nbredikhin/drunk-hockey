@@ -91,19 +91,16 @@ function scene:create(event)
     -- Тряска камеры
     self.currentShakeMultiplier = 0
     self.shakePower = 4
-
-    self.playersFrozen = false
-
     self:respawn()
-    timer.performWithDelay(2000, function ()
+    timer.performWithDelay(1500, function ()
         self:startCountdown()
     end)
 
     self.score = {0, 0}
+    self.state = "waiting"
 end
 
 function scene:respawn()
-    self.playersFrozen = true
     self.puck.x, self.puck.y = display.contentCenterX, display.contentCenterY
     self.puck:setLinearVelocity(0, 0)
 
@@ -116,6 +113,8 @@ function scene:respawn()
     self.players[2].y = display.contentCenterY - self.area.height * 0.32
     self.players[2]:setLinearVelocity(0, 0)
     self.players[2].angularVelocity = 0
+
+    self.state = "waiting"
 end
 
 function scene:startCountdown()
@@ -128,6 +127,8 @@ function scene:startCountdown()
     timer.performWithDelay(duration, function ()
         self:startRound()
     end)
+
+    self.state = "countdown"
 end
 
 function scene:endRound(goalTo)
@@ -151,13 +152,15 @@ function scene:endRound(goalTo)
         end
     end)
 
-    timer.performWithDelay(4500, function ()
+    timer.performWithDelay(3500, function ()
         self:startCountdown()
     end)
+
+    self.state = "ended"
 end
 
 function scene:startRound()
-    self.playersFrozen = false
+    self.state = "running"
 end
 
 function scene:onGoal(playerName)
@@ -183,7 +186,7 @@ function scene:enterFrame()
         self.currentShakeMultiplier = self.currentShakeMultiplier * 0.9
     end
 
-    if not self.playersFrozen then
+    if self.state == "running" then
         -- Управление игроками
         for i, joystick in ipairs(self.joysticks) do
             joystick:update()
