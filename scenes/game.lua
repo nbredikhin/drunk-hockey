@@ -97,12 +97,12 @@ function scene:create(event)
         self.joysticks[2] = Bot(self.puck, self.players[2], difficulty[event.params.difficulty])
     end
 
-    -- Camera shaking settings
+    -- Параметры тряски камеры
     self.currentShakeMultiplier = 0
     self.shakePower = 4
 
-    -- Goals to end game
-    self.maxGoals = 1
+    -- Количество голов для завершения игры
+    self.maxGoals = 5
 
     self:restartGame()
 end
@@ -149,7 +149,7 @@ function scene:restartGame()
     for i, ui in ipairs(self.uiManagers) do
         ui.winner:hide()
     end
-    -- Launch game
+    -- Запустить игру
     self:respawn()
     timer.performWithDelay(1500, function ()
         self:startCountdown()
@@ -182,6 +182,7 @@ function scene:endRound(goalTo)
         self.score[2] = self.score[2] + 1
     end
 
+    audio.stop(3)
     self:respawn()
 
     if self.score[1] >= self.maxGoals then
@@ -191,8 +192,6 @@ function scene:endRound(goalTo)
         self:endGame("blue")
         return
     end
-
-    audio.stop(3)
 
     for i, ui in ipairs(self.uiManagers) do
         ui.score:show(unpack(self.score))
