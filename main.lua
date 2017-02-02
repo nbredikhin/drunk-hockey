@@ -4,6 +4,8 @@ DEBUG = {
     drawPhysics = false,
     -- Сброс прогресса игры
     resetProgress = false,
+    -- Открыть всю игру
+    unlockEverything = true,
 
     Log = function (s, ...)
         local str = string.format(s, ...)
@@ -61,6 +63,10 @@ end
 -- Сброс прогресса
 if DEBUG.resetProgress then
     storage.clear()
+end
+
+if DEBUG.unlockEverything then
+    storage.set("levels_unlocked", 4)
 end
 
 -- Setup ads
