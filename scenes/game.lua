@@ -2,6 +2,8 @@ local composer = require("composer")
 local physics  = require("physics")
 local widget   = require("widget")
 
+local storage  = require("lib.storage")
+
 local Area     = require("game.Area")
 local Player   = require("game.Player")
 local Puck     = require("game.Puck")
@@ -26,6 +28,8 @@ function scene:create(event)
     if not event.params.difficulty then
         event.params.difficulty = "easy"
     end
+    self.difficulty = event.params.difficulty
+    self.gamemode = event.params.gamemode
 
     scene.gotoPreviousScene = "scenes.menu"
 
@@ -98,7 +102,7 @@ function scene:create(event)
     self.shakePower = 4
 
     -- Goals to end game
-    self.maxGoals = 5
+    self.maxGoals = 1
 
     self:restartGame()
 end
@@ -155,6 +159,15 @@ end
 function scene:endGame(winner)
     self.state = "ended"
 
+    if self.gamemode == "singleplayer" and winner == "red" then
+        if self.difficulty == "easy" then
+            storage.set("levels_unlocked", 2)
+        elseif self.difficulty == "medium" then
+            storage.set("levels_unlocked", 3)
+        elseif self.difficulty == "hard" then
+            storage.set("levels_unlocked", 4)
+        end
+    end
     for i, ui in ipairs(self.uiManagers) do
         ui.winner:show(winner, self.score)
     end

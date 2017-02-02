@@ -1,6 +1,7 @@
 local composer = require("composer")
-local widget = require("widget")
-local ads = require("lib.ads")
+local widget   = require("widget")
+local ads      = require("lib.ads")
+local storage  = require("lib.storage")
 
 local scene = composer.newScene()
 
@@ -69,6 +70,11 @@ function scene:create(event)
     end
     self.buttons = buttons
 
+    local levelsUnlocked = storage.get("levels_unlocked", 1)
+    if type(levelsUnlocked) ~= "number" then
+        levelsUnlocked = 1
+    end
+
     self.difficultyButtons = {
         { difficulty = "easy",   label = "Easy" },
         { difficulty = "medium", label = "Medium" },
@@ -76,6 +82,10 @@ function scene:create(event)
     }
     buttonY = display.contentCenterY - 5
     for i, b in ipairs(self.difficultyButtons) do
+        local imagePath = "assets/ui/button.png"
+        if i > levelsUnlocked then
+            imagePath = "assets/ui/button_locked.png"
+        end
         local button = widget.newButton({
             x = display.contentCenterX,
             y = buttonY,
@@ -87,7 +97,9 @@ function scene:create(event)
             labelColor = { default = {1, 1, 1} },
             labelYOffset = -0.8,
 
-            defaultFile = "assets/ui/button.png",
+            isEnabled = i <= levelsUnlocked,
+
+            defaultFile = imagePath,
             onRelease = function ()
                 scene:startGameWithDifficulty(b.difficulty)
             end

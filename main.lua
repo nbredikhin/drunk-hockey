@@ -2,6 +2,8 @@ DEBUG = {
     skipMenu = false,
     skipIntro = false,
     drawPhysics = false,
+    -- Сброс прогресса игры
+    resetProgress = false,
 
     Log = function (s, ...)
         local str = string.format(s, ...)
@@ -12,6 +14,7 @@ DEBUG = {
 local composer  = require("composer")
 local ads       = require("lib.ads")
 local adsconfig = require("adsconfig") or {}
+local storage   = require("lib.storage")
 
 composer.recycleOnSceneChange = true
 
@@ -19,7 +22,7 @@ display.setStatusBar(display.HiddenStatusBar)
 display.setDefault("magTextureFilter", "nearest")
 display.setDefault("minTextureFilter", "nearest")
 
--- Support for back button
+-- Поддержка кнопки "назад" на Android и WindowsPhone (или backspace на Windows)
 local platform = system.getInfo("platform")
 if platform == "android" or platform == "winphone" or platform == "win32" then
     Runtime:addEventListener("key", function(event)
@@ -53,6 +56,11 @@ for i, eventName in ipairs(passEvents) do
             end
         end
     end)
+end
+
+-- Сброс прогресса
+if DEBUG.resetProgress then
+    storage.clear()
 end
 
 -- Setup ads
