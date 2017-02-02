@@ -5,9 +5,17 @@ local utils    = require("lib.utils")
 local MIN_SHAKE_FORCE = 100
 local MAX_SHAKE_FORCE = 250
 
+local MIN_SOUND_FORCE = 10
+local MAX_SOUND_FORCE = 70
+
 local function collision(self, event)
     if event.phase == "began" then
         local force = utils.vectorLength(self:getLinearVelocity())
+        if force > MIN_SOUND_FORCE then
+            local volume = (force - MIN_SOUND_FORCE) / (MAX_SOUND_FORCE - MIN_SOUND_FORCE)
+            audio.setVolume(volume, { channel = 2 })
+            audio.play(self.hitSound, { channel = 2 })
+        end
         if force > MIN_SHAKE_FORCE then
             local scene = composer.getScene(composer.getSceneName("current"))
             if scene and scene.shake then
@@ -22,6 +30,7 @@ end
 
 local function constructor()
     local self = display.newImage("assets/puck.png")
+    self.hitSound = audio.loadSound("assets/sounds/hit.wav")
 
     -- Physics setup
     physics.addBody(self, {

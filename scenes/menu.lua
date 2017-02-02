@@ -36,6 +36,11 @@ function scene:create(event)
     local buttonY = display.contentCenterY
     local buttonWidth = display.contentWidth * 0.8
     local buttonHeight = buttonWidth * 0.220703125
+
+    self.selectSound = audio.loadSound("assets/sounds/select.wav")
+    self.buttonSound = audio.loadSound("assets/sounds/button.wav")
+
+    self.menuTheme = audio.loadStream("assets/music/menu.mp3")
     for i, b in ipairs(buttons) do
         local button = widget.newButton({
             x = display.contentCenterX,
@@ -104,6 +109,11 @@ function scene:show(event)
         return
     end
     self.loaded = true
+    audio.play(self.menuTheme, { channel = 1, loops = -1 })
+end
+
+function scene:hide()
+    audio.stop(1)
 end
 
 function scene:startGameWithDifficulty(difficultyName)
@@ -112,6 +122,7 @@ function scene:startGameWithDifficulty(difficultyName)
         difficulty = difficultyName
     }
     composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft", params = params})
+    audio.play(self.buttonSound)
 end
 
 function scene:menuButtonPressed(name)
@@ -124,12 +135,15 @@ function scene:menuButtonPressed(name)
             b.button.yScale = 0.1
             transition.to(b.button, { transition=easing.outBack, delay = (i - 1) * 200, time = 300, delta = false, xScale = 1, yScale = 1, alpha = 1})
         end
+        audio.play(self.selectSound)
     elseif name == "multiplayer" then
         composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft", params = { gamemode = "multiplayer" }})
+        audio.play(self.buttonSound)
     end
 end
 
 scene:addEventListener("create", scene)
 scene:addEventListener("show", scene)
+scene:addEventListener("hide", scene)
 
 return scene

@@ -28,6 +28,8 @@ function scene:create(event)
     end
 
     scene.gotoPreviousScene = "scenes.menu"
+
+    self.music = audio.loadStream("assets/music/action.mp3")
     local group = self.view
     local background = display.newImage("assets/background.png", display.contentCenterX, display.contentCenterY)
     background.width = display.contentWidth
@@ -96,7 +98,7 @@ function scene:create(event)
     self.shakePower = 4
 
     -- Goals to end game
-    self.maxGoals = 1
+    self.maxGoals = 5
 
     self:restartGame()
 end
@@ -160,6 +162,7 @@ end
 
 -- Goal handling
 function scene:endRound(goalTo)
+
     if goalTo == "blue" then
         self.score[1] = self.score[1] + 1
     else
@@ -175,6 +178,8 @@ function scene:endRound(goalTo)
         self:endGame("blue")
         return
     end
+
+    audio.stop(3)
 
     for i, ui in ipairs(self.uiManagers) do
         ui.score:show(unpack(self.score))
@@ -197,12 +202,8 @@ end
 
 function scene:startRound()
     self.state = "running"
-end
-
-function scene:onGoal(playerName)
-    -- playerName - кому забили
-    print("Goal to " .. tostring(playerName))
-    self:respawn()
+    audio.seek(0, self.music)
+    audio.play(self.music, { channel = 3, loops = -1 })
 end
 
 function scene:show(event)
@@ -211,8 +212,15 @@ function scene:show(event)
     end
 end
 
+function scene:hide(event)
+    if event.phase == "will" then
+        self.loaded = false
+        audio.stop(3)
+    end
+end
+
 function scene:enterFrame()
-    if not self.currentShakeMultiplier then
+    if not self.currentShakeMultiplier or not self.loaded then
         return
     end
     -- Тряска камеры
@@ -254,5 +262,6 @@ end
 
 scene:addEventListener("create", scene)
 scene:addEventListener("show", scene)
+scene:addEventListener("hide", scene)
 
 return scene

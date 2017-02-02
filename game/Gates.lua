@@ -5,7 +5,7 @@ local function update(self)
     local dx = (self.initialX - self.x) * self.returnForce
     local dy = (self.initialY - self.y) * self.returnForce
     self:applyForce(dx, dy, self.x, self.y)
-end 
+end
 
 local function collision(self, event)
     if event.phase == "began" and event.other.isPuck and event.selfElement == 4 then
@@ -13,6 +13,7 @@ local function collision(self, event)
         if scene and scene.endRound then
             timer.performWithDelay(1, function ()
                 scene:endRound(self.colorName)
+                audio.play(self.goalSound)
             end)
         end
     end
@@ -21,6 +22,8 @@ end
 local function constructor(colorName, x, y)
     local self = display.newImage("assets/gate_".. colorName ..".png")
     self.colorName = colorName
+    self.goalSound = audio.loadSound("assets/sounds/goal.wav")
+
     self.initialX = x
     self.initialY = y
 

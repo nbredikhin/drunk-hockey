@@ -1,24 +1,27 @@
 
-local function animateNumber(number)
-    number.alpha = 1
-    number.xScale = 1
-    number.yScale = 1
-    transition.from(number, {transition=easing.outBack, alpha=0, delay=0,   time=200, xScale=0.8, yScale=0.1})
-    transition.to(number, {transition=easing.inBack, alpha=0, delay=200,   time=400, xScale=0.8, yScale=1.5})
+local function animateNumber(self)
+    self.number.alpha = 1
+    self.number.xScale = 1
+    self.number.yScale = 1
+    transition.from(self.number, {transition=easing.outBack, alpha=0, delay=0,   time=200, xScale=0.8, yScale=0.1})
+    transition.to(self.number, {transition=easing.inBack, alpha=0, delay=200,   time=400, xScale=0.8, yScale=1.5})
 end
 
-local function show(self, callback)
+local function show(self)
     local frame = 4
     self.number:setFrame(frame)
-    animateNumber(self.number)
+    self:animateNumber()
+    audio.play(self.sound1)
 
     timer.performWithDelay(900, function ()
         frame = frame - 1
         self.number:setFrame(frame)
-        animateNumber(self.number)
+        self:animateNumber(self.number)
 
-        if frame == 1 and callback then
-            callback()
+        if frame == 1 then
+            audio.play(self.sound2)
+        else
+            audio.play(self.sound1)
         end
     end, 3)
     self.isVisible = true
@@ -29,9 +32,12 @@ end
 local function constructor(colorName)
     local self = display.newGroup()
 
+    self.sound1 = audio.loadSound("assets/sounds/countdown1.wav")
+    self.sound2 = audio.loadSound("assets/sounds/countdown2.wav")
+
     self.numbers = {}
     local imageSheet = graphics.newImageSheet("assets/ui/numbers.png", {
-        width = 24, 
+        width = 24,
         height = 24,
         numFrames = 6
     })
@@ -51,6 +57,7 @@ local function constructor(colorName)
     self.isVisible = false
 
     self.show = show
+    self.animateNumber = animateNumber
     return self
 end
 
