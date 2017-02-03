@@ -1,7 +1,8 @@
 DEBUG = {
-    skipMenu = true,
-    skipIntro = true,
+    skipMenu = false,
+    skipIntro = false,
     drawPhysics = false,
+    disableSounds = true,
     -- Сброс прогресса игры
     resetProgress = false,
     -- Открыть всю игру
@@ -18,7 +19,13 @@ local ads       = require("lib.ads")
 local adsconfig = require("adsconfig") or {}
 local storage   = require("lib.storage")
 
+Globals = {
+    soundEnabled = storage.get("sound_enabled", true)
+}
+
 composer.recycleOnSceneChange = true
+
+system.activate("multitouch")
 
 display.setStatusBar(display.HiddenStatusBar)
 display.setDefault("magTextureFilter", "nearest")
@@ -26,7 +33,7 @@ display.setDefault("minTextureFilter", "nearest")
 
 -- Поддержка кнопки "назад" на Android и WindowsPhone (или backspace на Windows)
 local platform = system.getInfo("platform")
-if platform == "android" or platform == "winphone" or platform == "win32" then
+if platform == "android" or platform == "winphone" or platform == "win32" or platform == "macos" then
     Runtime:addEventListener("key", function(event)
         if event.phase == "down" and (event.keyName == "back" or event.keyName == "deleteBack") then
             local scene = composer.getScene(composer.getSceneName("current"))
@@ -67,6 +74,18 @@ end
 
 if DEBUG.unlockEverything then
     storage.set("levels_unlocked", 4)
+end
+if DEBUG.disableSounds then
+    storage.set("sounds_enabled", false)
+    Globals.soundEnabled = false
+end
+
+local _audio_play = audio.play
+function audio.play(...)
+    if not Globals.soundEnabled then
+        return
+    end
+    _audio_play(...)
 end
 
 -- Setup ads
