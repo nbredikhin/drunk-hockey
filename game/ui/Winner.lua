@@ -1,5 +1,7 @@
-local widget   = require("widget")
-local composer = require("composer")
+local widget    = require("widget")
+local composer  = require("composer")
+local adsconfig = require("adsconfig")
+local ads       = require("lib.ads")
 
 local function show(self, winner, score)
     if self.isVisible then
@@ -17,14 +19,14 @@ local function show(self, winner, score)
             self.winnerText.text = "Blue player won!"
             self.winnerText:setFillColor(0.15, 0.4, 1)
         else
-            self.winnerText.text = "You lost!"
+            self.winnerText.text = "You loose!"
         end
     else
         if self.isMultiplayer then
             self.winnerText.text = "Red player won!"
             self.winnerText:setFillColor(1, 0.1, 0.1)
         else
-            self.winnerText.text = "You won!"
+            self.winnerText.text = "You win!"
             self.button:setLabel("Tap to continue")
         end
     end
@@ -94,7 +96,17 @@ local function constructor(isMultiplayer, bg)
         label = "Tap to play again",
         labelColor = { default = {1, 1, 1} },
 
+        defaultFile = "assets/empty.png",
+
         onRelease = function ()
+            Globals.adsCounter = Globals.adsCounter + 1
+            if Globals.adsCounter >= Globals.adsInterval then
+                Globals.adsCounter = 0
+                if ads.isLoaded(adsconfig.adType) then
+                    ads.show(adsconfig.adType, { testMode = adsconfig.testMode })
+                end
+            end
+
             if not self.isMultiplayer and self.winner == "red" then
                 composer.gotoScene("scenes.menu", {time = 500, effect = "slideRight"})
                 return

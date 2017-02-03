@@ -127,6 +127,9 @@ function scene:create(event)
 
     -- Количество голов для завершения игры
     self.maxGoals = 5
+    if DEBUG.oneGoalToWin then
+        self.maxGoals = 1
+    end
 
     self:restartGame()
 end

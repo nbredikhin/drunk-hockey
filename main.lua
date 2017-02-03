@@ -1,12 +1,13 @@
 DEBUG = {
-    skipMenu = false,
-    skipIntro = false,
-    drawPhysics = false,
-    disableSounds = true,
+    skipMenu         = false,
+    skipIntro        = true,
+    drawPhysics      = false,
+    disableSounds    = true,
     -- Сброс прогресса игры
-    resetProgress = false,
+    resetProgress    = false,
     -- Открыть всю игру
     unlockEverything = true,
+    oneGoalToWin     = true,
 
     Log = function (s, ...)
         local str = string.format(s, ...)
@@ -20,7 +21,9 @@ local adsconfig = require("adsconfig") or {}
 local storage   = require("lib.storage")
 
 Globals = {
-    soundEnabled = storage.get("sound_enabled", true)
+    soundEnabled = storage.get("sound_enabled", true),
+    adsCounter   = 0,
+    adsInterval  = 2 -- Показ рекламы через каждые N игр (1 - каждый раунд, 2 - через раунд и т. д.)
 }
 
 composer.recycleOnSceneChange = true
@@ -67,6 +70,11 @@ for i, eventName in ipairs(passEvents) do
     end)
 end
 
+-- Обработка ошибок
+Runtime:addEventListener("unhandledError", function (event)
+    return true
+end)
+
 -- Сброс прогресса
 if DEBUG.resetProgress then
     storage.clear()
@@ -88,12 +96,13 @@ function audio.play(...)
     _audio_play(...)
 end
 
--- Setup ads
-ads.init(adsconfig.provider, adsconfig.appId)
+-- Реклама
+ads.init(adsconfig.provider, adsconfig.appId, function (event)
+    if event.isError or event.phase == "shown" then
+        ads.load(adsconfig.adType, { testMode = adsconfig.testMode })
+    end
+end)
 ads.load(adsconfig.adType, { testMode = adsconfig.testMode })
--- if ads.isLoaded() then
---     ads.show(adsconfig.adType, { testMode = adsconfig.testMode })
--- end
 
 -- Load menu
 if DEBUG.skipMenu then
