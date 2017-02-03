@@ -2,6 +2,8 @@ local composer = require("composer")
 local physics  = require("physics")
 local widget   = require("widget")
 
+local storage  = require("lib.storage")
+
 local Area     = require("game.Area")
 local Player   = require("game.Player")
 local Puck     = require("game.Puck")
@@ -26,12 +28,10 @@ local function spawnBottle(event)
     -- If not spawned
     if not scene.bottle.isVisible then
         scene.bottle.isVisible = true
-        scene.bottle.x = math.random((scene.area.x + scene.area.width  * 0.15) +
-            scene.area.width  * 0.7 * math.random())
-        scene.bottle.y = math.random((scene.area.y + scene.area.height * 0.15) +
-            scene.area.height * 0.7 * math.random())
+        scene.bottle.x = scene.area.x + scene.area.width  * (0.15 + math.random() * 0.7 - 0.5)
+        scene.bottle.y = scene.area.y + scene.area.height * (0.15 + math.random() * 0.7 - 0.5)
 
-        DEBUG.Log("Spawning a bottle")
+        DEBUG.Log("scene.x = %f, scene.y = %f, scene.width = %f, scene.height = %f, x = %f, y = %f", scene.area.x, scene.area.y, scene.area.width, scene.area.height, scene.bottle.x, scene.bottle.y)
     end
 end
 
@@ -43,10 +43,15 @@ function scene:create(event)
         event.params.difficulty = "easy"
     end
 
-    self.bottleSpawnDelayMin   = 7 * 1000
-    self.bottleSpawnDelayRange = 10 * 1000
+    self.bottleSpawnDelayMin = 20 * 1000
+    self.bottleSpawnDelayMax = 30 * 1000
+
+    self.difficulty = event.params.difficulty
+    self.gamemode = event.params.gamemode
 
     scene.gotoPreviousScene = "scenes.menu"
+
+    self.music = audio.loadStream("assets/music/action.mp3")
     local group = self.view
     local background = display.newImage("assets/background.png", display.contentCenterX, display.contentCenterY)
     background.width = display.contentWidth
@@ -84,24 +89,27 @@ function scene:create(event)
     self.gates[2].rotation = 180
     group:insert(self.gates[2])
 
-    self.joysticks = { Joystick("full") }
+    self.joysticks = {}
+    self.joysticks[1] = Joystick("full")
+    group:insert(self.joysticks[1])
 
     self.uiManagers = {}
     if event.params.gamemode == "multiplayer" then
         -- Два UI
-        self.uiManagers[1] = GameUI("red")
-        self.uiManagers[1].x = display.contentCenterX
-        self.uiManagers[1].y = display.contentCenterY * 1.3
-        group:insert(self.uiManagers[1])
-
-        self.uiManagers[2] = GameUI("blue")
+        self.uiManagers[2] = GameUI("blue", true)
         self.uiManagers[2].x = display.contentCenterX
         self.uiManagers[2].y = display.contentCenterY * 0.7
         self.uiManagers[2].rotation = 180
         group:insert(self.uiManagers[2])
 
+        self.uiManagers[1] = GameUI("red", true)
+        self.uiManagers[1].x = display.contentCenterX
+        self.uiManagers[1].y = display.contentCenterY * 1.3
+        group:insert(self.uiManagers[1])
+
         -- Два джойстика
         self.joysticks[2] = Joystick()
+        group:insert(self.joysticks[2])
         self.joysticks[1].side = "bottom"
         self.joysticks[2].side = "top"
     elseif event.params.gamemode == "singleplayer" then
@@ -109,27 +117,23 @@ function scene:create(event)
         self.uiManagers[1].x = display.contentCenterX
         self.uiManagers[1].y = display.contentCenterY
         group:insert(self.uiManagers[1])
-        -- TODO: поставить difficulty
+
         self.joysticks[2] = Bot(self.puck, self.players[2], difficulty[event.params.difficulty])
     end
 
-    -- Тряска камеры
+    -- Параметры тряски камеры
     self.currentShakeMultiplier = 0
     self.shakePower = 4
 
-    self.playersFrozen = false
+    -- Количество голов для завершения игры
+    self.maxGoals = 5
 
-    self:respawn()
-    timer.performWithDelay(2000, function ()
-        self:startCountdown()
-    end)
-
-    self.score = {0, 0}
+    self:restartGame()
 end
 
 function scene:delayBottleSpawn()
     local spawnTimer = timer.performWithDelay(
-        math.random(self.bottleSpawnDelayRange) + self.bottleSpawnDelayMin,
+        math.random(self.bottleSpawnDelayMin, self.bottleSpawnDelayMax),
         spawnBottle)
 
     spawnTimer.params = {
@@ -138,7 +142,6 @@ function scene:delayBottleSpawn()
 end
 
 function scene:respawn()
-    self.playersFrozen = true
     self.puck.x, self.puck.y = display.contentCenterX, display.contentCenterY
     self.puck:setLinearVelocity(0, 0)
 
@@ -149,9 +152,14 @@ function scene:respawn()
     self.players[2].x = display.contentCenterX
     self.players[2].y = display.contentCenterY - self.area.height * 0.32
     self.players[2]:reset()
+
+    self.state = "waiting"
 end
 
 function scene:startCountdown()
+    if self.state == "countdown" then
+        return
+    end
     local scene = self
     local duration = 0
     for i, ui in ipairs(self.uiManagers) do
@@ -161,14 +169,62 @@ function scene:startCountdown()
     timer.performWithDelay(duration, function ()
         self:startRound()
     end)
+
+    self.state = "countdown"
 end
 
+function scene:restartGame()
+    if self.state == "waiting" then
+        return
+    end
+    self.score = {0, 0}
+    for i, ui in ipairs(self.uiManagers) do
+        ui.winner:hide()
+    end
+    -- Запустить игру
+    self:respawn()
+    timer.performWithDelay(1500, function ()
+        self:startCountdown()
+    end)
+end
+
+function scene:endGame(winner)
+    self.state = "ended"
+
+    if self.gamemode == "singleplayer" and winner == "red" then
+        if self.difficulty == "easy" then
+            storage.set("levels_unlocked", 2)
+        elseif self.difficulty == "medium" then
+            storage.set("levels_unlocked", 3)
+        elseif self.difficulty == "hard" then
+            storage.set("levels_unlocked", 4)
+        end
+    end
+    for i, ui in ipairs(self.uiManagers) do
+        ui.winner:show(winner, self.score)
+    end
+end
+
+-- Goal handling
 function scene:endRound(goalTo)
+
     if goalTo == "blue" then
         self.score[1] = self.score[1] + 1
     else
         self.score[2] = self.score[2] + 1
     end
+
+    audio.stop(3)
+    self:respawn()
+
+    if self.score[1] >= self.maxGoals then
+        self:endGame("red")
+        return
+    elseif self.score[2] >= self.maxGoals then
+        self:endGame("blue")
+        return
+    end
+
     for i, ui in ipairs(self.uiManagers) do
         ui.score:show(unpack(self.score))
     end
@@ -176,7 +232,6 @@ function scene:endRound(goalTo)
     for i, joystick in ipairs(self.joysticks) do
         joystick.alpha = 0
     end
-    self:respawn()
 
     timer.performWithDelay(2000, function ()
         for i, ui in ipairs(self.uiManagers) do
@@ -184,19 +239,15 @@ function scene:endRound(goalTo)
         end
     end)
 
-    timer.performWithDelay(4500, function ()
+    timer.performWithDelay(3500, function ()
         self:startCountdown()
     end)
 end
 
 function scene:startRound()
-    self.playersFrozen = false
-end
-
-function scene:onGoal(playerName)
-    -- playerName - кому забили
-    print("Goal to " .. tostring(playerName))
-    self:respawn()
+    self.state = "running"
+    audio.seek(0, self.music)
+    audio.play(self.music, { channel = 3, loops = -1 })
 end
 
 function scene:show(event)
@@ -205,8 +256,15 @@ function scene:show(event)
     end
 end
 
+function scene:hide(event)
+    if event.phase == "will" then
+        self.loaded = false
+        audio.stop(3)
+    end
+end
+
 function scene:enterFrame()
-    if not self.currentShakeMultiplier then
+    if not self.currentShakeMultiplier or not self.loaded then
         return
     end
     -- Тряска камеры
@@ -216,7 +274,7 @@ function scene:enterFrame()
         self.currentShakeMultiplier = self.currentShakeMultiplier * 0.9
     end
 
-    if not self.playersFrozen then
+    if self.state == "running" then
         -- Управление игроками
         for i, joystick in ipairs(self.joysticks) do
             joystick:update()
@@ -248,5 +306,6 @@ end
 
 scene:addEventListener("create", scene)
 scene:addEventListener("show", scene)
+scene:addEventListener("hide", scene)
 
 return scene

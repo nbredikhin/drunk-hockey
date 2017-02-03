@@ -13,7 +13,7 @@ settings =
 		default = "portrait",
 		supported = { "portrait", },
 	},
-	
+
 	excludeFiles =
 	{
 		-- Include only the necessary icon files on each platform
@@ -54,7 +54,17 @@ settings =
 			},
 		},
 	},
-	
+	--
+	--
+	--
+    plugins =
+    {
+        ["plugin.google.play.services"] =
+        {
+            publisherId = "com.coronalabs",
+            supportedPlatforms = { iphone=false, android=true }
+        },
+    },
 	--
 	-- Android Section
 	--
@@ -62,7 +72,8 @@ settings =
 	{
 		usesPermissions =
 		{
-			-- "android.permission.INTERNET",
+			"android.permission.INTERNET",
+			"android.permission.ACCESS_NETWORK_STATE"
 		},
 	},
 }
