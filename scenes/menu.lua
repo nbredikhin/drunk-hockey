@@ -128,6 +128,7 @@ function scene:create(event)
         defaultFile = "assets/ui/about.png",
         onRelease = function ()
             composer.gotoScene("scenes.about", {time = 500, effect = "slideRight" })
+            audio.play(self.buttonSound)
         end
     })
     group:insert(self.aboutButton)
@@ -145,7 +146,6 @@ end
 function scene:hide(event)
     if event.phase == "will" then
         Globals.analytics.endTimedEvent("Main menu")
-        audio.stop(1)
         timer.cancelAll()
     end
 end
@@ -161,6 +161,7 @@ function scene:startGameWithDifficulty(difficultyName)
     })
     composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft", params = params})
     audio.play(self.buttonSound)
+    audio.stop(1)
 end
 
 function scene:menuButtonPressed(name)
@@ -181,6 +182,7 @@ function scene:menuButtonPressed(name)
         })
         composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft", params = { gamemode = "multiplayer" }})
         audio.play(self.buttonSound)
+        audio.stop(1)
     end
 end
 

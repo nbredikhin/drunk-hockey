@@ -55,6 +55,7 @@ function scene:create(event)
     self.scrollingGroup:insert(text)
 
     self.minY = -40
+    getDeltaTime()
     --self.scrollingGroup.y = self.minY
 end
 
@@ -70,7 +71,8 @@ function scene:show(event)
 end
 
 function scene:enterFrame()
-    self.scrollingGroup.y = self.scrollingGroup.y - 0.3 * getDeltaTime()
+    local dt = getDeltaTime()
+    self.scrollingGroup.y = self.scrollingGroup.y - 0.3 * dt
     if self.scrollingGroup.y < self.minY then
         self.scrollingGroup.y = self.minY
     end

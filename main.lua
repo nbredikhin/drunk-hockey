@@ -1,14 +1,14 @@
 DEBUG = {
     skipMenu         = false,
-    skipIntro        = true,
-    showAbout        = true,
+    skipIntro        = false,
+    showAbout        = false,
     drawPhysics      = false,
-    disableSounds    = true,
+    disableSounds    = false,
     -- Сброс прогресса игры
     resetProgress    = false,
     -- Открыть всю игру
-    unlockEverything = true,
-    oneGoalToWin     = true,
+    unlockEverything = false,
+    oneGoalToWin     = false,
     disableAnalytics = false,
     disableAds       = false,
 
