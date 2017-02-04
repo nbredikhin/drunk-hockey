@@ -1,6 +1,6 @@
 local utils = require("lib.utils")
 
-local function touch(self, event)
+local function touch(self, event, dt)
     if self.id and event.id ~= self.id then
         return
     end
@@ -45,9 +45,9 @@ local function touch(self, event)
     end
 end
 
-local function update(self)
-    self.alpha = self.alpha + (self.targetAlpha - self.alpha) * 0.1
-    self.scale = self.scale + (self.targetScale - self.scale) * 0.2
+local function update(self, dt)
+    self.alpha = self.alpha + (self.targetAlpha - self.alpha) * 0.1 * dt
+    self.scale = self.scale + (self.targetScale - self.scale) * 0.2 * dt
     if self.scale > 0 then
         self.xScale, self.yScale = self.scale, self.scale
     end

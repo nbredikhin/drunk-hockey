@@ -1,9 +1,9 @@
 local physics  = require("physics")
 local composer = require("composer")
 
-local function update(self)
-    local dx = (self.initialX - self.x) * self.returnForce
-    local dy = (self.initialY - self.y) * self.returnForce
+local function update(self, dt)
+    local dx = (self.initialX - self.x) * self.returnForce * dt
+    local dy = (self.initialY - self.y) * self.returnForce * dt
     self:applyForce(dx, dy, self.x, self.y)
 end
 

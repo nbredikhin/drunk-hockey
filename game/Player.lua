@@ -18,15 +18,15 @@ local function reset(self)
     end
 end
 
-local function update(self)
-    self.angularVelocity = self.rotationSpeed
-    self.shadow.rotation = -self.rotation
+local function update(self, dt)
+    self.angularVelocity = self.rotationSpeed * dt
+    self.shadow.rotation = -self.rotation * dt
 end
 
-local function move(self, x, y)
+local function move(self, x, y, dt)
     x = math.max(-self.maxMovementSpeed, math.min(x, self.maxMovementSpeed))
     y = math.max(-self.maxMovementSpeed, math.min(y, self.maxMovementSpeed))
-    self:applyForce(x * self.movementSpeed, y * self.movementSpeed, self.x, self.y)
+    self:applyForce(x * self.movementSpeed * dt, y * self.movementSpeed * dt, self.x, self.y)
 end
 
 local function constructor(colorName)

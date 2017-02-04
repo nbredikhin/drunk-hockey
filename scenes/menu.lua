@@ -41,7 +41,7 @@ function scene:create(event)
     self.selectSound = audio.loadSound("assets/sounds/select.wav")
     self.buttonSound = audio.loadSound("assets/sounds/button.wav")
 
-    self.menuTheme = audio.loadStream("assets/music/menu.mp3")
+    self.menuTheme = audio.loadStream("assets/music/menu.ogg")
     for i, b in ipairs(buttons) do
         local button = widget.newButton({
             x = display.contentCenterX,
