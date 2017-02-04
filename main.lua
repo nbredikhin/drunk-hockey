@@ -1,15 +1,15 @@
 DEBUG = {
     skipMenu         = false,
-    skipIntro        = true,
+    skipIntro        = false,
     drawPhysics      = false,
-    disableSounds    = true,
+    disableSounds    = false,
     -- Сброс прогресса игры
     resetProgress    = false,
     -- Открыть всю игру
     unlockEverything = true,
     oneGoalToWin     = true,
     disableAnalytics = false,
-    disableAds       = true,
+    disableAds       = false,
 
     Log = function (s, ...)
         local str = string.format(s, ...)
@@ -27,7 +27,7 @@ Globals = {
     analytics = analytics,
     soundEnabled = storage.get("sound_enabled", true),
     adsCounter   = 0,
-    adsInterval  = 2 -- Показ рекламы через каждые N игр (1 - каждый раунд, 2 - через раунд и т. д.)
+    adsInterval  = 1 -- Показ рекламы через каждые N игр (1 - каждый раунд, 2 - через раунд и т. д.)
 }
 
 composer.recycleOnSceneChange = true
@@ -74,6 +74,24 @@ for i, eventName in ipairs(passEvents) do
     end)
 end
 
+-- Свои таймеры
+
+local activeTimersList = {}
+local _performWithDelay = timer.performWithDelay
+
+timer.performWithDelay = function (...)
+    local t = _performWithDelay(...)
+    table.insert(activeTimersList, t)
+    return t
+end
+
+timer.cancelAll = function ()
+    for i, t in ipairs(activeTimersList) do
+        timer.cancel(t)
+    end
+    activeTimersList = {}
+end
+
 -- Обработка ошибок
 Runtime:addEventListener("unhandledError", function (event)
     return true
@@ -109,7 +127,7 @@ end)
 ads.load(adsconfig.adType, { testMode = adsconfig.testMode })
 
 -- Аналитика
-if DEBUG.disableAnalytics then--or system.getInfo("environment") == "simulator" then
+if DEBUG.disableAnalytics or system.getInfo("environment") == "simulator" then
     analytics = {
         init            = function () end,
         logEvent        = function () end,
@@ -128,5 +146,5 @@ Globals.analytics.init(analyticsListener, { apiKey = adsconfig.analyticsKey })
 if DEBUG.skipMenu then
     composer.gotoScene("scenes.game", { params = { gamemode = "singleplayer" } })
 else
-    composer.gotoScene("scenes.intro", { effect = "fade", time = 1000 })
+    composer.gotoScene("scenes.intro", { effect = "fade", time = 500 })
 end

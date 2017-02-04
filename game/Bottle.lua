@@ -9,6 +9,7 @@ local function colision(self, event)
     if event.phase == "began" and event.other.isPlayer then
         local player = event.other
         self.isVisible = false
+        audio.play(self.sound, { channel = 20 })
         player:increaseRotationSpeed(self.speedUpRatio, self.speedUpDuration)
         Globals.analytics.logEvent("Bottle", { action = "Used" })
     end
@@ -17,6 +18,7 @@ end
 local function constructor()
     -- TODO: Починить спрайт бутылки
     self = display.newImage("assets/bottle.png")
+    self.sound = audio.loadSound("assets/sounds/powerup.wav")
     physics.addBody(self, {
         isSensor = true,
     })

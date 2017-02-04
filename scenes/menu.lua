@@ -129,6 +129,7 @@ function scene:hide(event)
     if event.phase == "will" then
         Globals.analytics.endTimedEvent("Main menu")
         audio.stop(1)
+        timer.cancelAll()
     end
 end
 

@@ -276,6 +276,7 @@ function scene:hide(event)
         self.loaded = false
         audio.stop(3)
         Globals.analytics.endTimedEvent("Game screen", { gamemode = self.gamemode, difficulty = self.difficulty })
+        timer.cancelAll()
     end
 end
 
