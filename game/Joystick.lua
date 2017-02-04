@@ -1,24 +1,27 @@
 local utils = require("lib.utils")
 
 local function touch(self, event)
-    if event.phase == "began" then
-        if self.side == "top" and event.y > display.contentCenterY then
-            return
-        end
-        if self.side == "bottom" and event.y < display.contentCenterY then
-            return
-        end
+    if self.id and event.id ~= self.id then
+        return
     end
-    -- elseif self.side == "bottom" and event.y < display.contentCenterY then
-    --     event.phase = "ended"
-    -- end
-    if event.phase == "began" then
+
+    -- Проверка нажатия на свою сторону экрана
+    local isTouchingSide = (self.side == "top"    and event.y < display.contentCenterY)
+                        or (self.side == "bottom" and event.y >= display.contentCenterY)
+
+    if self.side == "full" then
+        isTouchingSide = true
+    end
+
+    if event.phase == "began" and isTouchingSide then
         self.sx = event.x
         self.sy = event.y
         self.targetAlpha = 0.2
         self.active = true
-    elseif event.phase == "ended" then
+        self.id = event.id
+    elseif event.phase == "ended" or not isTouchingSide then
         self.targetAlpha = 0
+        self.id = nil
         self.active = false
     end
 
@@ -36,10 +39,10 @@ local function touch(self, event)
 
         self.x = self.sx + self.inputX
         self.y = self.sy + self.inputY
-        self.rotation = angle / math.pi * 180 
+        self.rotation = angle / math.pi * 180
 
         self.targetScale = distanceMul * 0.3 + 0.7
-    end  
+    end
 end
 
 local function update(self)
@@ -48,6 +51,14 @@ local function update(self)
     if self.scale > 0 then
         self.xScale, self.yScale = self.scale, self.scale
     end
+end
+
+local function hide(self)
+    self.targetAlpha = 0
+    self.targetScale = 0.1
+
+    self.alpha = 0
+    self.xScale, self.yScale = self.targetScale, self.targetScale
 end
 
 local function constructor(side)
@@ -70,10 +81,11 @@ local function constructor(side)
     end
     self.side = side
 
-    self.maxDistance = 20
+    self.maxDistance = 12.5
 
     self.touch = touch
     self.update = update
+    self.hide = hide
     return self
 end
 

@@ -131,7 +131,6 @@ function scene:create(event)
     if DEBUG.oneGoalToWin then
         self.maxGoals = 1
     end
-
     self:restartGame()
 end
 
@@ -194,6 +193,7 @@ end
 
 function scene:endGame(winner)
     self.state = "ended"
+    -- Обновить прогресс одиночной игры
     if self.gamemode == "singleplayer" then
         if winner == "red" then
             local levelsUnlocked = storage.get("levels_unlocked", 1)
@@ -206,6 +206,11 @@ function scene:endGame(winner)
             end
         end
     end
+    -- Скрыть джойстики
+    for i, joystick in ipairs(self.joysticks) do
+        joystick:hide()
+    end
+    -- Отобразить экран победителя
     for i, ui in ipairs(self.uiManagers) do
         ui.winner:show(winner, self.score)
     end
@@ -231,12 +236,13 @@ function scene:endRound(goalTo)
         return
     end
 
-    for i, ui in ipairs(self.uiManagers) do
-        ui.score:show(unpack(self.score))
+    -- Скрыть джойстики
+    for i, joystick in ipairs(self.joysticks) do
+        joystick:hide()
     end
 
-    for i, joystick in ipairs(self.joysticks) do
-        joystick.alpha = 0
+    for i, ui in ipairs(self.uiManagers) do
+        ui.score:show(unpack(self.score))
     end
 
     timer.performWithDelay(2000, function ()
