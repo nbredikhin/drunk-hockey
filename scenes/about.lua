@@ -11,8 +11,6 @@ local aboutLines = {
     "", "",
     "Music",
     "Azureflux, mathgrant",
-    "", "",
-    "Thanks for playing!"
 }
 
 function scene:create(event)
@@ -54,7 +52,7 @@ function scene:create(event)
     })
     self.scrollingGroup:insert(text)
 
-    self.minY = -40
+    self.minY = -35
     getDeltaTime()
     --self.scrollingGroup.y = self.minY
 end
