@@ -1,15 +1,15 @@
 DEBUG = {
-    skipMenu         = false,
-    skipIntro        = true,
-    drawPhysics      = false,
-    disableSounds    = true,
-    -- Сброс прогресса игры
-    resetProgress    = false,
-    -- Открыть всю игру
-    unlockEverything = true,
-    oneGoalToWin     = true,
-    disableAnalytics = false,
-    disableAds       = true,
+    -- skipMenu         = false,
+    -- skipIntro        = true,
+    -- drawPhysics      = false,
+    -- disableSounds    = true,
+    -- -- Сброс прогресса игры
+    -- resetProgress    = false,
+    -- -- Открыть всю игру
+    -- unlockEverything = true,
+    -- oneGoalToWin     = true,
+    -- disableAnalytics = false,
+    -- disableAds       = true,
 
     Log = function (s, ...)
         local str = string.format(s, ...)
