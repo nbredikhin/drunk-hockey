@@ -31,8 +31,8 @@ function scene:create(event)
 
     -- Menu buttons
     local buttons = {
-        { name = "singleplayer", label = "Singleplayer" },
-        { name = "multiplayer",  label = "Multiplayer"  }
+        { name = "singleplayer", label = lang.getString("menu_button_singleplayer") },
+        { name = "multiplayer",  label = lang.getString("menu_button_multiplayer")  }
     }
     local buttonY = display.contentCenterY
     local buttonWidth = display.contentWidth * 0.8
@@ -76,9 +76,9 @@ function scene:create(event)
     end
 
     self.difficultyButtons = {
-        { difficulty = "easy",   label = "Easy" },
-        { difficulty = "medium", label = "Medium" },
-        { difficulty = "hard",   label = "Hard" },
+        { difficulty = "easy",   label = lang.getString("menu_button_easy") },
+        { difficulty = "medium", label = lang.getString("menu_button_medium") },
+        { difficulty = "hard",   label = lang.getString("menu_button_hard") },
     }
     buttonY = display.contentCenterY - 5
     for i, b in ipairs(self.difficultyButtons) do
@@ -114,6 +114,23 @@ function scene:create(event)
 
         self.difficultyButtons[i].button = button
     end
+
+    self.aboutButton = widget.newButton({
+        x = display.contentCenterX,--math.floor(buttonHeight / 2) + 2,
+        y = display.contentHeight - math.floor(buttonHeight / 2) - 2,
+        width = buttonHeight,
+        height = buttonHeight,
+        fontSize = 10,
+        label = "?",
+        labelColor = { default = {1, 1, 1} },
+        labelYOffset = -0.5,
+
+        defaultFile = "assets/ui/about.png",
+        onRelease = function ()
+            composer.gotoScene("scenes.about", {time = 500, effect = "slideRight" })
+        end
+    })
+    group:insert(self.aboutButton)
 end
 
 function scene:show(event)

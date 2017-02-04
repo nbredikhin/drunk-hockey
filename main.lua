@@ -1,8 +1,9 @@
 DEBUG = {
     skipMenu         = false,
-    skipIntro        = false,
+    skipIntro        = true,
+    showAbout        = true,
     drawPhysics      = false,
-    disableSounds    = false,
+    disableSounds    = true,
     -- Сброс прогресса игры
     resetProgress    = false,
     -- Открыть всю игру
@@ -24,6 +25,9 @@ local ads       = require("lib.ads")
 local adsconfig = require("adsconfig") or {}
 local storage   = require("lib.storage")
 local analytics = require("plugin.flurry.analytics")
+
+require("lib.lang")
+lang.init()
 
 Globals = {
     analytics = analytics,
@@ -155,6 +159,8 @@ Globals.analytics.init(analyticsListener, { apiKey = adsconfig.analyticsKey })
 -- Load menu
 if DEBUG.skipMenu then
     composer.gotoScene("scenes.game", { params = { gamemode = "singleplayer" } })
+elseif DEBUG.showAbout then
+     composer.gotoScene("scenes.about")
 else
     composer.gotoScene("scenes.intro", { effect = "fade", time = 500 })
 end

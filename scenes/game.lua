@@ -260,6 +260,7 @@ function scene:startRound()
     self.state = "running"
     audio.seek(0, self.music)
     audio.play(self.music, { channel = 3, loops = -1 })
+    audio.setVolume(0.45, { channel = 3 })
 
     Globals.analytics.startTimedEvent("Game round", { gamemode = self.gamemode, difficulty = self.difficulty })
 end

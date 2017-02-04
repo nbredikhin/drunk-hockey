@@ -16,21 +16,21 @@ local function show(self, winner, score)
 
     if winner == "blue" then
         if self.isMultiplayer then
-            self.winnerText.text = "Blue player won!"
+            self.winnerText.text = lang.getString("game_blue_win")
             self.winnerText:setFillColor(0.15, 0.4, 1)
         else
-            self.winnerText.text = "You loose!"
+            self.winnerText.text = lang.getString("game_you_loose")
         end
     else
         if self.isMultiplayer then
-            self.winnerText.text = "Red player won!"
+            self.winnerText.text = lang.getString("game_red_win")
             self.winnerText:setFillColor(1, 0.1, 0.1)
         else
-            self.winnerText.text = "You win!"
-            self.button:setLabel("Tap to continue")
+            self.winnerText.text = lang.getString("game_you_win")
+            self.button:setLabel(lang.getString("game_end_button"))
         end
     end
-    self.scoreText.text = "Score is " .. score[1] .. ":" .. score[2]
+    self.scoreText.text = lang.getString("game_end_score")  .. " " .. score[1] .. ":" .. score[2]
 
     if self.bg then
         self.bg.alpha = 1
