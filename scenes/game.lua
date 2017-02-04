@@ -283,30 +283,31 @@ function scene:enterFrame()
     if not self.currentShakeMultiplier or not self.loaded then
         return
     end
+    local dt = getDeltaTime()
     -- Тряска камеры
     if self.currentShakeMultiplier > 0 then
-        self.view.x = (math.random() - 0.5) * self.currentShakeMultiplier * self.shakePower
-        self.view.y = (math.random() - 0.5) * self.currentShakeMultiplier * self.shakePower
+        self.view.x = (math.random() - 0.5) * self.currentShakeMultiplier * self.shakePower * dt
+        self.view.y = (math.random() - 0.5) * self.currentShakeMultiplier * self.shakePower * dt
         self.currentShakeMultiplier = self.currentShakeMultiplier * 0.9
     end
 
     if self.state == "running" then
         -- Управление игроками
         for i, joystick in ipairs(self.joysticks) do
-            joystick:update()
+            joystick:update(dt)
             if joystick.active then
-                self.players[i]:move(joystick.inputX, joystick.inputY)
+                self.players[i]:move(joystick.inputX, joystick.inputY, dt)
             end
         end
 
         -- Обновление игроков
         for i, player in ipairs(self.players) do
-            player:update()
+            player:update(dt)
         end
     end
 
     for i, gate in ipairs(self.gates) do
-        gate:update()
+        gate:update(dt)
     end
 end
 

@@ -9,7 +9,7 @@ DEBUG = {
     unlockEverything = true,
     oneGoalToWin     = true,
     disableAnalytics = false,
-    disableAds       = true,
+    disableAds       = false,
 
     Log = function (s, ...)
         local str = string.format(s, ...)
@@ -62,6 +62,14 @@ local passEvents = {
     "enterFrame",
     "touch"
 }
+
+local runtime = 0
+function getDeltaTime()
+    local temp = system.getTimer()  -- Get current game time in ms
+    local dt = (temp - runtime) / (1000 / 60)  -- 60 fps or 30 fps as base
+    runtime = temp  -- Store game time
+    return dt
+end
 
 for i, eventName in ipairs(passEvents) do
     Runtime:addEventListener(eventName, function (event)

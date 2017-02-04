@@ -3,6 +3,7 @@ local utils = require("lib.utils")
 
 local function touch() end
 local function update() end
+local function hide() end
 
 local function updateInput(event)
     local self = event.source.params
@@ -37,6 +38,7 @@ local function constructor(puck, player, difficulty)
 
     self.touch  = touch
     self.update = update
+    self.hide   = hide
 
     self.puck = puck
     self.player = player
