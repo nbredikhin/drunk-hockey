@@ -52,7 +52,7 @@ function scene:create(event)
 
     scene.gotoPreviousScene = "scenes.menu"
 
-    self.music = audio.loadStream("assets/music/action.mp3")
+    self.music = audio.loadStream("assets/music/action.ogg")
     local group = self.view
     local background = display.newImage("assets/background.png", display.contentCenterX, display.contentCenterY)
     background.width = display.contentWidth

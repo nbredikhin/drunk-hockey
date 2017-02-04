@@ -2,7 +2,7 @@ DEBUG = {
     skipMenu         = false,
     skipIntro        = true,
     drawPhysics      = false,
-    disableSounds    = true,
+    disableSounds    = false,
     -- Сброс прогресса игры
     resetProgress    = false,
     -- Открыть всю игру
@@ -12,8 +12,10 @@ DEBUG = {
     disableAds       = false,
 
     Log = function (s, ...)
+        local info = debug.getinfo(2, "Sl")
+        local pre_str = string.format("[%s]:%3d", info.source, info.currentline)
         local str = string.format(s, ...)
-        print(str)
+        print(pre_str .. " " .. str)
     end
 }
 
