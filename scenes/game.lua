@@ -42,6 +42,7 @@ function scene:create(event)
     if not event.params.difficulty then
         event.params.difficulty = "easy"
     end
+    Globals.googleAnalytics.logEvent("gamemode", tostring(event.params.gamemode))
 
     self.bottleSpawnDelayMin = 20 * 1000
     self.bottleSpawnDelayMax = 30 * 1000
@@ -256,6 +257,7 @@ end
 function scene:show(event)
     if event.phase == "did" then
         self.loaded = true
+        Globals.googleAnalytics.logScreenName("game")
     end
 end
 

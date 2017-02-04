@@ -8,6 +8,8 @@ DEBUG = {
     -- Открыть всю игру
     unlockEverything = true,
     oneGoalToWin     = true,
+    disableAnalytics = false,
+    disableAds       = true,
 
     Log = function (s, ...)
         local str = string.format(s, ...)
@@ -19,8 +21,10 @@ local composer  = require("composer")
 local ads       = require("lib.ads")
 local adsconfig = require("adsconfig") or {}
 local storage   = require("lib.storage")
+local googleAnalytics = require("plugin.googleAnalytics")
 
 Globals = {
+    googleAnalytics = googleAnalytics,
     soundEnabled = storage.get("sound_enabled", true),
     adsCounter   = 0,
     adsInterval  = 2 -- Показ рекламы через каждые N игр (1 - каждый раунд, 2 - через раунд и т. д.)
@@ -103,6 +107,17 @@ ads.init(adsconfig.provider, adsconfig.appId, function (event)
     end
 end)
 ads.load(adsconfig.adType, { testMode = adsconfig.testMode })
+
+-- Аналитика
+if DEBUG.disableAnalytics then
+    googleAnalytics = {
+        init = function () end,
+        logScreenName = function () end,
+        logEvent = function () end
+    }
+    Globals.googleAnalytics = googleAnalytics
+end
+googleAnalytics.init("Drunk Hockey", "UA-91387170-1")
 
 -- Load menu
 if DEBUG.skipMenu then

@@ -122,6 +122,7 @@ function scene:show(event)
     end
     self.loaded = true
     audio.play(self.menuTheme, { channel = 1, loops = -1 })
+    Globals.googleAnalytics.logScreenName("menu")
 end
 
 function scene:hide()

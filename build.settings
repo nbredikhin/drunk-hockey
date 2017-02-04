@@ -64,6 +64,11 @@ settings =
             publisherId = "com.coronalabs",
             supportedPlatforms = { iphone=false, android=true }
         },
+        ["plugin.googleAnalytics"] =
+        {
+            publisherId = "com.coronalabs",
+            supportedPlatforms = { iphone=false, android=true }
+        },
     },
 	--
 	-- Android Section

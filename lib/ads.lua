@@ -1,4 +1,4 @@
-if system.getInfo("environment") ~= "simulator" then
+if system.getInfo("environment") ~= "simulator" and not DEBUG.disableAds then
     return require("ads")
 end
 
@@ -10,6 +10,9 @@ adImage.y = display.contentCenterY
 adImage.width = display.contentWidth
 adImage.height = display.contentHeight
 function ads.show(...)
+    if DEBUG.disableAds then
+        return
+    end
     adImage.isVisible = true
 
     timer.performWithDelay(3000, function ()
