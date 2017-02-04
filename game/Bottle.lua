@@ -10,6 +10,7 @@ local function colision(self, event)
         local player = event.other
         self.isVisible = false
         player:increaseRotationSpeed(self.speedUpRatio, self.speedUpDuration)
+        Globals.analytics.logEvent("Bottle", { action = "Used" })
     end
 end
 

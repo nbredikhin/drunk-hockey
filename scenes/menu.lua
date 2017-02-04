@@ -122,11 +122,14 @@ function scene:show(event)
     end
     self.loaded = true
     audio.play(self.menuTheme, { channel = 1, loops = -1 })
-    Globals.googleAnalytics.logScreenName("menu")
+    Globals.analytics.startTimedEvent("Main menu")
 end
 
-function scene:hide()
-    audio.stop(1)
+function scene:hide(event)
+    if event.phase == "will" then
+        Globals.analytics.endTimedEvent("Main menu")
+        audio.stop(1)
+    end
 end
 
 function scene:startGameWithDifficulty(difficultyName)
@@ -134,6 +137,10 @@ function scene:startGameWithDifficulty(difficultyName)
         gamemode   = "singleplayer",
         difficulty = difficultyName
     }
+    Globals.analytics.logEvent("Menu selection", {
+        location="Main Menu",
+        selection="Singleplayer " .. tostring(difficultyName)
+    })
     composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft", params = params})
     audio.play(self.buttonSound)
 end
@@ -150,6 +157,10 @@ function scene:menuButtonPressed(name)
         end
         audio.play(self.selectSound)
     elseif name == "multiplayer" then
+        Globals.analytics.logEvent("Menu selection", {
+            location="Main Menu",
+            selection="Multiplayer"
+        })
         composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft", params = { gamemode = "multiplayer" }})
         audio.play(self.buttonSound)
     end

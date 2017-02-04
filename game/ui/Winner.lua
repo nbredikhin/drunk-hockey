@@ -7,7 +7,6 @@ local function show(self, winner, score)
     if self.isVisible then
         return
     end
-    Globals.googleAnalytics.logScreenName("end game")
     if not score then
         score = {0, 0}
     end
@@ -21,7 +20,6 @@ local function show(self, winner, score)
             self.winnerText:setFillColor(0.15, 0.4, 1)
         else
             self.winnerText.text = "You loose!"
-            Globals.googleAnalytics.logEvent("game result", "loose")
         end
     else
         if self.isMultiplayer then
@@ -30,7 +28,6 @@ local function show(self, winner, score)
         else
             self.winnerText.text = "You win!"
             self.button:setLabel("Tap to continue")
-            Globals.googleAnalytics.logEvent("game result", "win")
         end
     end
     self.scoreText.text = "Score is " .. score[1] .. ":" .. score[2]

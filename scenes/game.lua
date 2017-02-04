@@ -31,6 +31,7 @@ local function spawnBottle(event)
         scene.bottle.x = scene.area.x + scene.area.width  * (0.15 + math.random() * 0.7 - 0.5)
         scene.bottle.y = scene.area.y + scene.area.height * (0.15 + math.random() * 0.7 - 0.5)
 
+        Globals.analytics.logEvent("Bottle", { action = "Spawned" })
         DEBUG.Log("scene.x = %f, scene.y = %f, scene.width = %f, scene.height = %f, x = %f, y = %f", scene.area.x, scene.area.y, scene.area.width, scene.area.height, scene.bottle.x, scene.bottle.y)
     end
 end
@@ -42,7 +43,6 @@ function scene:create(event)
     if not event.params.difficulty then
         event.params.difficulty = "easy"
     end
-    Globals.googleAnalytics.logEvent("gamemode", tostring(event.params.gamemode))
 
     self.bottleSpawnDelayMin = 20 * 1000
     self.bottleSpawnDelayMax = 30 * 1000
@@ -194,14 +194,16 @@ end
 
 function scene:endGame(winner)
     self.state = "ended"
-
-    if self.gamemode == "singleplayer" and winner == "red" then
-        if self.difficulty == "easy" then
-            storage.set("levels_unlocked", 2)
-        elseif self.difficulty == "medium" then
-            storage.set("levels_unlocked", 3)
-        elseif self.difficulty == "hard" then
-            storage.set("levels_unlocked", 4)
+    if self.gamemode == "singleplayer" then
+        if winner == "red" then
+            local levelsUnlocked = storage.get("levels_unlocked", 1)
+            if self.difficulty == "easy" then
+                storage.set("levels_unlocked", math.max(2, levelsUnlocked))
+            elseif self.difficulty == "medium" then
+                storage.set("levels_unlocked", math.max(3, levelsUnlocked))
+            elseif self.difficulty == "hard" then
+                storage.set("levels_unlocked", math.max(4, levelsUnlocked))
+            end
         end
     end
     for i, ui in ipairs(self.uiManagers) do
@@ -211,7 +213,7 @@ end
 
 -- Goal handling
 function scene:endRound(goalTo)
-
+    Globals.analytics.endTimedEvent("Game round", { gamemode = self.gamemode, difficulty = self.difficulty })
     if goalTo == "blue" then
         self.score[1] = self.score[1] + 1
     else
@@ -252,12 +254,14 @@ function scene:startRound()
     self.state = "running"
     audio.seek(0, self.music)
     audio.play(self.music, { channel = 3, loops = -1 })
+
+    Globals.analytics.startTimedEvent("Game round", { gamemode = self.gamemode, difficulty = self.difficulty })
 end
 
 function scene:show(event)
     if event.phase == "did" then
         self.loaded = true
-        Globals.googleAnalytics.logScreenName("game")
+        Globals.analytics.startTimedEvent("Game screen", { gamemode = self.gamemode, difficulty = self.difficulty })
     end
 end
 
@@ -265,6 +269,7 @@ function scene:hide(event)
     if event.phase == "will" then
         self.loaded = false
         audio.stop(3)
+        Globals.analytics.endTimedEvent("Game screen", { gamemode = self.gamemode, difficulty = self.difficulty })
     end
 end
 

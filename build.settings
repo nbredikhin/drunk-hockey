@@ -59,16 +59,16 @@ settings =
 	--
     plugins =
     {
+        ["plugin.flurry.analytics"] =
+        {
+            publisherId = "com.coronalabs",
+            supportedPlatforms = { iphone=true, android=true }
+        },
         ["plugin.google.play.services"] =
         {
             publisherId = "com.coronalabs",
             supportedPlatforms = { iphone=false, android=true }
-        },
-        ["plugin.googleAnalytics"] =
-        {
-            publisherId = "com.coronalabs",
-            supportedPlatforms = { iphone=false, android=true }
-        },
+        }
     },
 	--
 	-- Android Section

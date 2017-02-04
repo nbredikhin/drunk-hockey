@@ -21,10 +21,10 @@ local composer  = require("composer")
 local ads       = require("lib.ads")
 local adsconfig = require("adsconfig") or {}
 local storage   = require("lib.storage")
-local googleAnalytics = require("plugin.googleAnalytics")
+local analytics = require("plugin.flurry.analytics")
 
 Globals = {
-    googleAnalytics = googleAnalytics,
+    analytics = analytics,
     soundEnabled = storage.get("sound_enabled", true),
     adsCounter   = 0,
     adsInterval  = 2 -- Показ рекламы через каждые N игр (1 - каждый раунд, 2 - через раунд и т. д.)
@@ -85,7 +85,7 @@ if DEBUG.resetProgress then
 end
 
 if DEBUG.unlockEverything then
-    storage.set("levels_unlocked", 4)
+    storage.set("levels_unlocked", 99)
 end
 if DEBUG.disableSounds then
     storage.set("sounds_enabled", false)
@@ -109,15 +109,20 @@ end)
 ads.load(adsconfig.adType, { testMode = adsconfig.testMode })
 
 -- Аналитика
-if DEBUG.disableAnalytics then
-    googleAnalytics = {
-        init = function () end,
-        logScreenName = function () end,
-        logEvent = function () end
+if DEBUG.disableAnalytics then--or system.getInfo("environment") == "simulator" then
+    analytics = {
+        init            = function () end,
+        logEvent        = function () end,
+        startTimedEvent = function () end,
+        endTimedEvent   = function () end
     }
-    Globals.googleAnalytics = googleAnalytics
+    Globals.analytics = analytics
 end
-googleAnalytics.init("Drunk Hockey", "UA-91387170-1")
+
+local function analyticsListener(event)
+
+end
+Globals.analytics.init(analyticsListener, { apiKey = adsconfig.analyticsKey })
 
 -- Load menu
 if DEBUG.skipMenu then
