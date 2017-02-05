@@ -1,16 +1,16 @@
 DEBUG = {
-    -- skipMenu         = false,
-    -- skipIntro        = false,
-    -- showAbout        = false,
-    -- drawPhysics      = false,
-    -- disableSounds    = false,
-    -- -- Сброс прогресса игры
-    -- resetProgress    = false,
-    -- -- Открыть всю игру
-    -- unlockEverything = false,
-    -- oneGoalToWin     = false,
-    -- disableAnalytics = false,
-    -- disableAds       = false,
+    skipMenu         = true,
+    skipIntro        = true,
+    showAbout        = false,
+    drawPhysics      = false,
+    disableSounds    = false,
+    -- Сброс прогресса игры
+    resetProgress    = false,
+    -- Открыть всю игру
+    unlockEverything = false,
+    oneGoalToWin     = false,
+    disableAnalytics = false,
+    disableAds       = false,
 
     Log = function (s, ...)
         local info = debug.getinfo(2, "Sl")
@@ -19,6 +19,14 @@ DEBUG = {
         print(pre_str .. " " .. str)
     end
 }
+
+local function disableDebug()
+    DEBUG = {}
+    DEBUG.Log = function () end
+end
+
+-- Выключить режим отладки
+disableDebug()
 
 local composer  = require("composer")
 local ads       = require("lib.ads")
