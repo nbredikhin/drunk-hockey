@@ -93,22 +93,17 @@ local function constructor(isMultiplayer, bg)
         height = display.contentHeight,
 
         fontSize = 5,
-        label = "Tap to play again",
+        label = lang.getString("game_restart_button"),
         labelColor = { default = {1, 1, 1} },
 
         defaultFile = "assets/empty.png",
 
         onRelease = function ()
-            Globals.adsCounter = Globals.adsCounter + 1
-            DEBUG.Log("Ads counter: %i", Globals.adsCounter)
-            if Globals.adsCounter >= Globals.adsInterval then
-                Globals.adsCounter = 0
-                if ads.isLoaded(adsconfig.adType) then
-                    DEBUG.Log("Show ad")
-                    ads.show(adsconfig.adType, { testMode = adsconfig.testMode })
-                else
-                    DEBUG.Log("Can't show ad. Ad is not loaded yet")
-                end
+            if ads.isLoaded(adsconfig.adType) then
+                DEBUG.Log("Show ad")
+                ads.show(adsconfig.adType, { testMode = adsconfig.testMode })
+            else
+                DEBUG.Log("Can't show ad. Ad is not loaded yet")
             end
 
             if not self.isMultiplayer and self.winner == "red" then

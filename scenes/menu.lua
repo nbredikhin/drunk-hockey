@@ -132,6 +132,10 @@ function scene:create(event)
         end
     })
     group:insert(self.aboutButton)
+
+    if event.params.firstTime then
+        transition.from(self.aboutButton, { time = 500, alpha = 0, delay = 800 + 800, xScale = 0.1, yScale = 0.1, transition = easing.inOutCubic})
+    end
 end
 
 function scene:show(event)
@@ -174,6 +178,7 @@ function scene:menuButtonPressed(name)
             b.button.yScale = 0.1
             transition.to(b.button, { transition=easing.outBack, delay = (i - 1) * 200, time = 300, delta = false, xScale = 1, yScale = 1, alpha = 1})
         end
+        transition.to(self.aboutButton, { time = 800, delay = 0, transition = easing.outBack, delta = true, y = self.aboutButton.height + 5})
         audio.play(self.selectSound)
     elseif name == "multiplayer" then
         Globals.analytics.logEvent("Menu selection", {

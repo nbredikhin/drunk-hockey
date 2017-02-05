@@ -1,16 +1,16 @@
 DEBUG = {
-    skipMenu         = true,
-    skipIntro        = true,
-    showAbout        = false ,
-    drawPhysics      = false,
-    disableSounds    = false,
-    -- Сброс прогресса игры
-    resetProgress    = false,
-    -- Открыть всю игру
-    unlockEverything = false,
-    oneGoalToWin     = false,
-    disableAnalytics = false,
-    disableAds       = false,
+    -- skipMenu         = false,
+    -- skipIntro        = false,
+    -- showAbout        = false,
+    -- drawPhysics      = false,
+    -- disableSounds    = false,
+    -- -- Сброс прогресса игры
+    -- resetProgress    = false,
+    -- -- Открыть всю игру
+    -- unlockEverything = false,
+    -- oneGoalToWin     = false,
+    -- disableAnalytics = false,
+    -- disableAds       = false,
 
     Log = function (s, ...)
         local info = debug.getinfo(2, "Sl")
@@ -31,9 +31,7 @@ lang.init()
 
 Globals = {
     analytics = analytics,
-    soundEnabled = storage.get("sound_enabled", true),
-    adsCounter   = 0,
-    adsInterval  = 1 -- Показ рекламы через каждые N игр (1 - каждый раунд, 2 - через раунд и т. д.)
+    soundEnabled = storage.get("sound_enabled", true)
 }
 
 composer.recycleOnSceneChange = true

@@ -218,6 +218,7 @@ end
 
 -- Goal handling
 function scene:endRound(goalTo)
+    system.vibrate()
     Globals.analytics.endTimedEvent("Game round", { gamemode = self.gamemode, difficulty = self.difficulty })
     if goalTo == "blue" then
         self.score[1] = self.score[1] + 1
