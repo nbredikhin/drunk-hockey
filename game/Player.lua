@@ -1,4 +1,5 @@
 local physics = require("physics")
+local utils   = require("lib.utils")
 
 local function increaseRotationSpeed(self, speedMultiplyer, timeout)
     self.rotationSpeed = self.rotationSpeed * speedMultiplyer
@@ -20,13 +21,20 @@ end
 
 local function update(self, dt)
     self.angularVelocity = self.rotationSpeed * dt
-    self.shadow.rotation = -self.rotation * dt
+    self.shadow.rotation = -self.rotation
 end
 
 local function move(self, x, y, dt)
-    x = math.max(-self.maxMovementSpeed, math.min(x, self.maxMovementSpeed))
-    y = math.max(-self.maxMovementSpeed, math.min(y, self.maxMovementSpeed))
-    self:applyForce(x * self.movementSpeed * dt, y * self.movementSpeed * dt, self.x, self.y)
+    -- local ratio = self.maxMovementSpeed
+    -- x = utils.clamp(x, -self.maxMovementSpeed, self.maxMovementSpeed)
+    -- y = utils.clamp(y, -self.maxMovementSpeed, self.maxMovementSpeed)
+    local magnitude = math.sqrt(x * x + y * y)
+    if magnitude == 0 then
+        return
+    end
+    x = x / magnitude
+    y = y / magnitude
+    self:applyForce(x * self.maxMovementSpeed * dt, y * self.maxMovementSpeed * dt, self.x, self.y)
 end
 
 local function constructor(colorName)
@@ -47,7 +55,7 @@ local function constructor(colorName)
     self.movementSpeed = 0.0008
     self.rotationSpeed = self.defaultRotationSpeed
 
-    self.maxMovementSpeed = 25
+    self.maxMovementSpeed = 0.01
 
     -- Physics setup
     physics.addBody(self,

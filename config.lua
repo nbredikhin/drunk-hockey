@@ -23,17 +23,17 @@ application = {
 -- Сложность бота
 difficulty = {
     easy = {
-        speed         = 0.5,
-        reactionDelay = 150,
+        speed         = 0.65,
+        reactionDelay = 200,
         panicChance   = 0.75
     },
     medium = {
-        speed         = 0.75,
-        reactionDelay = 100,
+        speed         = 1.0,
+        reactionDelay = 150,
         panicChance   = 0.5
     },
     hard = {
-        speed         = 1.0,
+        speed         = 1.20,
         reactionDelay = 50,
         panicChance   = 0.25
     },

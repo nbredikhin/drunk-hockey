@@ -26,10 +26,10 @@ local function updateInput(event)
     local y = targetY - self.player.y
 
     local magnitude = math.sqrt(x * x + y * y)
-    local ratio = self.difficulty.speed * self.player.maxMovementSpeed
+    -- local ratio = self.player.maxMovementSpeed
 
-    self.inputX = x / magnitude * ratio
-    self.inputY = y / magnitude * ratio
+    self.inputX = x
+    self.inputY = y
 end
 
 local function constructor(puck, player, difficulty)
@@ -46,6 +46,7 @@ local function constructor(puck, player, difficulty)
 
     self.difficulty = difficulty
     self.panicPuckSpeed = 170
+    self.player.maxMovementSpeed = self.difficulty.speed * self.player.maxMovementSpeed
 
     local reactionTimer = timer.performWithDelay(self.difficulty.reactionDelay,
                                                  updateInput, 0)
