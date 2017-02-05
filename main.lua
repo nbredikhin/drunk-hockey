@@ -1,6 +1,6 @@
 DEBUG = {
-    -- skipMenu         = false,
-    -- skipIntro        = false,
+    -- skipMenu         = true,
+    -- skipIntro        = true,
     -- showAbout        = false,
     -- drawPhysics      = false,
     -- disableSounds    = false,
@@ -16,7 +16,7 @@ DEBUG = {
         local info = debug.getinfo(2, "Sl")
         local pre_str = string.format("[%s]:%3d", info.source, info.currentline)
         local str = string.format(s, ...)
-        print(pre_str .. " " .. str)
+        -- print(pre_str .. " " .. str)
     end
 }
 
