@@ -8,7 +8,7 @@ DEBUG = {
     -- resetProgress    = false,
     -- -- Открыть всю игру
     -- unlockEverything = false,
-    -- oneGoalToWin     = false,
+    -- oneGoalToWin     = true,
     -- disableAnalytics = false,
     -- disableAds       = false,
 
@@ -31,9 +31,7 @@ lang.init()
 
 Globals = {
     analytics = analytics,
-    soundEnabled = storage.get("sound_enabled", true),
-    adsCounter   = 0,
-    adsInterval  = 1 -- Показ рекламы через каждые N игр (1 - каждый раунд, 2 - через раунд и т. д.)
+    soundEnabled = storage.get("sound_enabled", true)
 }
 
 composer.recycleOnSceneChange = true
