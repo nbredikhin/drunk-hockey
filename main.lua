@@ -1,16 +1,16 @@
 DEBUG = {
-    skipMenu         = false,
-    skipIntro        = false,
-    showAbout        = false,
-    drawPhysics      = false,
-    disableSounds    = false,
-    -- Сброс прогресса игры
-    resetProgress    = false,
-    -- Открыть всю игру
-    unlockEverything = false,
-    oneGoalToWin     = false,
-    disableAnalytics = false,
-    disableAds       = false,
+    -- skipMenu         = false,
+    -- skipIntro        = false,
+    -- showAbout        = false,
+    -- drawPhysics      = false,
+    -- disableSounds    = false,
+    -- -- Сброс прогресса игры
+    -- resetProgress    = false,
+    -- -- Открыть всю игру
+    -- unlockEverything = false,
+    -- oneGoalToWin     = false,
+    -- disableAnalytics = false,
+    -- disableAds       = false,
 
     Log = function (s, ...)
         local info = debug.getinfo(2, "Sl")

@@ -132,6 +132,10 @@ function scene:create(event)
         end
     })
     group:insert(self.aboutButton)
+
+    if event.params.firstTime then
+        transition.from(self.aboutButton, { time = 500, alpha = 0, delay = 800 + 800, xScale = 0.1, yScale = 0.1, transition = easing.inOutCubic})
+    end
 end
 
 function scene:show(event)
