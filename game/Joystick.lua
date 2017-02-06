@@ -81,7 +81,7 @@ local function constructor(side)
     end
     self.side = side
 
-    self.maxDistance = 12.5
+    self.maxDistance = 10.0
 
     self.touch = touch
     self.update = update

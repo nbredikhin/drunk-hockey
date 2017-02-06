@@ -55,7 +55,7 @@ local function constructor(colorName)
     self.movementSpeed = 0.0008
     self.rotationSpeed = self.defaultRotationSpeed
 
-    self.maxMovementSpeed = 0.01
+    self.maxMovementSpeed = 0.011
 
     -- Physics setup
     physics.addBody(self,
