@@ -46,8 +46,8 @@ function scene:create(event)
         text = table.concat(aboutLines, "\n"),
         x    = display.contentCenterX,
         y    = display.contentCenterY + 50,
-        font = native.systemFont,
-        fontSize = 7,
+        font = "pixel_font.ttf",
+        fontSize = 5,
         align = "center"
     })
     self.scrollingGroup:insert(text)

@@ -49,6 +49,7 @@ function scene:create(event)
             width = buttonWidth,
             height = buttonHeight,
 
+            font = "pixel_font.ttf",
             fontSize = 7,
             label = b.label,
             labelColor = { default = {1, 1, 1} },
@@ -92,6 +93,7 @@ function scene:create(event)
             width = buttonWidth,
             height = buttonHeight,
 
+            font = "pixel_font.ttf",
             fontSize = 7,
             label = b.label,
             labelColor = { default = {1, 1, 1} },

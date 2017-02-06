@@ -21,7 +21,7 @@ local function constructor(colorName, isMultiplayer)
     self.countdown = Countdown(colorName)
     self:insert(self.countdown)
 
-    self.winner = Winner(isMultiplayer, self.bg)
+    self.winner = Winner(isMultiplayer, self.bg, colorName)
     self:insert(self.winner)
     return self
 end

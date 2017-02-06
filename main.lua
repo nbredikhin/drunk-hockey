@@ -1,14 +1,14 @@
 DEBUG = {
-    skipMenu         = true,
+    skipMenu         = false,
     skipIntro        = true,
     showAbout        = false,
     drawPhysics      = false,
-    disableSounds    = false,
+    disableSounds    = true,
     -- Сброс прогресса игры
     resetProgress    = false,
     -- Открыть всю игру
     unlockEverything = false,
-    oneGoalToWin     = false,
+    oneGoalToWin     = true,
     disableAnalytics = false,
     disableAds       = false,
 
@@ -26,7 +26,7 @@ local function disableDebug()
 end
 
 -- Выключить режим отладки
-disableDebug()
+-- disableDebug()
 
 local composer  = require("composer")
 local ads       = require("lib.ads")

@@ -14,22 +14,17 @@ local function show(self, winner, score)
 
     self.winner = winner
 
-    if winner == "blue" then
-        if self.isMultiplayer then
-            self.winnerText.text = lang.getString("game_blue_win")
-            self.winnerText:setFillColor(0.15, 0.4, 1)
-        else
-            self.winnerText.text = lang.getString("game_you_loose")
-        end
+    if winner == self.colorName then
+        self.winnerText.text = lang.getString("game_you_win")
     else
-        if self.isMultiplayer then
-            self.winnerText.text = lang.getString("game_red_win")
-            self.winnerText:setFillColor(1, 0.1, 0.1)
-        else
-            self.winnerText.text = lang.getString("game_you_win")
-            self.button:setLabel(lang.getString("game_end_button"))
-        end
+        self.winnerText.text = lang.getString("game_you_lose")
     end
+    if winner == "blue" then
+        self.winnerText:setFillColor(0.15, 0.4, 1)
+    else
+        self.winnerText:setFillColor(1, 0.1, 0.1)
+    end
+
     self.scoreText.text = lang.getString("game_end_score")  .. " " .. score[1] .. ":" .. score[2]
 
     if self.bg then
@@ -72,17 +67,18 @@ local function hide(self)
     end})
 end
 
-local function constructor(isMultiplayer, bg)
+local function constructor(isMultiplayer, bg, colorName)
     self = display.newGroup()
     self.isMultiplayer = isMultiplayer
 
+    self.colorName = colorName
     self.bg = bg
 
-    self.winnerText = display.newText("Player won!", 0, 0, native.systemFont, 10)
+    self.winnerText = display.newText("", 0, 0, "pixel_font.ttf", 10)
     self.winnerText:setFillColor(0.15, 0.4, 1)
     self:insert(self.winnerText)
 
-    self.scoreText = display.newText("Score is 5:5", 0, 10, native.systemFont, 7)
+    self.scoreText = display.newText("", 0, 10, "pixel_font.ttf", 7)
     self.scoreText:setFillColor(0.15, 0.4, 1)
     self:insert(self.scoreText)
 
@@ -92,6 +88,7 @@ local function constructor(isMultiplayer, bg)
         width = display.contentWidth,
         height = display.contentHeight,
 
+        font = "pixel_font.ttf",
         fontSize = 5,
         label = lang.getString("game_restart_button"),
         labelColor = { default = {1, 1, 1} },

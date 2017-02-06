@@ -5,12 +5,10 @@ return {
     menu_button_medium       = "Средне",
     menu_button_hard         = "Тяжело",
 
-    game_you_loose = "Поражение!",
-    game_you_win   = "Победа!",
-    game_blue_win  = "Синий победил!",
-    game_red_win   = "Красный победил!",
+    game_you_lose = "Поражение!",
+    game_you_win  = "Победа!",
 
-    game_end_score      = "Счёт",
+    game_end_score      = "Счет",
     game_end_button     = "Нажмите для продолжения",
     game_restart_button = "Играть заново",
 }
