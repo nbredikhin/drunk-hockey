@@ -34,7 +34,7 @@ local function move(self, x, y, dt)
     end
     x = x / magnitude
     y = y / magnitude
-    self:applyForce(x * self.maxMovementSpeed * dt, y * self.maxMovementSpeed * dt, self.x, self.y)
+    self:applyLinearImpulse(x * self.maxMovementSpeed * dt, y * self.maxMovementSpeed * dt, self.x, self.y)
 end
 
 local function constructor(colorName)
@@ -55,7 +55,7 @@ local function constructor(colorName)
     self.movementSpeed = 0.0008
     self.rotationSpeed = self.defaultRotationSpeed
 
-    self.maxMovementSpeed = 0.011
+    self.maxMovementSpeed = 0.0002
 
     -- Physics setup
     physics.addBody(self,
