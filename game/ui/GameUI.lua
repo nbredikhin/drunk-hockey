@@ -8,7 +8,7 @@ local function constructor(colorName, isMultiplayer)
     end
     local self = display.newGroup()
 
-    if colorName == "blue" then
+    if colorName == "red" then
         self.bg = display.newRect(0, 0, display.contentWidth, display.contentHeight * 2)
         self.bg:setFillColor(0, 0, 0, 0.9)
         self.bg.alpha = 0

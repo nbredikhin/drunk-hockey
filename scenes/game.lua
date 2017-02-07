@@ -183,6 +183,7 @@ end
 
 function scene:restartGame()
     if self.state == "waiting" then
+        DEBUG.Log("DAFUQ?")
         return
     end
     self.score = {0, 0}
@@ -219,7 +220,6 @@ function scene:endGame(winner)
     for i, ui in ipairs(self.uiManagers) do
         ui.winner:show(winner, self.score, self.players[i].goalShots, self.players[i].savesCount)
     end
-    self:respawn()
 end
 
 -- Goal handling

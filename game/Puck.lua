@@ -29,10 +29,15 @@ local function collision(self, event)
         if scene and event.other.isPlayer then
             self.lastTouchingPlayer = event.other
             if self.shotOnGoal then
+                local toPlayerX, toPlayerY = self.lastTouchingPlayer.x - self.x, self.lastTouchingPlayer.y - self.y;
+                local vx, vy = self:getLinearVelocity()
+                local indicator = toPlayerX * vx + toPlayerY * vy
                 DEBUG.Log("Save by " ..  event.other.colorName)
-                scene:showGameText("save", self.x, self.y, event.other.colorName)
-                self.lastTouchingPlayer.savesCount = self.lastTouchingPlayer.savesCount + 1
-                self.shotOnGoal = false
+                if indicator > 0 then
+                    scene:showGameText("save", self.x, self.y, event.other.colorName)
+                    self.lastTouchingPlayer.savesCount = self.lastTouchingPlayer.savesCount + 1
+                    self.shotOnGoal = false
+                end
             end
             if self.touchTimer then
                 timer.cancel(self.touchTimer)
@@ -64,41 +69,14 @@ local function checkShotOnGoal(self)
         then
             return false
         end
+        DEBUG.Log("Shot on goal!!!")
         return true
     end
     return false
 end
 
 local function update(self)
-    local shotOnGoal = self:checkShotOnGoal()
-    if shotOnGoal ~= self.shotOnGoal then
-        if not shotOnGoal then
-            if self.shotCancelTimer then
-                timer.cancel(self.shotCancelTimer)
-            end
-            if self.shotConfirmTimer then
-                timer.cancel(self.shotConfirmTimer)
-            end
-            self.shotCancelTimer = timer.performWithDelay(100, function ()
-                self.shotOnGoal = false
-            end)
-        else
-            if self.shotCancelTimer then
-                timer.cancel(self.shotCancelTimer)
-                self.shotCancelTimer = nil
-            end
-            if self.shotConfirmTimer then
-                timer.cancel(self.shotConfirmTimer)
-            end
-            self.shotConfirmTimer = timer.performWithDelay(400, function ()
-                if self.lastTouchingPlayer then
-                    self.lastTouchingPlayer.goalShots = self.lastTouchingPlayer.goalShots + 1
-                    self.lastTouchingPlayer = nil
-                end
-                self.shotOnGoal = true
-            end)
-        end
-    end
+    self.shotOnGoal = self:checkShotOnGoal()
 end
 
 local function constructor()

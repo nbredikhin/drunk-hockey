@@ -1,9 +1,9 @@
 DEBUG = {
-    skipMenu         = false,
+    skipMenu         = true,
     skipIntro        = true,
     skipCountdown    = false,
     showAbout        = false,
-    drawPhysics      = false,
+    drawPhysics      = true,
     disableSounds    = true,
     -- Сброс прогресса игры
     resetProgress    = false,

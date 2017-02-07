@@ -64,6 +64,7 @@ local function hide(self)
     if not self.isVisible then
         return
     end
+
     local state = { time = 300, alpha = 0 }
     if self.bg then
         transition.to(self.bg, state)
@@ -123,17 +124,18 @@ local function constructor(isMultiplayer, bg, colorName)
             end
 
             if not self.isMultiplayer and self.winner == "red" then
+                DEBUG.Log("SHIIIIET")
                 composer.gotoScene("scenes.menu", {time = 500, effect = "slideRight"})
                 return
             end
             local scene = composer.getScene(composer.getSceneName("current"))
             if scene and scene.shake then
+                DEBUG.Log("RESTARTING)")
                 scene:restartGame()
             end
         end
     })
     self:insert(self.button)
-
 
     self.isVisible = false
 

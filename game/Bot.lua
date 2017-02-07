@@ -45,7 +45,7 @@ local function constructor(puck, player, difficulty)
     self.active = true
 
     self.difficulty = difficulty
-    self.panicPuckSpeed = 170
+    self.panicPuckSpeed = 80
     self.player.maxMovementSpeed = self.difficulty.speed * self.player.maxMovementSpeed
 
     local reactionTimer = timer.performWithDelay(self.difficulty.reactionDelay,
