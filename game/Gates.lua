@@ -27,6 +27,8 @@ local function constructor(colorName, x, y)
     self.initialX = x
     self.initialY = y
 
+    self.isGate = true
+
     self.x = x
     self.y = y
 

@@ -8,7 +8,11 @@ return {
     game_you_lose = "You lose!",
     game_you_win  = "You win!",
 
-    game_end_score      = "Score is",
-    game_end_button     = "Tap to continue",
-    game_restart_button = "Tap to play again",
+    game_end_score         = "Score is",
+    game_end_button        = "Tap to continue",
+    game_restart_button    = "Tap to play again",
+    game_end_shots_on_goal = "Shots on goal",
+    game_end_saves         = "Saves count",
+
+    game_text_save      = "Save!",
 }

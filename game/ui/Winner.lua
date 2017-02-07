@@ -3,7 +3,7 @@ local composer  = require("composer")
 local adsconfig = require("adsconfig")
 local ads       = require("lib.ads")
 
-local function show(self, winner, score)
+local function show(self, winner, score, shotsOnGoal, savesCount)
     if self.isVisible then
         return
     end
@@ -25,6 +25,9 @@ local function show(self, winner, score)
         self.winnerText:setFillColor(1, 0.1, 0.1)
     end
 
+    self.infoText.text = lang.getString("game_end_shots_on_goal") .. ": " .. tostring(shotsOnGoal)
+        .. "\n\n" .. lang.getString("game_end_saves") .. ": " .. tostring(savesCount)
+
     self.scoreText.text = lang.getString("game_end_score")  .. " " .. score[1] .. ":" .. score[2]
 
     if self.bg then
@@ -43,13 +46,18 @@ local function show(self, winner, score)
     self.scoreText.xScale = 1
     self.scoreText.yScale = 1
 
+    self.infoText.alpha = 1
+    self.infoText.xScale = 1
+    self.infoText.yScale = 1
+
     self.button.alpha = 1
     self.button.xScale = 1
     self.button.yScale = 1
 
     transition.from(self.winnerText, { transition=easing.outBack, delay = 500, time = 500, alpha = 0, xScale = 0.5, yScale = 0.8 })
     transition.from(self.scoreText, { transition=easing.outBack, delay = 1000, time = 500, alpha = 0, xScale = 0.5, yScale = 0.8 })
-    transition.from(self.button, { transition=easing.outBack, delay = 1500, time = 500, alpha = 0, xScale = 0.3, yScale = 0.8 })
+    transition.from(self.infoText, { transition=easing.outBack, delay = 1500, time = 500, alpha = 0, xScale = 0.5, yScale = 0.8 })
+    transition.from(self.button, { transition=easing.outBack, delay = 2000, time = 500, alpha = 0, xScale = 0.3, yScale = 0.8 })
 end
 
 local function hide(self)
@@ -82,9 +90,20 @@ local function constructor(isMultiplayer, bg, colorName)
     self.scoreText:setFillColor(0.15, 0.4, 1)
     self:insert(self.scoreText)
 
+    self.infoText = display.newText({
+        text = "Some text 1: 99\nSome text 2: 99",
+        x    = 0,
+        y    = 22,
+        font = "pixel_font.ttf",
+        fontSize = 4,
+        align = "center"
+    })
+    self.infoText:setFillColor(0.15, 0.4, 1)
+    self:insert(self.infoText)
+
     self.button = widget.newButton({
         x = 0,
-        y = 25,
+        y = 35,
         width = display.contentWidth,
         height = display.contentHeight,
 

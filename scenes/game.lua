@@ -13,6 +13,7 @@ local Bot      = require("game.Bot")
 local Bottle   = require("game.Bottle")
 
 local GameUI   = require("game.ui.GameUI")
+local GameText = require("game.ui.GameText")
 
 physics.start()
 physics.setGravity(0, 0)
@@ -41,7 +42,7 @@ function scene:create(event)
         event.params = {}
     end
     if not event.params.difficulty then
-        event.params.difficulty = "easy"
+        event.params.difficulty = "medium"
     end
 
     self.bottleSpawnDelayMin = 20 * 1000
@@ -163,6 +164,10 @@ function scene:startCountdown()
     if self.state == "countdown" then
         return
     end
+    if DEBUG.skipCountdown then
+        self:startRound()
+        return
+    end
     local scene = self
     local duration = 0
     for i, ui in ipairs(self.uiManagers) do
@@ -212,8 +217,9 @@ function scene:endGame(winner)
     end
     -- Отобразить экран победителя
     for i, ui in ipairs(self.uiManagers) do
-        ui.winner:show(winner, self.score)
+        ui.winner:show(winner, self.score, self.players[i].goalShots, self.players[i].savesCount)
     end
+    self:respawn()
 end
 
 -- Goal handling
@@ -225,9 +231,7 @@ function scene:endRound(goalTo)
     else
         self.score[2] = self.score[2] + 1
     end
-
     audio.stop(3)
-    self:respawn()
 
     if self.score[1] >= self.maxGoals then
         self:endGame("red")
@@ -236,7 +240,7 @@ function scene:endRound(goalTo)
         self:endGame("blue")
         return
     end
-
+    self:respawn()
     -- Скрыть джойстики
     for i, joystick in ipairs(self.joysticks) do
         joystick:hide()
@@ -307,6 +311,8 @@ function scene:enterFrame()
         for i, player in ipairs(self.players) do
             player:update(dt)
         end
+
+        self.puck:update()
     end
 
     for i, gate in ipairs(self.gates) do
@@ -322,6 +328,12 @@ end
 
 function scene:shake(mul)
     self.currentShakeMultiplier = mul
+end
+
+function scene:showGameText(text, x, y, colorName)
+    local reversed = self.gamemode == "multiplayer" and y < display.contentCenterY / 2
+    local text = GameText(text, x, y, colorName, reversed)
+    self.view:insert(text)
 end
 
 scene:addEventListener("create", scene)

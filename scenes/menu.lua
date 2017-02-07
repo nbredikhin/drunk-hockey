@@ -90,7 +90,7 @@ function scene:create(event)
         local button = widget.newButton({
             x = display.contentCenterX,
             y = buttonY,
-            width = buttonWidth,
+            width = buttonWidth * 0.8,
             height = buttonHeight,
 
             font = "pixel_font.ttf",
@@ -122,10 +122,12 @@ function scene:create(event)
         y = display.contentHeight - math.floor(buttonHeight / 2) - 2,
         width = buttonHeight,
         height = buttonHeight,
-        fontSize = 10,
+        fontSize = 8,
         label = "?",
         labelColor = { default = {1, 1, 1} },
-        labelYOffset = -0.5,
+        labelYOffset = 0,
+        labelXOffset = 0.3,
+        font = "pixel_font.ttf",
 
         defaultFile = "assets/ui/about.png",
         onRelease = function ()

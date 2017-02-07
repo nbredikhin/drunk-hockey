@@ -1,6 +1,7 @@
 DEBUG = {
     skipMenu         = false,
     skipIntro        = true,
+    skipCountdown    = false,
     showAbout        = false,
     drawPhysics      = false,
     disableSounds    = true,
@@ -11,6 +12,7 @@ DEBUG = {
     oneGoalToWin     = true,
     disableAnalytics = false,
     disableAds       = false,
+    forceLang        = "english",
 
     Log = function (s, ...)
         local info = debug.getinfo(2, "Sl")
@@ -36,6 +38,9 @@ local analytics = require("plugin.flurry.analytics")
 
 require("lib.lang")
 lang.init()
+if DEBUG.forceLang then
+    lang.setLang(DEBUG.forceLang)
+end
 
 Globals = {
     analytics = analytics,
