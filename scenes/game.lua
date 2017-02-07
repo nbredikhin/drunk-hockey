@@ -115,7 +115,7 @@ function scene:create(event)
         self.joysticks[1].side = "bottom"
         self.joysticks[2].side = "top"
     elseif event.params.gamemode == "singleplayer" then
-        self.uiManagers[1] = GameUI("blue")
+        self.uiManagers[1] = GameUI("red")
         self.uiManagers[1].x = display.contentCenterX
         self.uiManagers[1].y = display.contentCenterY
         group:insert(self.uiManagers[1])

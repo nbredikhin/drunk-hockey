@@ -123,6 +123,7 @@ function scene:create(event)
         width = buttonHeight,
         height = buttonHeight,
         fontSize = 8,
+        font = "pixel_font.ttf",
         label = "?",
         labelColor = { default = {1, 1, 1} },
         labelYOffset = 0,
