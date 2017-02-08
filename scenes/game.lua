@@ -3,6 +3,7 @@ local physics  = require("physics")
 local widget   = require("widget")
 
 local storage  = require("lib.storage")
+local utils    = require("lib.utils")
 
 local Area     = require("game.Area")
 local Player   = require("game.Player")
@@ -168,6 +169,7 @@ function scene:startCountdown()
         self:startRound()
         return
     end
+    self:respawn()
     local scene = self
     local duration = 0
     for i, ui in ipairs(self.uiManagers) do
@@ -183,7 +185,6 @@ end
 
 function scene:restartGame()
     if self.state == "waiting" then
-        DEBUG.Log("DAFUQ?")
         return
     end
     self.score = {0, 0}
@@ -224,12 +225,18 @@ end
 
 -- Goal handling
 function scene:endRound(goalTo)
-    system.vibrate()
+    if self.state ~= "running" then
+        return
+    end
+    physics.setTimeStep(1/60*0.25)
+
     Globals.analytics.endTimedEvent("Game round", { gamemode = self.gamemode, difficulty = self.difficulty })
     if goalTo == "blue" then
         self.score[1] = self.score[1] + 1
+        self:goalExplosion(self.gates[2])
     else
         self.score[2] = self.score[2] + 1
+        self:goalExplosion(self.gates[1])
     end
     audio.stop(3)
 
@@ -240,7 +247,6 @@ function scene:endRound(goalTo)
         self:endGame("blue")
         return
     end
-    self:respawn()
     -- Скрыть джойстики
     for i, joystick in ipairs(self.joysticks) do
         joystick:hide()
@@ -263,10 +269,10 @@ end
 
 function scene:startRound()
     self.state = "running"
+    physics.setTimeStep(-1)
     audio.seek(0, self.music)
     audio.play(self.music, { channel = 3, loops = -1 })
     audio.setVolume(0.45, { channel = 3 })
-
     Globals.analytics.startTimedEvent("Game round", { gamemode = self.gamemode, difficulty = self.difficulty })
 end
 
@@ -282,6 +288,7 @@ function scene:hide(event)
         self.loaded = false
         audio.stop(3)
         Globals.analytics.endTimedEvent("Game screen", { gamemode = self.gamemode, difficulty = self.difficulty })
+        DEBUG.Log("Game scene will hide")
         timer.cancelAll()
     end
 end
@@ -336,8 +343,36 @@ function scene:showGameText(text, x, y, colorName)
     self.view:insert(text)
 end
 
+function scene:goalExplosion(gate)
+    local mul = 0.0002
+    physics.setTimeStep(1/60 * 0.1)
+    for i, player in ipairs(self.players) do
+        local x = player.x - gate.x
+        local y = player.y - gate.y
+        local magnitude = math.sqrt(x * x + y * y)
+        if magnitude == 0 then
+            return
+        end
+        local fx = x / magnitude * (self.area.height - magnitude)
+        local fy = y / magnitude * (self.area.height - magnitude)
+        player:applyLinearImpulse(fx * mul, fy * mul, player.x, player.y)
+    end
+end
+
 scene:addEventListener("create", scene)
 scene:addEventListener("show", scene)
 scene:addEventListener("hide", scene)
+
+Runtime:addEventListener("key", function(event)
+    if event.phase == "down" then
+        if event.keyName == "1" then
+            scene:endGame("red")
+        elseif event.keyName == "2" then
+            scene:goalExplosion(scene.gates[2])
+        elseif event.keyName == "3" then
+            scene:goalExplosion(scene.gates[1])
+        end
+    end
+end)
 
 return scene

@@ -3,13 +3,13 @@ DEBUG = {
     skipIntro        = true,
     skipCountdown    = false,
     showAbout        = false,
-    drawPhysics      = true,
+    drawPhysics      = false,
     disableSounds    = true,
     -- Сброс прогресса игры
     resetProgress    = false,
     -- Открыть всю игру
     unlockEverything = false,
-    oneGoalToWin     = true,
+    oneGoalToWin     = false,
     disableAnalytics = false,
     disableAds       = false,
     forceLang        = "english",
@@ -104,9 +104,16 @@ end
 local activeTimersList = {}
 local _performWithDelay = timer.performWithDelay
 
-timer.performWithDelay = function (...)
-    local t = _performWithDelay(...)
+timer.performWithDelay = function (delay, ...)
+    local t
+    if type(delay) == "boolean" and delay then
+        _performWithDelay(...)
+        return
+    else
+        t = _performWithDelay(delay, ...)
+    end
     table.insert(activeTimersList, t)
+    DEBUG.Log("timer: New timer with delay %s", tostring(delay))
     return t
 end
 
@@ -115,6 +122,7 @@ timer.cancelAll = function ()
         timer.cancel(t)
     end
     activeTimersList = {}
+    DEBUG.Log("timer: Cancel all timers")
 end
 
 -- Обработка ошибок

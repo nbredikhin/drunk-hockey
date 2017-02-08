@@ -120,7 +120,7 @@ local function constructor()
 
     -- Physics setup
     physics.addBody(self, {
-        density = 0.05,
+        density = 0.045,
         bounce = 1,
         friction = 0,
         radius = 2.7

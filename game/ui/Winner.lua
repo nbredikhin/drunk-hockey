@@ -13,9 +13,13 @@ local function show(self, winner, score, shotsOnGoal, savesCount)
     self.isVisible = true
 
     self.winner = winner
+    self.button:setLabel(lang.getString("game_restart_button"))
 
     if winner == self.colorName then
         self.winnerText.text = lang.getString("game_you_win")
+        if not self.isMultiplayer then
+            self.button:setLabel(lang.getString("game_end_button"))
+        end
     else
         self.winnerText.text = lang.getString("game_you_lose")
     end

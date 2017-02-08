@@ -1,6 +1,6 @@
 return {
     menu_button_singleplayer = "Singleplayer",
-    menu_button_multiplayer  = "Multiplayer",
+    menu_button_multiplayer  = "Two players",
     menu_button_easy         = "Easy",
     menu_button_medium       = "Medium",
     menu_button_hard         = "Hard",

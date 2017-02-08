@@ -14,8 +14,7 @@ function ads.show(...)
         return
     end
     adImage.isVisible = true
-
-    timer.performWithDelay(3000, function ()
+    timer.performWithDelay(true, 3000, function ()
         adImage.isVisible = false
     end)
 end
