@@ -9,7 +9,7 @@ DEBUG = {
     resetProgress    = false,
     -- Открыть всю игру
     unlockEverything = false,
-    oneGoalToWin     = true,
+    oneGoalToWin     = false,
     disableAnalytics = false,
     disableAds       = false,
     forceLang        = "english",

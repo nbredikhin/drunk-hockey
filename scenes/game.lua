@@ -169,6 +169,7 @@ function scene:startCountdown()
         self:startRound()
         return
     end
+    self:respawn()
     local scene = self
     local duration = 0
     for i, ui in ipairs(self.uiManagers) do
@@ -184,7 +185,6 @@ end
 
 function scene:restartGame()
     if self.state == "waiting" then
-        DEBUG.Log("DAFUQ?")
         return
     end
     self.score = {0, 0}
@@ -225,6 +225,9 @@ end
 
 -- Goal handling
 function scene:endRound(goalTo)
+    if self.state ~= "running" then
+        return
+    end
     physics.setTimeStep(1/60*0.25)
 
     Globals.analytics.endTimedEvent("Game round", { gamemode = self.gamemode, difficulty = self.difficulty })
