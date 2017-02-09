@@ -26,7 +26,7 @@ return {
     game_text_phrase_bottle_6 = "WHOOOSH!",
     game_text_phrase_bottle_7 = "DAT DRINK!",
 
-    pause_title        = "PAUSE",
+    pause_title        = "PAUSED",
     pause_back_to_menu = "Back to menu",
     pause_continue     = "Continue",
 
