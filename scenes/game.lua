@@ -244,6 +244,11 @@ function scene:restartGame()
     end
     self.state = "waiting"
     self.score = {0, 0}
+
+    for i, player in ipairs(self.players) do
+        player:resetStats()
+    end
+
     for i, ui in ipairs(self.uiManagers) do
         ui.winner:hide()
     end

@@ -13,13 +13,15 @@ local function reset(self)
     self:setLinearVelocity(0, 0)
     self.angularVelocity = 0
     self.rotationSpeed = self.defaultRotationSpeed
-    -- Количество ударов по воротам
-    self.goalShots = 0
-    self.savesCount = 0
 
     if self.resetSpeedTimer ~= nil then
         timer.cancel(self.resetSpeedTimer)
     end
+end
+
+local function resetStats(self)
+    self.goalShots = 0
+    self.savesCount = 0
 end
 
 local function update(self, dt)
@@ -92,6 +94,7 @@ local function constructor(colorName)
     self.move   = move
     self.increaseRotationSpeed = increaseRotationSpeed
     self.reset = reset
+    self.resetStats = resetStats
     return self
 end
 
