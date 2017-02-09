@@ -30,6 +30,7 @@ local function collision(self, event)
             if self:isPlayerShotOnGoal() then
                 -- DEBUG.Log("SHOT ON GOAL: %d", self.lastTouchingPlayer.goalShots)
                 self.lastTouchingPlayer.goalShots = self.lastTouchingPlayer.goalShots + 1
+                DEBUG.Log("SHOTS ON GOAL (%s) %d", self.lastTouchingPlayer.colorName, self.lastTouchingPlayer.goalShots)
             end
         end
 
@@ -44,6 +45,7 @@ local function collision(self, event)
                 if indicator > 0 then
                     scene:showGameText("save", self.x, self.y, event.other.colorName)
                     event.other.savesCount = event.other.savesCount + 1
+                    DEBUG.Log("SAVES (%s) %d", event.other.colorName, event.other.savesCount)
                     self.shotOnGoal = false
                 end
             end
