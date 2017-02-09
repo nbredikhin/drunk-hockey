@@ -4,6 +4,7 @@ return {
     menu_button_easy         = "Easy",
     menu_button_medium       = "Medium",
     menu_button_hard         = "Hard",
+    menu_button_2vs2         = "2 vs 2",
 
     game_you_lose = "You lose!",
     game_you_win  = "You win!",

@@ -5,6 +5,8 @@ DEBUG = {
     showAbout        = false,
     drawPhysics      = false,
     disableSounds    = true,
+    -- Вызов функций с клавиатуры
+    enableShortcuts  = true,
     -- Сброс прогресса игры
     resetProgress    = false,
     -- Открыть всю игру

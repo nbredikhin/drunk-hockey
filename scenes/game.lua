@@ -34,7 +34,6 @@ local function spawnBottle(event)
         scene.bottle.y = scene.area.y + scene.area.height * (0.15 + math.random() * 0.7 - 0.5)
 
         Globals.analytics.logEvent("Bottle", { action = "Spawned" })
-        DEBUG.Log("scene.x = %f, scene.y = %f, scene.width = %f, scene.height = %f, x = %f, y = %f", scene.area.x, scene.area.y, scene.area.width, scene.area.height, scene.bottle.x, scene.bottle.y)
     end
 end
 
@@ -54,7 +53,6 @@ function scene:create(event)
 
     scene.gotoPreviousScene = "scenes.menu"
 
-    self.music = audio.loadStream("assets/music/action.ogg")
     local group = self.view
     local background = display.newImage("assets/background.png", display.contentCenterX, display.contentCenterY)
     background.width = display.contentWidth
@@ -124,6 +122,9 @@ function scene:create(event)
         self.joysticks[2] = Bot(self.puck, self.players[2], difficulty[event.params.difficulty])
     end
 
+    -- Фоновая музыка
+    self.music = audio.loadStream("assets/music/action.ogg")
+
     -- Параметры тряски камеры
     self.currentShakeMultiplier = 0
     self.shakePower = 4
@@ -133,6 +134,8 @@ function scene:create(event)
     if DEBUG.oneGoalToWin then
         self.maxGoals = 1
     end
+
+    self.state = nil
     self:restartGame()
 end
 
@@ -157,8 +160,6 @@ function scene:respawn()
     self.players[2].x = display.contentCenterX
     self.players[2].y = display.contentCenterY - self.area.height * 0.32
     self.players[2]:reset()
-
-    self.state = "waiting"
 end
 
 function scene:startCountdown()
@@ -184,9 +185,10 @@ function scene:startCountdown()
 end
 
 function scene:restartGame()
-    if self.state == "waiting" then
+    if self.state and self.state ~= "ended" then
         return
     end
+    self.state = "waiting"
     self.score = {0, 0}
     for i, ui in ipairs(self.uiManagers) do
         ui.winner:hide()
@@ -228,18 +230,27 @@ function scene:endRound(goalTo)
     if self.state ~= "running" then
         return
     end
-    physics.setTimeStep(1/60*0.25)
-
+    self.state = "waiting"
     Globals.analytics.endTimedEvent("Game round", { gamemode = self.gamemode, difficulty = self.difficulty })
+
+    -- Выключить музыку
+    audio.stop(3)
+    -- Замедление игры в 10 раз
+    physics.setTimeStep(1/60 * 0.1)
+
+    -- Прибавление счёта
     if goalTo == "blue" then
         self.score[1] = self.score[1] + 1
-        self:goalExplosion(self.gates[2])
     else
         self.score[2] = self.score[2] + 1
-        self:goalExplosion(self.gates[1])
     end
-    audio.stop(3)
 
+    -- Скрыть джойстики
+    for i, joystick in ipairs(self.joysticks) do
+        joystick:hide()
+    end
+
+    -- Проверить, не забито ли максимальное кол-во голов
     if self.score[1] >= self.maxGoals then
         self:endGame("red")
         return
@@ -247,33 +258,35 @@ function scene:endRound(goalTo)
         self:endGame("blue")
         return
     end
-    -- Скрыть джойстики
-    for i, joystick in ipairs(self.joysticks) do
-        joystick:hide()
-    end
-
+    -- Отобразить счёт
     for i, ui in ipairs(self.uiManagers) do
         ui.score:show(unpack(self.score))
     end
-
+    -- Скрыть счёт
     timer.performWithDelay(2000, function ()
         for i, ui in ipairs(self.uiManagers) do
             ui.score:hide()
         end
     end)
-
+    -- Запустить следующий раунд
     timer.performWithDelay(3500, function ()
         self:startCountdown()
     end)
 end
 
+-- Запуск раунда
 function scene:startRound()
+    if self.state == "running" then
+        return
+    end
     self.state = "running"
+    Globals.analytics.startTimedEvent("Game round", { gamemode = self.gamemode, difficulty = self.difficulty })
+    -- Восстановить время
     physics.setTimeStep(-1)
+    -- Запустить музыку
     audio.seek(0, self.music)
     audio.play(self.music, { channel = 3, loops = -1 })
     audio.setVolume(0.45, { channel = 3 })
-    Globals.analytics.startTimedEvent("Game round", { gamemode = self.gamemode, difficulty = self.difficulty })
 end
 
 function scene:show(event)
@@ -288,7 +301,6 @@ function scene:hide(event)
         self.loaded = false
         audio.stop(3)
         Globals.analytics.endTimedEvent("Game screen", { gamemode = self.gamemode, difficulty = self.difficulty })
-        DEBUG.Log("Game scene will hide")
         timer.cancelAll()
     end
 end
@@ -343,36 +355,18 @@ function scene:showGameText(text, x, y, colorName)
     self.view:insert(text)
 end
 
-function scene:goalExplosion(gate)
-    local mul = 0.0002
-    physics.setTimeStep(1/60 * 0.1)
-    for i, player in ipairs(self.players) do
-        local x = player.x - gate.x
-        local y = player.y - gate.y
-        local magnitude = math.sqrt(x * x + y * y)
-        if magnitude == 0 then
-            return
-        end
-        local fx = x / magnitude * (self.area.height - magnitude)
-        local fy = y / magnitude * (self.area.height - magnitude)
-        player:applyLinearImpulse(fx * mul, fy * mul, player.x, player.y)
-    end
-end
-
 scene:addEventListener("create", scene)
 scene:addEventListener("show", scene)
 scene:addEventListener("hide", scene)
 
-Runtime:addEventListener("key", function(event)
-    if event.phase == "down" then
-        if event.keyName == "1" then
-            scene:endGame("red")
-        elseif event.keyName == "2" then
-            scene:goalExplosion(scene.gates[2])
-        elseif event.keyName == "3" then
-            scene:goalExplosion(scene.gates[1])
+if DEBUG.enableShortcuts then
+    Runtime:addEventListener("key", function(event)
+        if event.phase == "down" then
+            if event.keyName == "1" then
+                scene:endRound("red")
+            end
         end
-    end
-end)
+    end)
+end
 
 return scene

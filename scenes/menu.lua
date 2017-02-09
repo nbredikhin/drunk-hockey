@@ -35,13 +35,17 @@ function scene:create(event)
         { name = "multiplayer",  label = lang.getString("menu_button_multiplayer")  }
     }
     local buttonY = display.contentCenterY
+    -- Текстура кнопки
+    local buttonImagePath = "assets/ui/button.png"
+    local buttonImageLockedPath = "assets/ui/button_locked.png.png"
+
+    local buttonImage = display.newImage(buttonImagePath)
+    local buttonImageRatio = buttonImage.width / buttonImage.height
+    buttonImage:removeSelf()
+    -- Кнопка занимает 80% ширины экрана
     local buttonWidth = display.contentWidth * 0.8
-    local buttonHeight = buttonWidth * 0.220703125
+    local buttonHeight = buttonWidth / buttonImageRatio
 
-    self.selectSound = audio.loadSound("assets/sounds/select.wav")
-    self.buttonSound = audio.loadSound("assets/sounds/button.wav")
-
-    self.menuTheme = audio.loadStream("assets/music/menu.ogg")
     for i, b in ipairs(buttons) do
         local button = widget.newButton({
             x = display.contentCenterX,
@@ -55,7 +59,7 @@ function scene:create(event)
             labelColor = { default = {1, 1, 1} },
             labelYOffset = -0.8,
 
-            defaultFile = "assets/ui/button.png",
+            defaultFile = buttonImagePath,
             onRelease = function ()
                 scene:menuButtonPressed(b.name)
             end
@@ -71,21 +75,24 @@ function scene:create(event)
     end
     self.buttons = buttons
 
+    -- Кнопки выбора сложности
+    self.difficultyButtons = {
+        { difficulty = "easy",   label = lang.getString("menu_button_easy")   },
+        { difficulty = "medium", label = lang.getString("menu_button_medium") },
+        { difficulty = "hard",   label = lang.getString("menu_button_hard")   },
+        -- { difficulty = "medium", label = lang.getString("menu_button_2vs2")   },
+    }
+    -- Количество разблокированных уровней сложности
     local levelsUnlocked = storage.get("levels_unlocked", 1)
     if type(levelsUnlocked) ~= "number" then
         levelsUnlocked = 1
     end
 
-    self.difficultyButtons = {
-        { difficulty = "easy",   label = lang.getString("menu_button_easy") },
-        { difficulty = "medium", label = lang.getString("menu_button_medium") },
-        { difficulty = "hard",   label = lang.getString("menu_button_hard") },
-    }
     buttonY = display.contentCenterY - 5
     for i, b in ipairs(self.difficultyButtons) do
-        local imagePath = "assets/ui/button.png"
+        local imagePath = buttonImagePath
         if i > levelsUnlocked then
-            imagePath = "assets/ui/button_locked.png"
+            imagePath = buttonImageLockedPath
         end
         local button = widget.newButton({
             x = display.contentCenterX,
@@ -118,7 +125,7 @@ function scene:create(event)
     end
 
     self.aboutButton = widget.newButton({
-        x = display.contentCenterX,--math.floor(buttonHeight / 2) + 2,
+        x = display.contentCenterX,
         y = display.contentHeight - math.floor(buttonHeight / 2) - 2,
         width = buttonHeight,
         height = buttonHeight,
@@ -141,6 +148,11 @@ function scene:create(event)
     if event.params.firstTime then
         transition.from(self.aboutButton, { time = 500, alpha = 0, delay = 800 + 800, xScale = 0.1, yScale = 0.1, transition = easing.inOutCubic})
     end
+
+    -- Звуки и музыка
+    self.selectSound = audio.loadSound("assets/sounds/select.wav")
+    self.buttonSound = audio.loadSound("assets/sounds/button.wav")
+    self.menuTheme   = audio.loadStream("assets/music/menu.ogg")
 end
 
 function scene:show(event)
@@ -160,14 +172,15 @@ function scene:hide(event)
 end
 
 function scene:startGameWithDifficulty(difficultyName)
-    local params = {
-        gamemode   = "singleplayer",
-        difficulty = difficultyName
-    }
     Globals.analytics.logEvent("Menu selection", {
         location="Main Menu",
         selection="Singleplayer " .. tostring(difficultyName)
     })
+
+    local params = {
+        gamemode   = "singleplayer",
+        difficulty = difficultyName
+    }
     composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft", params = params})
     audio.play(self.buttonSound)
     audio.stop(1)

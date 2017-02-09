@@ -4,6 +4,7 @@ return {
     menu_button_easy         = "Легко",
     menu_button_medium       = "Средне",
     menu_button_hard         = "Тяжело",
+    menu_button_2vs2         = "2 на 2",
 
     game_you_lose = "Поражение!",
     game_you_win  = "Победа!",
