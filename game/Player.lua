@@ -1,8 +1,8 @@
 local physics = require("physics")
 local utils   = require("lib.utils")
 
-local function increaseRotationSpeed(self, speedMultiplyer, timeout)
-    self.rotationSpeed = self.rotationSpeed * speedMultiplyer
+local function increaseRotationSpeed(self, speedMultiplier, timeout)
+    self.rotationSpeed = self.rotationSpeed * speedMultiplier
     self.resetSpeedTimer = timer.performWithDelay(timeout,
         function()
             self.rotationSpeed = self.defaultRotationSpeed
@@ -17,6 +17,11 @@ local function reset(self)
     if self.resetSpeedTimer ~= nil then
         timer.cancel(self.resetSpeedTimer)
     end
+end
+
+local function resetStats(self)
+    self.goalShots = 0
+    self.savesCount = 0
 end
 
 local function update(self, dt)
@@ -34,10 +39,10 @@ local function move(self, x, y, dt)
     end
     x = x / magnitude
     y = y / magnitude
-    self:applyForce(x * self.maxMovementSpeed * dt, y * self.maxMovementSpeed * dt, self.x, self.y)
+    self:applyLinearImpulse(x * self.maxMovementSpeed * dt, y * self.maxMovementSpeed * dt, self.x, self.y)
 end
 
-local function constructor(colorName)
+local function constructor(colorName, isBot)
     if not colorName then
         colorName = "blue"
     end
@@ -45,17 +50,25 @@ local function constructor(colorName)
     self.shadow = display.newImage("assets/player_shadow.png")
     self:insert(self.shadow)
 
-    self.body = display.newImage("assets/player_".. colorName ..".png")
+    local path = "assets/player_".. colorName ..".png"
+    if isBot then
+        path = "assets/player_".. colorName .."_bot.png"
+    end
+    self.body = display.newImage(path)
     self:insert(self.body)
     self.body.anchorX = 0.3
     self.body.anchorY = 0.7
+    self.colorName = colorName
+
+    self.goalShots = 0
+    self.savesCount = 0
 
     self.defaultRotationSpeed = -500
 
     self.movementSpeed = 0.0008
     self.rotationSpeed = self.defaultRotationSpeed
 
-    self.maxMovementSpeed = 0.011
+    self.maxMovementSpeed = 0.0002
 
     -- Physics setup
     physics.addBody(self,
@@ -85,6 +98,7 @@ local function constructor(colorName)
     self.move   = move
     self.increaseRotationSpeed = increaseRotationSpeed
     self.reset = reset
+    self.resetStats = resetStats
     return self
 end
 

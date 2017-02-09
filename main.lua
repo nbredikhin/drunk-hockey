@@ -1,33 +1,40 @@
-DEBUG = {
-    -- skipMenu         = true,
-    -- skipIntro        = true,
-    -- showAbout        = false,
-    -- drawPhysics      = false,
-    -- disableSounds    = false,
-    -- -- Сброс прогресса игры
-    -- resetProgress    = false,
-    -- -- Открыть всю игру
-    -- unlockEverything = false,
-    -- oneGoalToWin     = false,
-    -- disableAnalytics = false,
-    -- disableAds       = false,
+DEBUG      = require("config.debugconfig")
+if not DEBUG then
+    DEBUG = {}
+end
 
-    Log = function (s, ...)
-        local info = debug.getinfo(2, "Sl")
-        local pre_str = string.format("[%s]:%3d", info.source, info.currentline)
-        local str = string.format(s, ...)
-        -- print(pre_str .. " " .. str)
-    end
-}
+DEBUG.Log = function (s, ...)
+    local info = debug.getinfo(2, "Sl")
+    local pre_str = string.format("[%s]:%3d", info.source, info.currentline)
+    local str = string.format(s, ...)
+    print(pre_str .. " " .. str)
+end
+
+local function disableDebug()
+    DEBUG = {}
+    DEBUG.Log = function () end
+end
+
+-- Выключить режим отладки
+disableDebug()
+
+-- Глобальные настройки игры
+GameConfig = require("config.gameconfig")
+AIConfig   = require("config.aiconfig")
 
 local composer  = require("composer")
 local ads       = require("lib.ads")
-local adsconfig = require("adsconfig") or {}
+local adsconfig = require("config.adsconfig") or {}
 local storage   = require("lib.storage")
 local analytics = require("plugin.flurry.analytics")
 
 require("lib.lang")
 lang.init()
+if DEBUG.forceLang then
+    lang.setLang(DEBUG.forceLang)
+end
+
+require("lib.timers")
 
 Globals = {
     analytics = analytics,
@@ -64,7 +71,8 @@ end
 -- Automatically call event handlers on current scene
 local passEvents = {
     "enterFrame",
-    "touch"
+    "touch",
+    "system"
 }
 
 local runtime = 0
@@ -84,24 +92,6 @@ for i, eventName in ipairs(passEvents) do
             end
         end
     end)
-end
-
--- Свои таймеры
-
-local activeTimersList = {}
-local _performWithDelay = timer.performWithDelay
-
-timer.performWithDelay = function (...)
-    local t = _performWithDelay(...)
-    table.insert(activeTimersList, t)
-    return t
-end
-
-timer.cancelAll = function ()
-    for i, t in ipairs(activeTimersList) do
-        timer.cancel(t)
-    end
-    activeTimersList = {}
 end
 
 -- Обработка ошибок
@@ -134,9 +124,11 @@ end
 ads.init(adsconfig.provider, adsconfig.appId, function (event)
     if event.isError or event.phase == "shown" then
         ads.load(adsconfig.adType, { testMode = adsconfig.testMode })
+        -- ads.load(adsconfig.bannerType, { testMode = adsconfig.testMode, appId = adsconfig.bannerId })
     end
 end)
 ads.load(adsconfig.adType, { testMode = adsconfig.testMode })
+-- ads.load(adsconfig.bannerType, { testMode = adsconfig.testMode, appId = adsconfig.bannerId })
 
 -- Аналитика
 if DEBUG.disableAnalytics or system.getInfo("environment") == "simulator" then
@@ -156,7 +148,7 @@ Globals.analytics.init(analyticsListener, { apiKey = adsconfig.analyticsKey })
 
 -- Load menu
 if DEBUG.skipMenu then
-    composer.gotoScene("scenes.game", { params = { gamemode = "singleplayer" } })
+    composer.gotoScene("scenes.game", { params = { gamemode = "singleplayer", fourPlayers = DEBUG.forceFourPlayers } })
 elseif DEBUG.showAbout then
      composer.gotoScene("scenes.about")
 else

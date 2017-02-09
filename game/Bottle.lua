@@ -2,7 +2,7 @@ local composer = require("composer")
 local physics  = require("physics")
 local utils    = require("lib.utils")
 
-local function colision(self, event)
+local function collision(self, event)
     if not self.isVisible then
         return
     end
@@ -12,6 +12,12 @@ local function colision(self, event)
         audio.play(self.sound, { channel = 20 })
         player:increaseRotationSpeed(self.speedUpRatio, self.speedUpDuration)
         Globals.analytics.logEvent("Bottle", { action = "Used" })
+
+        local scene = composer.getScene(composer.getSceneName("current"))
+        if scene and scene.showGameText then
+            local phraseId = math.random(1, 7)
+            scene:showGameText("phrase_bottle_"..phraseId, self.x, self.y, player.colorName)
+        end
     end
 end
 
@@ -29,7 +35,7 @@ local function constructor()
     self.speedUpDuration = 10000
     self.speedUpRatio = 2
 
-    self.collision = colision
+    self.collision = collision
 
     self:addEventListener("collision")
     return self

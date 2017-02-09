@@ -31,7 +31,6 @@ function scene:show(event)
     end
     self.loaded = true
 
-    local delay = 1500
     transition.to(self.logo, {
         transition = easing.outBack,
         delay  = 300,
@@ -40,7 +39,7 @@ function scene:show(event)
         xScale = 1,
         yScale = 1
     })
-    timer.performWithDelay(delay, function ()
+    timer.performWithDelay(GameConfig.introDisplayTime, function ()
         composer.gotoScene("scenes.menu", { effect = "fade", time = 500, params = { firstTime = true }})
     end)
 end

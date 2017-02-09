@@ -8,13 +8,17 @@ local function update(self, dt)
 end
 
 local function collision(self, event)
-    if event.phase == "began" and event.other.isPuck and event.selfElement == 4 then
+    if event.phase == "began" and event.other.isPuck then
         local scene = composer.getScene(composer.getSceneName("current"))
-        if scene and scene.endRound then
-            timer.performWithDelay(1, function ()
-                scene:endRound(self.colorName)
-                audio.play(self.goalSound)
-            end)
+        if scene then
+            if event.selfElement == 4 then
+                timer.performWithDelay(1, function ()
+                    scene:endRound(self.colorName)
+                    audio.play(self.goalSound)
+                end)
+            elseif event.selfElement == 5 or event.selfElement == 6 then
+                scene:showGameText("close", event.other.x, event.other.y, self.colorName)
+            end
         end
     end
 end
@@ -26,6 +30,8 @@ local function constructor(colorName, x, y)
 
     self.initialX = x
     self.initialY = y
+
+    self.isGate = true
 
     self.x = x
     self.y = y
@@ -82,6 +88,32 @@ local function constructor(colorName, x, y)
             x          = 0,
             y          = self.height * -0.1,
             angle      = 0,
+        }
+    },
+    {
+        density = 0.05,
+        bounce = 0,
+        filter = filter,
+        isSensor = false,
+        box = {
+            halfWidth  = 1,
+            halfHeight = 0.7,
+            x          = -self.width / 2 - 1,
+            y          = self.height * -0.45,
+            angle      = 80,
+        }
+    },
+    {
+        density = 0.05,
+        bounce = 0,
+        filter = filter,
+        isSensor = false,
+        box = {
+            halfWidth  = 1,
+            halfHeight = 0.7,
+            x          = self.width / 2 + 1,
+            y          = self.height * -0.45,
+            angle      = -80,
         }
     })
 

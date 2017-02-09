@@ -8,7 +8,7 @@ local function constructor(colorName, isMultiplayer)
     end
     local self = display.newGroup()
 
-    if colorName == "blue" then
+    if colorName == "red" then
         self.bg = display.newRect(0, 0, display.contentWidth, display.contentHeight * 2)
         self.bg:setFillColor(0, 0, 0, 0.9)
         self.bg.alpha = 0
@@ -21,7 +21,7 @@ local function constructor(colorName, isMultiplayer)
     self.countdown = Countdown(colorName)
     self:insert(self.countdown)
 
-    self.winner = Winner(isMultiplayer, self.bg)
+    self.winner = Winner(isMultiplayer, self.bg, colorName)
     self:insert(self.winner)
     return self
 end

@@ -3,6 +3,7 @@ local physics  = require("physics")
 local widget   = require("widget")
 
 local storage  = require("lib.storage")
+local utils    = require("lib.utils")
 
 local Area     = require("game.Area")
 local Player   = require("game.Player")
@@ -13,6 +14,8 @@ local Bot      = require("game.Bot")
 local Bottle   = require("game.Bottle")
 
 local GameUI   = require("game.ui.GameUI")
+local GameText = require("game.ui.GameText")
+local Pause    = require("game.ui.Pause")
 
 physics.start()
 physics.setGravity(0, 0)
@@ -32,7 +35,6 @@ local function spawnBottle(event)
         scene.bottle.y = scene.area.y + scene.area.height * (0.15 + math.random() * 0.7 - 0.5)
 
         Globals.analytics.logEvent("Bottle", { action = "Spawned" })
-        DEBUG.Log("scene.x = %f, scene.y = %f, scene.width = %f, scene.height = %f, x = %f, y = %f", scene.area.x, scene.area.y, scene.area.width, scene.area.height, scene.bottle.x, scene.bottle.y)
     end
 end
 
@@ -40,19 +42,17 @@ function scene:create(event)
     if not event.params then
         event.params = {}
     end
+    print("Four players: " .. tostring(event.params.fourPlayers))
     if not event.params.difficulty then
-        event.params.difficulty = "easy"
+        event.params.difficulty = "medium"
     end
 
-    self.bottleSpawnDelayMin = 20 * 1000
-    self.bottleSpawnDelayMax = 30 * 1000
+    self.bottleSpawnDelayMin = GameConfig.bottleSpawnDelayMin * 1000
+    self.bottleSpawnDelayMax = GameConfig.bottleSpawnDelayMax * 1000
 
     self.difficulty = event.params.difficulty
     self.gamemode = event.params.gamemode
 
-    scene.gotoPreviousScene = "scenes.menu"
-
-    self.music = audio.loadStream("assets/music/action.ogg")
     local group = self.view
     local background = display.newImage("assets/background.png", display.contentCenterX, display.contentCenterY)
     background.width = display.contentWidth
@@ -74,12 +74,27 @@ function scene:create(event)
 
     -- Игроки
     self.players = {}
-    self.players[1] = Player("red")
-    group:insert(self.players[1])
+    if event.params.fourPlayers then
+        print("Four players ")
+        for i = 1, 4 do
+            local colorName = "red"
+            local rotation = 0
+            if i > 2 then
+                colorName = "blue"
+                rotation = 180
+            end
+            self.players[i] = Player(colorName, i >= 2)
+            self.players[i].rotation = rotation
+            group:insert(self.players[i])
+        end
+    else
+        self.players[1] = Player("red")
+        group:insert(self.players[1])
 
-    self.players[2] = Player("blue")
-    self.players[2].rotation = 180
-    group:insert(self.players[2])
+        self.players[2] = Player("blue", self.gamemode == "singleplayer")
+        self.players[2].rotation = 180
+        group:insert(self.players[2])
+    end
 
     -- Ворота
     self.gates = {}
@@ -114,23 +129,51 @@ function scene:create(event)
         self.joysticks[1].side = "bottom"
         self.joysticks[2].side = "top"
     elseif event.params.gamemode == "singleplayer" then
-        self.uiManagers[1] = GameUI("blue")
+        self.uiManagers[1] = GameUI("red")
         self.uiManagers[1].x = display.contentCenterX
         self.uiManagers[1].y = display.contentCenterY
         group:insert(self.uiManagers[1])
 
-        self.joysticks[2] = Bot(self.puck, self.players[2], difficulty[event.params.difficulty])
+        for i = 2, #self.players do
+            local gates = self.gates[2]
+            local AIMode = AIConfig.forward
+            if self.players[i].colorName == "red" then
+                gates = self.gates[1]
+            end
+
+            if i == 4 then
+                AIMode = AIConfig.goalie
+            end
+
+            self.joysticks[i] = Bot(self.puck, self.players[i],
+                difficulty[event.params.difficulty], gates, AIMode)
+        end
     end
+
+    -- Экран паузы
+    self.pauseUI = Pause()
+    self.pauseUI.x = display.contentCenterX
+    self.pauseUI.y = display.contentCenterY
+    group:insert(self.pauseUI)
+
+    -- Фоновая музыка
+    self.music = audio.loadStream("assets/music/action.ogg")
 
     -- Параметры тряски камеры
     self.currentShakeMultiplier = 0
-    self.shakePower = 4
+    self.shakePower = GameConfig.cameraShakePowerMultiplier
 
     -- Количество голов для завершения игры
-    self.maxGoals = 5
+    self.maxGoals = GameConfig.defaultMaxGoals
+    if self.gamemode == "singleplayer" and self.difficulty == "easy" then
+        self.maxGoals = GameConfig.easyMaxGoals
+    end
+
     if DEBUG.oneGoalToWin then
         self.maxGoals = 1
     end
+
+    self.state = nil
     self:restartGame()
 end
 
@@ -148,21 +191,40 @@ function scene:respawn()
     self.puck.x, self.puck.y = display.contentCenterX, display.contentCenterY
     self.puck:setLinearVelocity(0, 0)
 
-    self.players[1].x = display.contentCenterX
-    self.players[1].y = display.contentCenterY + self.area.height * 0.32
-    self.players[1]:reset()
+    if #self.players == 2 then
+        self.players[1].x = display.contentCenterX
+        self.players[1].y = display.contentCenterY + self.area.height * 0.32
 
-    self.players[2].x = display.contentCenterX
-    self.players[2].y = display.contentCenterY - self.area.height * 0.32
-    self.players[2]:reset()
+        self.players[2].x = display.contentCenterX
+        self.players[2].y = display.contentCenterY - self.area.height * 0.32
+    elseif #self.players == 4 then
+        self.players[1].x = display.contentCenterX - 10
+        self.players[1].y = display.contentCenterY + self.area.height * 0.28
 
-    self.state = "waiting"
+        self.players[2].x = display.contentCenterX + 10
+        self.players[2].y = display.contentCenterY + self.area.height * 0.28
+
+        self.players[3].x = display.contentCenterX - 10
+        self.players[3].y = display.contentCenterY - self.area.height * 0.28
+
+        self.players[4].x = display.contentCenterX + 10
+        self.players[4].y = display.contentCenterY - self.area.height * 0.28
+    end
+
+    for i, player in ipairs(self.players) do
+        player:reset()
+    end
 end
 
 function scene:startCountdown()
     if self.state == "countdown" then
         return
     end
+    if DEBUG.skipCountdown then
+        self:startRound()
+        return
+    end
+    self:respawn()
     local scene = self
     local duration = 0
     for i, ui in ipairs(self.uiManagers) do
@@ -177,16 +239,22 @@ function scene:startCountdown()
 end
 
 function scene:restartGame()
-    if self.state == "waiting" then
+    if self.state and self.state ~= "ended" then
         return
     end
+    self.state = "waiting"
     self.score = {0, 0}
+
+    for i, player in ipairs(self.players) do
+        player:resetStats()
+    end
+
     for i, ui in ipairs(self.uiManagers) do
         ui.winner:hide()
     end
     -- Запустить игру
     self:respawn()
-    timer.performWithDelay(1500, function ()
+    timer.performWithDelay(GameConfig.delayBeforeCountdown, function ()
         self:startCountdown()
     end)
 end
@@ -212,29 +280,30 @@ function scene:endGame(winner)
     end
     -- Отобразить экран победителя
     for i, ui in ipairs(self.uiManagers) do
-        ui.winner:show(winner, self.score)
+        ui.winner:show(winner, self.score, self.players[i].goalShots, self.players[i].savesCount)
     end
 end
 
 -- Goal handling
 function scene:endRound(goalTo)
-    system.vibrate()
+    if self.state ~= "running" then
+        return
+    end
+    self.state = "waiting"
     Globals.analytics.endTimedEvent("Game round", { gamemode = self.gamemode, difficulty = self.difficulty })
+
+    -- Выключить музыку
+    audio.stop(3)
+    -- Замедление игры в 10 раз
+    physics.setTimeStep(1/60 * GameConfig.goalGameSlowdownMultiplier)
+    -- Тряска камеры
+    scene:shake(GameConfig.goalCameraShakePower)
+
+    -- Прибавление счёта
     if goalTo == "blue" then
         self.score[1] = self.score[1] + 1
     else
         self.score[2] = self.score[2] + 1
-    end
-
-    audio.stop(3)
-    self:respawn()
-
-    if self.score[1] >= self.maxGoals then
-        self:endGame("red")
-        return
-    elseif self.score[2] >= self.maxGoals then
-        self:endGame("blue")
-        return
     end
 
     -- Скрыть джойстики
@@ -242,28 +311,43 @@ function scene:endRound(goalTo)
         joystick:hide()
     end
 
+    -- Проверить, не забито ли максимальное кол-во голов
+    if self.score[1] >= self.maxGoals then
+        self:endGame("red")
+        return
+    elseif self.score[2] >= self.maxGoals then
+        self:endGame("blue")
+        return
+    end
+    -- Отобразить счёт
     for i, ui in ipairs(self.uiManagers) do
         ui.score:show(unpack(self.score))
     end
-
-    timer.performWithDelay(2000, function ()
+    -- Скрыть счёт
+    timer.performWithDelay(GameConfig.scoreDisplayTime, function ()
         for i, ui in ipairs(self.uiManagers) do
             ui.score:hide()
         end
     end)
-
-    timer.performWithDelay(3500, function ()
+    -- Запустить следующий раунд
+    timer.performWithDelay(GameConfig.scoreDisplayTime + GameConfig.delayBeforeCountdown, function ()
         self:startCountdown()
     end)
 end
 
+-- Запуск раунда
 function scene:startRound()
+    if self.state == "running" then
+        return
+    end
     self.state = "running"
+    Globals.analytics.startTimedEvent("Game round", { gamemode = self.gamemode, difficulty = self.difficulty })
+    -- Восстановить время
+    physics.setTimeStep(-1)
+    -- Запустить музыку
     audio.seek(0, self.music)
     audio.play(self.music, { channel = 3, loops = -1 })
-    audio.setVolume(0.45, { channel = 3 })
-
-    Globals.analytics.startTimedEvent("Game round", { gamemode = self.gamemode, difficulty = self.difficulty })
+    audio.setVolume(GameConfig.gameMusicVolume,  { channel = 3 })
 end
 
 function scene:show(event)
@@ -283,10 +367,10 @@ function scene:hide(event)
 end
 
 function scene:enterFrame()
-    if not self.currentShakeMultiplier or not self.loaded then
+    local dt = getDeltaTime()
+    if self.isPaused or not self.currentShakeMultiplier or not self.loaded then
         return
     end
-    local dt = getDeltaTime()
     -- Тряска камеры
     if self.currentShakeMultiplier > 0 then
         self.view.x = (math.random() - 0.5) * self.currentShakeMultiplier * self.shakePower * dt
@@ -307,6 +391,8 @@ function scene:enterFrame()
         for i, player in ipairs(self.players) do
             player:update(dt)
         end
+
+        self.puck:update()
     end
 
     for i, gate in ipairs(self.gates) do
@@ -315,6 +401,9 @@ function scene:enterFrame()
 end
 
 function scene:touch(event)
+    if self.isPaused then
+        return
+    end
     for i, joystick in ipairs(self.joysticks) do
         joystick:touch(event)
     end
@@ -324,8 +413,55 @@ function scene:shake(mul)
     self.currentShakeMultiplier = mul
 end
 
+function scene:showGameText(text, x, y, colorName)
+    local reversed = self.gamemode == "multiplayer" and y < display.contentCenterY / 2
+    local text = GameText(text, x, y, colorName, reversed)
+    self.view:insert(text)
+end
+
+function scene:gotoPreviousScene()
+    if self.pauseUI.isVisible then
+        self.pauseUI:hide()
+        timer.resumeAll()
+        physics.start()
+        self.isPaused = false
+        if self.state == "running" then
+            audio.play(self.music, { channel = 3, loops = -1 })
+        end
+    elseif self.state ~= "ended" then
+        self.pauseUI:show()
+        timer.pauseAll()
+        physics.pause()
+        self.isPaused = true
+        audio.stop(3)
+    end
+end
+
+-- Системный эвент
+function scene:system(event)
+    if event.type == "applicationSuspend" then
+        if not self.pauseUI.isVisible then
+            self:gotoPreviousScene()
+        end
+    end
+end
+
 scene:addEventListener("create", scene)
 scene:addEventListener("show", scene)
 scene:addEventListener("hide", scene)
+
+if DEBUG.enableShortcuts then
+    Runtime:addEventListener("key", function(event)
+        if event.phase == "down" then
+            if event.keyName == "1" then
+                scene:endRound("red")
+            elseif event.keyName == "2" then
+                scene:endRound("blue")
+            elseif event.keyName == "0" then
+                scene:shake(5)
+            end
+        end
+    end)
+end
 
 return scene
