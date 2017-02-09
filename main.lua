@@ -124,9 +124,11 @@ end
 ads.init(adsconfig.provider, adsconfig.appId, function (event)
     if event.isError or event.phase == "shown" then
         ads.load(adsconfig.adType, { testMode = adsconfig.testMode })
+        ads.load(adsconfig.bannerType, { testMode = adsconfig.testMode, appId = adsconfig.bannerId })
     end
 end)
 ads.load(adsconfig.adType, { testMode = adsconfig.testMode })
+ads.load(adsconfig.bannerType, { testMode = adsconfig.testMode, appId = adsconfig.bannerId })
 
 -- Аналитика
 if DEBUG.disableAnalytics or system.getInfo("environment") == "simulator" then

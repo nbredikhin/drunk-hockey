@@ -428,7 +428,7 @@ function scene:gotoPreviousScene()
         if self.state == "running" then
             audio.play(self.music, { channel = 3, loops = -1 })
         end
-    else
+    elseif self.state ~= "ended" then
         self.pauseUI:show()
         timer.pauseAll()
         physics.pause()

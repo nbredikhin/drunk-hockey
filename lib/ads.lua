@@ -27,6 +27,10 @@ function ads.init(...)
 
 end
 
+function ads.hide()
+    adImage.isVisible = false
+end
+
 function ads.isLoaded()
     return true
 end

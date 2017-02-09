@@ -1,5 +1,7 @@
-local widget = require("widget")
-local composer = require("composer")
+local widget    = require("widget")
+local composer  = require("composer")
+local ads       = require("lib.ads")
+local adsconfig = require("config.adsconfig") or {}
 
 local function show(self)
     self.isVisible = true
@@ -9,10 +11,14 @@ local function show(self)
         time = 100,
         alpha = 1,
     })
+
+    ads.show(adsconfig.bannerType, { testMode = adsconfig.testMode, appId = adsconfig.bannerId })
 end
 
 local function hide(self)
     self.isVisible = false
+
+    ads.hide()
 end
 
 local function constructor()
