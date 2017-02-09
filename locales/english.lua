@@ -15,7 +15,16 @@ return {
     game_end_shots_on_goal = "Shots on goal",
     game_end_saves         = "Saves count",
 
-    game_text_save = "Save!",
+    game_text_save  = "Save!",
+    game_text_close = "Close one!",
+
+    game_text_phrase_bottle_1 = "MOAR!!",
+    game_text_phrase_bottle_2 = "RATATA!!",
+    game_text_phrase_bottle_3 = "SPLONK!",
+    game_text_phrase_bottle_4 = "ZWOSH!",
+    game_text_phrase_bottle_5 = "VROOO!",
+    game_text_phrase_bottle_6 = "WHOOOSH!",
+    game_text_phrase_bottle_7 = "DAT DRINK!",
 
     pause_title        = "PAUSE",
     pause_back_to_menu = "Back to menu",

@@ -16,6 +16,15 @@ return {
     game_end_saves         = "Кол-во сейвов",
 
     game_text_save      = "Сейв!",
+    game_text_close     = "Штанга!",
+
+    game_text_phrase_bottle_1 = "УХ!!",
+    game_text_phrase_bottle_2 = "Рататата!!",
+    game_text_phrase_bottle_3 = "Бульк!",
+    game_text_phrase_bottle_4 = "@#$%^&",
+    game_text_phrase_bottle_5 = "Вруум!",
+    game_text_phrase_bottle_6 = "Вуууф!",
+    game_text_phrase_bottle_7 = "ВОДКА!",
 
     pause_title        = "ПАУЗА",
     pause_back_to_menu = "Вернуться в меню",
