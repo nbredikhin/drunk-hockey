@@ -71,7 +71,8 @@ end
 -- Automatically call event handlers on current scene
 local passEvents = {
     "enterFrame",
-    "touch"
+    "touch",
+    "system"
 }
 
 local runtime = 0

@@ -428,6 +428,15 @@ function scene:gotoPreviousScene()
     end
 end
 
+-- Системный эвент
+function scene:system(event)
+    if event.type == "applicationSuspend" then
+        if not self.pauseUI.isVisible then
+            self:gotoPreviousScene()
+        end
+    end
+end
+
 scene:addEventListener("create", scene)
 scene:addEventListener("show", scene)
 scene:addEventListener("hide", scene)
