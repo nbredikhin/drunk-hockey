@@ -420,11 +420,15 @@ function scene:gotoPreviousScene()
         timer.resumeAll()
         physics.start()
         self.isPaused = false
+        if self.state == "running" then
+            audio.play(self.music, { channel = 3, loops = -1 })
+        end
     else
         self.pauseUI:show()
         timer.pauseAll()
         physics.pause()
         self.isPaused = true
+        audio.stop(3)
     end
 end
 
