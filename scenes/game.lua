@@ -41,6 +41,7 @@ function scene:create(event)
     if not event.params then
         event.params = {}
     end
+    print("Four players: " .. tostring(event.params.fourPlayers))
     if not event.params.difficulty then
         event.params.difficulty = "medium"
     end
@@ -74,12 +75,27 @@ function scene:create(event)
 
     -- Игроки
     self.players = {}
-    self.players[1] = Player("red")
-    group:insert(self.players[1])
+    if event.params.fourPlayers then
+        print("Four players ")
+        for i = 1, 4 do
+            local colorName = "red"
+            local rotation = 0
+            if i > 2 then
+                colorName = "blue"
+                rotation = 180
+            end
+            self.players[i] = Player(colorName)
+            self.players[i].rotation = rotation
+            group:insert(self.players[i])
+        end
+    else
+        self.players[1] = Player("red")
+        group:insert(self.players[1])
 
-    self.players[2] = Player("blue")
-    self.players[2].rotation = 180
-    group:insert(self.players[2])
+        self.players[2] = Player("blue")
+        self.players[2].rotation = 180
+        group:insert(self.players[2])
+    end
 
     -- Ворота
     self.gates = {}
@@ -119,7 +135,9 @@ function scene:create(event)
         self.uiManagers[1].y = display.contentCenterY
         group:insert(self.uiManagers[1])
 
-        self.joysticks[2] = Bot(self.puck, self.players[2], difficulty[event.params.difficulty])
+        for i = 2, #self.players do
+            self.joysticks[i] = Bot(self.puck, self.players[i], difficulty[event.params.difficulty])
+        end
     end
 
     -- Фоновая музыка
@@ -153,13 +171,29 @@ function scene:respawn()
     self.puck.x, self.puck.y = display.contentCenterX, display.contentCenterY
     self.puck:setLinearVelocity(0, 0)
 
-    self.players[1].x = display.contentCenterX
-    self.players[1].y = display.contentCenterY + self.area.height * 0.32
-    self.players[1]:reset()
+    if #self.players == 2 then
+        self.players[1].x = display.contentCenterX
+        self.players[1].y = display.contentCenterY + self.area.height * 0.32
 
-    self.players[2].x = display.contentCenterX
-    self.players[2].y = display.contentCenterY - self.area.height * 0.32
-    self.players[2]:reset()
+        self.players[2].x = display.contentCenterX
+        self.players[2].y = display.contentCenterY - self.area.height * 0.32
+    elseif #self.players == 4 then
+        self.players[1].x = display.contentCenterX - 10
+        self.players[1].y = display.contentCenterY + self.area.height * 0.28
+
+        self.players[2].x = display.contentCenterX + 10
+        self.players[2].y = display.contentCenterY + self.area.height * 0.28
+
+        self.players[3].x = display.contentCenterX - 10
+        self.players[3].y = display.contentCenterY - self.area.height * 0.28
+
+        self.players[4].x = display.contentCenterX + 10
+        self.players[4].y = display.contentCenterY - self.area.height * 0.28
+    end
+
+    for i, player in ipairs(self.players) do
+        player:reset()
+    end
 end
 
 function scene:startCountdown()
@@ -237,6 +271,8 @@ function scene:endRound(goalTo)
     audio.stop(3)
     -- Замедление игры в 10 раз
     physics.setTimeStep(1/60 * 0.1)
+    -- Тряска камеры
+    scene:shake(2)
 
     -- Прибавление счёта
     if goalTo == "blue" then
@@ -286,7 +322,7 @@ function scene:startRound()
     -- Запустить музыку
     audio.seek(0, self.music)
     audio.play(self.music, { channel = 3, loops = -1 })
-    audio.setVolume(0.45, { channel = 3 })
+    audio.setVolume(0.45,  { channel = 3 })
 end
 
 function scene:show(event)
@@ -364,6 +400,10 @@ if DEBUG.enableShortcuts then
         if event.phase == "down" then
             if event.keyName == "1" then
                 scene:endRound("red")
+            elseif event.keyName == "2" then
+                scene:endRound("blue")
+            elseif event.keyName == "0" then
+                scene:shake(5)
             end
         end
     end)

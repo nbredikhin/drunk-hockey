@@ -1,5 +1,5 @@
 DEBUG = {
-    skipMenu         = true,
+    skipMenu         = false,
     skipIntro        = true,
     skipCountdown    = false,
     showAbout        = false,
@@ -10,11 +10,12 @@ DEBUG = {
     -- Сброс прогресса игры
     resetProgress    = false,
     -- Открыть всю игру
-    unlockEverything = false,
+    unlockEverything = true,
     oneGoalToWin     = false,
     disableAnalytics = false,
     disableAds       = false,
-    forceLang        = "english",
+    forceFourPlayers = false,
+    -- forceLang        = "english",
 
     Log = function (s, ...)
         local info = debug.getinfo(2, "Sl")
@@ -179,7 +180,7 @@ Globals.analytics.init(analyticsListener, { apiKey = adsconfig.analyticsKey })
 
 -- Load menu
 if DEBUG.skipMenu then
-    composer.gotoScene("scenes.game", { params = { gamemode = "singleplayer" } })
+    composer.gotoScene("scenes.game", { params = { gamemode = "singleplayer", fourPlayers = DEBUG.forceFourPlayers } })
 elseif DEBUG.showAbout then
      composer.gotoScene("scenes.about")
 else

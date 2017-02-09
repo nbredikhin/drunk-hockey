@@ -37,7 +37,7 @@ function scene:create(event)
     local buttonY = display.contentCenterY
     -- Текстура кнопки
     local buttonImagePath = "assets/ui/button.png"
-    local buttonImageLockedPath = "assets/ui/button_locked.png.png"
+    local buttonImageLockedPath = "assets/ui/button_locked.png"
 
     local buttonImage = display.newImage(buttonImagePath)
     local buttonImageRatio = buttonImage.width / buttonImage.height
@@ -80,7 +80,7 @@ function scene:create(event)
         { difficulty = "easy",   label = lang.getString("menu_button_easy")   },
         { difficulty = "medium", label = lang.getString("menu_button_medium") },
         { difficulty = "hard",   label = lang.getString("menu_button_hard")   },
-        -- { difficulty = "medium", label = lang.getString("menu_button_2vs2")   },
+        { difficulty = "medium", label = lang.getString("menu_button_2vs2"), fourPlayers = true },
     }
     -- Количество разблокированных уровней сложности
     local levelsUnlocked = storage.get("levels_unlocked", 1)
@@ -88,7 +88,7 @@ function scene:create(event)
         levelsUnlocked = 1
     end
 
-    buttonY = display.contentCenterY - 5
+    buttonY = display.contentCenterY - 5 - buttonHeight - 1
     for i, b in ipairs(self.difficultyButtons) do
         local imagePath = buttonImagePath
         if i > levelsUnlocked then
@@ -110,7 +110,7 @@ function scene:create(event)
 
             defaultFile = imagePath,
             onRelease = function ()
-                scene:startGameWithDifficulty(b.difficulty)
+                scene:startGameWithDifficulty(b.difficulty, b.fourPlayers)
             end
         })
         buttonY = buttonY + buttonHeight + 1
@@ -171,15 +171,16 @@ function scene:hide(event)
     end
 end
 
-function scene:startGameWithDifficulty(difficultyName)
+function scene:startGameWithDifficulty(difficultyName, fourPlayers)
     Globals.analytics.logEvent("Menu selection", {
-        location="Main Menu",
-        selection="Singleplayer " .. tostring(difficultyName)
+        location  = "Main Menu",
+        selection = "Singleplayer " .. tostring(difficultyName)
     })
 
     local params = {
-        gamemode   = "singleplayer",
-        difficulty = difficultyName
+        gamemode    = "singleplayer",
+        difficulty  = difficultyName,
+        fourPlayers = fourPlayers
     }
     composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft", params = params})
     audio.play(self.buttonSound)

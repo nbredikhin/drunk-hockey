@@ -10,7 +10,7 @@ return {
     game_you_win  = "Победа!",
 
     game_end_score         = "Счет",
-    game_end_button        = "Нажмите для продолжения",
+    game_end_button        = "Вернуться в меню",
     game_restart_button    = "Играть заново",
     game_end_shots_on_goal = "Удары по воротам",
     game_end_saves         = "Кол-во сейвов",
