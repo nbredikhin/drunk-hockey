@@ -83,7 +83,7 @@ function scene:create(event)
                 colorName = "blue"
                 rotation = 180
             end
-            self.players[i] = Player(colorName)
+            self.players[i] = Player(colorName, i >= 2)
             self.players[i].rotation = rotation
             group:insert(self.players[i])
         end
@@ -91,7 +91,7 @@ function scene:create(event)
         self.players[1] = Player("red")
         group:insert(self.players[1])
 
-        self.players[2] = Player("blue")
+        self.players[2] = Player("blue", self.gamemode == "singleplayer")
         self.players[2].rotation = 180
         group:insert(self.players[2])
     end
