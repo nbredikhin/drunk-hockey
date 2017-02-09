@@ -28,7 +28,7 @@ local function collision(self, event)
 
         if scene and (event.other.isPlayer or event.other.isGates) then
             if self:isPlayerShotOnGoal() then
-                DEBUG.Log("SHOT ON GOAL: %d", self.lastTouchingPlayer.goalShots)
+                -- DEBUG.Log("SHOT ON GOAL: %d", self.lastTouchingPlayer.goalShots)
                 self.lastTouchingPlayer.goalShots = self.lastTouchingPlayer.goalShots + 1
             end
         end
@@ -40,7 +40,7 @@ local function collision(self, event)
                 local toPlayerX, toPlayerY = event.other.x - self.x, event.other.y - self.y;
                 local vx, vy = self.prevVx, self.prevVy
                 local indicator = toPlayerX * vx + toPlayerY * vy
-                DEBUG.Log("Save by " ..  event.other.colorName)
+                -- DEBUG.Log("Save by " ..  event.other.colorName)
                 if indicator > 0 then
                     scene:showGameText("save", self.x, self.y, event.other.colorName)
                     event.other.savesCount = event.other.savesCount + 1
@@ -62,25 +62,25 @@ end
 local function isPlayerShotOnGoal(self)
     local gates = self:getGatesInDirection()
     if not gates then
-        DEBUG.Log("Player shot on goal: false")
+        -- DEBUG.Log("Player shot on goal: false")
         return false
     end
 
     if gates.colorName == self.lastTouchingPlayer.colorName then
-        DEBUG.Log("Player shot on goal: false")
+        -- DEBUG.Log("Player shot on goal: false")
         return false
     end
-    DEBUG.Log("Player shot on goal: true")
+    -- DEBUG.Log("Player shot on goal: true")
     return true
 end
 
 local function isShotOnGoal(self)
     local gates = self:getGatesInDirection()
     if gates == nil then
-        DEBUG.Log("Shot on goal: false")
+        -- DEBUG.Log("Shot on goal: false")
         return false
     end
-    DEBUG.Log("Shot on goal: true")
+    -- DEBUG.Log("Shot on goal: true")
     return true
 end
 

@@ -11,7 +11,7 @@ function scene:create(event)
     end
     local group = self.view
     local scene = self
-
+    self.showGameText = function() end
     local background = display.newImage("assets/background.png", display.contentCenterX, display.contentCenterY)
     background.width = display.contentWidth
     background.height = display.contentHeight

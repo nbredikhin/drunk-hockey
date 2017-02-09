@@ -16,4 +16,11 @@ return {
     game_end_saves         = "Saves count",
 
     game_text_save      = "Save!",
+
+    game_text_stuck1    = "Hmm...",
+    game_text_stuck2    = "Uhh?..",
+    game_text_stuck3    = "!*$@!",
+    game_text_stuck4  = "EZ PEZ",
+    game_text_stuck5  = "GGWP",
+    game_text_stuck6  = "U noob!"
 }

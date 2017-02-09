@@ -136,7 +136,18 @@ function scene:create(event)
         group:insert(self.uiManagers[1])
 
         for i = 2, #self.players do
-            self.joysticks[i] = Bot(self.puck, self.players[i], difficulty[event.params.difficulty])
+            local gates = self.gates[2]
+            local AIMode = AIConfig.forward
+            if self.players[i].colorName == "red" then
+                gates = self.gates[1]
+            end
+
+            if i == 4 then
+                AIMode = AIConfig.goalie
+            end
+
+            self.joysticks[i] = Bot(self.puck, self.players[i],
+                difficulty[event.params.difficulty], gates, AIMode)
         end
     end
 

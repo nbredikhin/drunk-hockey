@@ -15,5 +15,12 @@ return {
     game_end_shots_on_goal = "Удары по воротам",
     game_end_saves         = "Кол-во сейвов",
 
-    game_text_save      = "Сейв!"
+    game_text_save      = "Сейв!",
+
+    game_text_stuck1  = "Хмм...",
+    game_text_stuck2  = "Ааа?..",
+    game_text_stuck3  = "!*$@!",
+    game_text_stuck4  = "ЩА-ЩА!",
+    game_text_stuck5  = "ГГ ВП",
+    game_text_stuck6  = "Я про!"
 }

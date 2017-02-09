@@ -20,6 +20,7 @@ end
 
 -- Глобальные настройки игры
 GameConfig = require("config.gameconfig")
+AIConfig   = require("config.aiconfig")
 
 local composer  = require("composer")
 local ads       = require("lib.ads")
