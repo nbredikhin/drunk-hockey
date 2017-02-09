@@ -15,5 +15,9 @@ return {
     game_end_shots_on_goal = "Удары по воротам",
     game_end_saves         = "Кол-во сейвов",
 
-    game_text_save      = "Сейв!"
+    game_text_save      = "Сейв!",
+
+    pause_title        = "ПАУЗА",
+    pause_back_to_menu = "Вернуться в меню",
+    pause_continue     = "Продолжить игру",
 }

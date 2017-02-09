@@ -33,6 +33,8 @@ if DEBUG.forceLang then
     lang.setLang(DEBUG.forceLang)
 end
 
+require("lib.timers")
+
 Globals = {
     analytics = analytics,
     soundEnabled = storage.get("sound_enabled", true)
@@ -88,30 +90,6 @@ for i, eventName in ipairs(passEvents) do
             end
         end
     end)
-end
-
--- Свои таймеры
-
-local activeTimersList = {}
-local _performWithDelay = timer.performWithDelay
-
-timer.performWithDelay = function (delay, ...)
-    local t
-    if type(delay) == "boolean" and delay then
-        _performWithDelay(...)
-        return
-    else
-        t = _performWithDelay(delay, ...)
-    end
-    table.insert(activeTimersList, t)
-    return t
-end
-
-timer.cancelAll = function ()
-    for i, t in ipairs(activeTimersList) do
-        timer.cancel(t)
-    end
-    activeTimersList = {}
 end
 
 -- Обработка ошибок

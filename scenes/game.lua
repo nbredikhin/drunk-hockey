@@ -15,6 +15,7 @@ local Bottle   = require("game.Bottle")
 
 local GameUI   = require("game.ui.GameUI")
 local GameText = require("game.ui.GameText")
+local Pause    = require("game.ui.Pause")
 
 physics.start()
 physics.setGravity(0, 0)
@@ -51,8 +52,6 @@ function scene:create(event)
 
     self.difficulty = event.params.difficulty
     self.gamemode = event.params.gamemode
-
-    scene.gotoPreviousScene = "scenes.menu"
 
     local group = self.view
     local background = display.newImage("assets/background.png", display.contentCenterX, display.contentCenterY)
@@ -139,6 +138,12 @@ function scene:create(event)
             self.joysticks[i] = Bot(self.puck, self.players[i], difficulty[event.params.difficulty])
         end
     end
+
+    -- Экран паузы
+    self.pauseUI = Pause()
+    self.pauseUI.x = display.contentCenterX
+    self.pauseUI.y = display.contentCenterY
+    group:insert(self.pauseUI)
 
     -- Фоновая музыка
     self.music = audio.loadStream("assets/music/action.ogg")
@@ -346,10 +351,10 @@ function scene:hide(event)
 end
 
 function scene:enterFrame()
-    if not self.currentShakeMultiplier or not self.loaded then
+    local dt = getDeltaTime()
+    if self.isPaused or not self.currentShakeMultiplier or not self.loaded then
         return
     end
-    local dt = getDeltaTime()
     -- Тряска камеры
     if self.currentShakeMultiplier > 0 then
         self.view.x = (math.random() - 0.5) * self.currentShakeMultiplier * self.shakePower * dt
@@ -380,6 +385,9 @@ function scene:enterFrame()
 end
 
 function scene:touch(event)
+    if self.isPaused then
+        return
+    end
     for i, joystick in ipairs(self.joysticks) do
         joystick:touch(event)
     end
@@ -393,6 +401,20 @@ function scene:showGameText(text, x, y, colorName)
     local reversed = self.gamemode == "multiplayer" and y < display.contentCenterY / 2
     local text = GameText(text, x, y, colorName, reversed)
     self.view:insert(text)
+end
+
+function scene:gotoPreviousScene()
+    if self.pauseUI.isVisible then
+        self.pauseUI:hide()
+        timer.resumeAll()
+        physics.start()
+        self.isPaused = false
+    else
+        self.pauseUI:show()
+        timer.pauseAll()
+        physics.pause()
+        self.isPaused = true
+    end
 end
 
 scene:addEventListener("create", scene)

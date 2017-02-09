@@ -15,5 +15,9 @@ return {
     game_end_shots_on_goal = "Shots on goal",
     game_end_saves         = "Saves count",
 
-    game_text_save      = "Save!",
+    game_text_save = "Save!",
+
+    pause_title        = "PAUSE",
+    pause_back_to_menu = "Back to menu",
+    pause_continue     = "Continue",
 }
