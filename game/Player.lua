@@ -1,8 +1,8 @@
 local physics = require("physics")
 local utils   = require("lib.utils")
 
-local function increaseRotationSpeed(self, speedMultiplyer, timeout)
-    self.rotationSpeed = self.rotationSpeed * speedMultiplyer
+local function increaseRotationSpeed(self, speedMultiplier, timeout)
+    self.rotationSpeed = self.rotationSpeed * speedMultiplier
     self.resetSpeedTimer = timer.performWithDelay(timeout,
         function()
             self.rotationSpeed = self.defaultRotationSpeed

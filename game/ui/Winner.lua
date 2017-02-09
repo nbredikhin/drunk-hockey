@@ -1,6 +1,6 @@
 local widget    = require("widget")
 local composer  = require("composer")
-local adsconfig = require("adsconfig")
+local adsconfig = require("config.adsconfig")
 local ads       = require("lib.ads")
 
 local function show(self, winner, score, shotsOnGoal, savesCount)

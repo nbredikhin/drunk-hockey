@@ -46,8 +46,8 @@ function scene:create(event)
         event.params.difficulty = "medium"
     end
 
-    self.bottleSpawnDelayMin = 20 * 1000
-    self.bottleSpawnDelayMax = 30 * 1000
+    self.bottleSpawnDelayMin = GameConfig.bottleSpawnDelayMin * 1000
+    self.bottleSpawnDelayMax = GameConfig.bottleSpawnDelayMax * 1000
 
     self.difficulty = event.params.difficulty
     self.gamemode = event.params.gamemode
@@ -145,10 +145,14 @@ function scene:create(event)
 
     -- Параметры тряски камеры
     self.currentShakeMultiplier = 0
-    self.shakePower = 4
+    self.shakePower = GameConfig.cameraShakePowerMultiplier
 
     -- Количество голов для завершения игры
-    self.maxGoals = 5
+    self.maxGoals = GameConfig.defaultMaxGoals
+    if self.gamemode == "singleplayer" and self.difficulty == "easy" then
+        self.maxGoals = GameConfig.easyMaxGoals
+    end
+
     if DEBUG.oneGoalToWin then
         self.maxGoals = 1
     end
@@ -229,7 +233,7 @@ function scene:restartGame()
     end
     -- Запустить игру
     self:respawn()
-    timer.performWithDelay(1500, function ()
+    timer.performWithDelay(GameConfig.delayBeforeCountdown, function ()
         self:startCountdown()
     end)
 end
@@ -270,9 +274,9 @@ function scene:endRound(goalTo)
     -- Выключить музыку
     audio.stop(3)
     -- Замедление игры в 10 раз
-    physics.setTimeStep(1/60 * 0.1)
+    physics.setTimeStep(1/60 * GameConfig.goalGameSlowdownMultiplier)
     -- Тряска камеры
-    scene:shake(2)
+    scene:shake(GameConfig.goalCameraShakePower)
 
     -- Прибавление счёта
     if goalTo == "blue" then
@@ -299,13 +303,13 @@ function scene:endRound(goalTo)
         ui.score:show(unpack(self.score))
     end
     -- Скрыть счёт
-    timer.performWithDelay(2000, function ()
+    timer.performWithDelay(GameConfig.scoreDisplayTime, function ()
         for i, ui in ipairs(self.uiManagers) do
             ui.score:hide()
         end
     end)
     -- Запустить следующий раунд
-    timer.performWithDelay(3500, function ()
+    timer.performWithDelay(GameConfig.scoreDisplayTime + GameConfig.delayBeforeCountdown, function ()
         self:startCountdown()
     end)
 end
@@ -322,7 +326,7 @@ function scene:startRound()
     -- Запустить музыку
     audio.seek(0, self.music)
     audio.play(self.music, { channel = 3, loops = -1 })
-    audio.setVolume(0.45,  { channel = 3 })
+    audio.setVolume(GameConfig.gameMusicVolume,  { channel = 3 })
 end
 
 function scene:show(event)

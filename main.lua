@@ -1,29 +1,14 @@
-DEBUG = {
-    skipMenu         = false,
-    skipIntro        = true,
-    skipCountdown    = false,
-    showAbout        = false,
-    drawPhysics      = false,
-    disableSounds    = true,
-    -- Вызов функций с клавиатуры
-    enableShortcuts  = true,
-    -- Сброс прогресса игры
-    resetProgress    = false,
-    -- Открыть всю игру
-    unlockEverything = true,
-    oneGoalToWin     = false,
-    disableAnalytics = false,
-    disableAds       = false,
-    forceFourPlayers = false,
-    -- forceLang        = "english",
+DEBUG      = require("config.debugconfig")
+if not DEBUG then
+    DEBUG = {}
+end
 
-    Log = function (s, ...)
-        local info = debug.getinfo(2, "Sl")
-        local pre_str = string.format("[%s]:%3d", info.source, info.currentline)
-        local str = string.format(s, ...)
-        print(pre_str .. " " .. str)
-    end
-}
+DEBUG.Log = function (s, ...)
+    local info = debug.getinfo(2, "Sl")
+    local pre_str = string.format("[%s]:%3d", info.source, info.currentline)
+    local str = string.format(s, ...)
+    print(pre_str .. " " .. str)
+end
 
 local function disableDebug()
     DEBUG = {}
@@ -33,9 +18,12 @@ end
 -- Выключить режим отладки
 -- disableDebug()
 
+-- Глобальные настройки игры
+GameConfig = require("config.gameconfig")
+
 local composer  = require("composer")
 local ads       = require("lib.ads")
-local adsconfig = require("adsconfig") or {}
+local adsconfig = require("config.adsconfig") or {}
 local storage   = require("lib.storage")
 local analytics = require("plugin.flurry.analytics")
 
@@ -116,7 +104,6 @@ timer.performWithDelay = function (delay, ...)
         t = _performWithDelay(delay, ...)
     end
     table.insert(activeTimersList, t)
-    DEBUG.Log("timer: New timer with delay %s", tostring(delay))
     return t
 end
 
@@ -125,7 +112,6 @@ timer.cancelAll = function ()
         timer.cancel(t)
     end
     activeTimersList = {}
-    DEBUG.Log("timer: Cancel all timers")
 end
 
 -- Обработка ошибок
