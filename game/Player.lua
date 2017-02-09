@@ -40,7 +40,7 @@ local function move(self, x, y, dt)
     self:applyLinearImpulse(x * self.maxMovementSpeed * dt, y * self.maxMovementSpeed * dt, self.x, self.y)
 end
 
-local function constructor(colorName)
+local function constructor(colorName, isBot)
     if not colorName then
         colorName = "blue"
     end
@@ -48,7 +48,11 @@ local function constructor(colorName)
     self.shadow = display.newImage("assets/player_shadow.png")
     self:insert(self.shadow)
 
-    self.body = display.newImage("assets/player_".. colorName ..".png")
+    local path = "assets/player_".. colorName ..".png"
+    if isBot then
+        path = "assets/player_".. colorName .."_bot.png"
+    end
+    self.body = display.newImage(path)
     self:insert(self.body)
     self.body.anchorX = 0.3
     self.body.anchorY = 0.7
