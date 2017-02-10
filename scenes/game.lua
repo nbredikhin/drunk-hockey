@@ -157,7 +157,7 @@ function scene:create(event)
     group:insert(self.pauseUI)
 
     -- Фоновая музыка
-    self.music = audio.loadStream("assets/music/action.ogg")
+    self.music = audio.loadStream("assets/music/game.mp3")
 
     -- Параметры тряски камеры
     self.currentShakeMultiplier = 0

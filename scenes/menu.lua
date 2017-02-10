@@ -152,7 +152,7 @@ function scene:create(event)
     -- Звуки и музыка
     self.selectSound = audio.loadSound("assets/sounds/select.wav")
     self.buttonSound = audio.loadSound("assets/sounds/button.wav")
-    self.menuTheme   = audio.loadStream("assets/music/menu.ogg")
+    self.menuTheme   = audio.loadStream("assets/music/menu.mp3")
 end
 
 function scene:show(event)
