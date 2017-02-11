@@ -15,6 +15,8 @@ return {
     game_end_shots_on_goal = "Удары по воротам",
     game_end_saves         = "Кол-во сейвов",
 
+    game_commercial_brake  = "Рекламная пауза!",
+
     game_text_save      = "Сейв!",
     game_text_close     = "Штанга!",
 

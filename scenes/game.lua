@@ -17,6 +17,8 @@ local GameUI   = require("game.ui.GameUI")
 local GameText = require("game.ui.GameText")
 local Pause    = require("game.ui.Pause")
 
+local ads      = require("lib.ads")
+
 physics.start()
 physics.setGravity(0, 0)
 if DEBUG.drawPhysics then
@@ -355,6 +357,8 @@ function scene:show(event)
         self.loaded = true
         Globals.analytics.startTimedEvent("Game screen", { gamemode = self.gamemode, difficulty = self.difficulty })
     end
+
+    ads.hide()
 end
 
 function scene:hide(event)
@@ -364,6 +368,8 @@ function scene:hide(event)
         Globals.analytics.endTimedEvent("Game screen", { gamemode = self.gamemode, difficulty = self.difficulty })
         timer.cancelAll()
     end
+
+    ads.hide()
 end
 
 function scene:enterFrame()

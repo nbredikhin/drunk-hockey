@@ -159,6 +159,9 @@ function scene:show(event)
     if event.phase ~= "did" then
         return
     end
+
+    ads.hide()
+
     self.loaded = true
     audio.play(self.menuTheme, { channel = 1, loops = -1 })
     Globals.analytics.startTimedEvent("Main menu")
@@ -169,6 +172,8 @@ function scene:hide(event)
         Globals.analytics.endTimedEvent("Main menu")
         timer.cancelAll()
     end
+
+    ads.hide()
 end
 
 function scene:startGameWithDifficulty(difficultyName, fourPlayers)
