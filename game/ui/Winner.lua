@@ -104,11 +104,6 @@ local function show(self, winner, score, shotsOnGoal, savesCount)
         transition.from(self.bg, { time = 300, alpha = 0 })
     end
 
-    local cX, cY = self.commercialBrakeText:contentToLocal(display.contentCenterX,
-                                                           display.contentCenterY)
-    self.commercialBrakeText.x = cX
-    self.commercialBrakeText.y = cY
-
     local commercialBrakeTimer = timer.performWithDelay(300, commercialBrake, 1)
     commercialBrakeTimer.params = { self        = self,
                                     winner      = winner,
@@ -128,6 +123,7 @@ local function hide(self)
     end
     transition.to(self.winnerText, state)
     transition.to(self.scoreText, state)
+    transition.to(self.infoText, state)
     transition.to(self.continueButton, state)
     transition.to(self.backButton, { time = state.time, alpha = state.alpha, onComplete = function ()
         self.isVisible = false
@@ -168,7 +164,7 @@ local function constructor(isMultiplayer, bg, colorName)
 
     self.continueButton = widget.newButton({
         x = 0,
-        y = 35,
+        y = 30,
         alpha = 0,
         width = display.contentWidth,
         height = 10,
@@ -181,12 +177,6 @@ local function constructor(isMultiplayer, bg, colorName)
         defaultFile = "assets/empty.png",
 
         onRelease = function ()
-(??)            if ads.isLoaded(adsconfig.adType) then
-(??)                ads.show(adsconfig.adType, { testMode = adsconfig.testMode })
-(??)            if not self.isMultiplayer and self.winner == "red" then
-(??)                composer.gotoScene("scenes.menu", {time = 500, effect = "slideRight"})
-(??)                return
-            end
             local scene = composer.getScene(composer.getSceneName("current"))
             if scene and scene.shake then
                 scene:restartGame()
@@ -198,7 +188,7 @@ local function constructor(isMultiplayer, bg, colorName)
 
     self.backButton = widget.newButton({
         x = 0,
-        y = 45,
+        y = 40,
         width = display.contentWidth,
         height = 10,
 

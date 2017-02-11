@@ -115,16 +115,16 @@ function scene:create(event)
     self.uiManagers = {}
     if event.params.gamemode == "multiplayer" then
         -- Два UI
+        self.uiManagers[1] = GameUI("red", true)
+        self.uiManagers[1].x = display.contentCenterX
+        self.uiManagers[1].y = display.contentCenterY * 1.3
+        group:insert(self.uiManagers[1])
+
         self.uiManagers[2] = GameUI("blue", true)
         self.uiManagers[2].x = display.contentCenterX
         self.uiManagers[2].y = display.contentCenterY * 0.7
         self.uiManagers[2].rotation = 180
         group:insert(self.uiManagers[2])
-
-        self.uiManagers[1] = GameUI("red", true)
-        self.uiManagers[1].x = display.contentCenterX
-        self.uiManagers[1].y = display.contentCenterY * 1.3
-        group:insert(self.uiManagers[1])
 
         -- Два джойстика
         self.joysticks[2] = Joystick()
