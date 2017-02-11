@@ -1,21 +1,22 @@
-local composer = require("composer")
-local physics  = require("physics")
-local widget   = require("widget")
+local composer    = require("composer")
+local physics     = require("physics")
+local widget      = require("widget")
 
-local storage  = require("lib.storage")
-local utils    = require("lib.utils")
+local storage     = require("lib.storage")
+local utils       = require("lib.utils")
 
-local Area     = require("game.Area")
-local Player   = require("game.Player")
-local Puck     = require("game.Puck")
-local Gates    = require("game.Gates")
-local Joystick = require("game.Joystick")
-local Bot      = require("game.Bot")
-local Bottle   = require("game.Bottle")
+local Area        = require("game.Area")
+local Player      = require("game.Player")
+local Puck        = require("game.Puck")
+local Gates       = require("game.Gates")
+local Joystick    = require("game.Joystick")
+local Bot         = require("game.Bot")
+local Bottle      = require("game.Bottle")
 
-local GameUI   = require("game.ui.GameUI")
-local GameText = require("game.ui.GameText")
-local Pause    = require("game.ui.Pause")
+local GameUI      = require("game.ui.GameUI")
+local GameText    = require("game.ui.GameText")
+local Pause       = require("game.ui.Pause")
+local PauseButton = require("game.ui.PauseButton")
 
 local ads      = require("lib.ads")
 
@@ -158,6 +159,16 @@ function scene:create(event)
     self.pauseUI.y = display.contentCenterY
     group:insert(self.pauseUI)
 
+    -- Кнопка паузы
+    self.pauseButton = PauseButton()
+    self.pauseButton.x = display.contentWidth - self.pauseButton.width / 2 - 2
+    if self.gamemode == "multiplayer" then
+        self.pauseButton.y = display.contentCenterY
+    else
+        self.pauseButton.y = self.pauseButton.height / 2 + 2
+    end
+    group:insert(self.pauseButton)
+
     -- Фоновая музыка
     self.music = audio.loadStream("assets/music/game.mp3")
 
@@ -259,6 +270,7 @@ function scene:restartGame()
     timer.performWithDelay(GameConfig.delayBeforeCountdown, function ()
         self:startCountdown()
     end)
+    self.pauseButton.isVisible = true
 end
 
 function scene:endGame(winner)
@@ -280,6 +292,7 @@ function scene:endGame(winner)
     for i, joystick in ipairs(self.joysticks) do
         joystick:hide()
     end
+    self.pauseButton.isVisible = false
     -- Отобразить экран победителя
     for i, ui in ipairs(self.uiManagers) do
         ui.winner:show(winner, self.score, self.players[i].goalShots, self.players[i].savesCount)
@@ -413,6 +426,7 @@ function scene:touch(event)
     for i, joystick in ipairs(self.joysticks) do
         joystick:touch(event)
     end
+    self.pauseButton:touch(event)
 end
 
 function scene:shake(mul)
@@ -434,12 +448,14 @@ function scene:gotoPreviousScene()
         if self.state == "running" then
             audio.play(self.music, { channel = 3, loops = -1 })
         end
+        self.pauseButton.isVisible = true
     elseif self.state ~= "ended" then
         self.pauseUI:show()
         timer.pauseAll()
         physics.pause()
         self.isPaused = true
         audio.stop(3)
+        self.pauseButton.isVisible = false
     end
 end
 

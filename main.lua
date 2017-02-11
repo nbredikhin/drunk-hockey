@@ -1,4 +1,4 @@
-DEBUG      = require("config.debugconfig")
+DEBUG = require("config.debugconfig")
 if not DEBUG then
     DEBUG = {}
 end
