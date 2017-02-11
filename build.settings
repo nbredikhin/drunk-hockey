@@ -68,6 +68,10 @@ settings =
         {
             publisherId = "com.coronalabs",
             supportedPlatforms = { iphone=false, android=true }
+        },
+        ['plugin.vibrator'] =
+        {
+        	publisherId = 'com.spiralcodestudio'
         }
     },
 	--

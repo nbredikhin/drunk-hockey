@@ -19,6 +19,7 @@ local Pause       = require("game.ui.Pause")
 local PauseButton = require("game.ui.PauseButton")
 
 local ads      = require("lib.ads")
+local vibrator = require('plugin.vibrator')
 
 physics.start()
 physics.setGravity(0, 0)
@@ -430,6 +431,11 @@ function scene:touch(event)
 end
 
 function scene:shake(mul)
+    local haptic = vibrator.newHaptic('impact', 'hard')
+    if haptic then
+        haptic:invoke()
+    end
+
     self.currentShakeMultiplier = mul
 end
 
