@@ -1,4 +1,5 @@
 local composer = require("composer")
+local widget   = require("widget")
 
 local scene = composer.newScene()
 
@@ -51,6 +52,20 @@ function scene:create(event)
         align = "center"
     })
     self.scrollingGroup:insert(text)
+
+    self.backButton = widget.newButton({
+        x = 8,
+        y = display.contentHeight - 8,
+        width = 14,
+        height = 13,
+
+        defaultFile = "assets/ui/back_button.png",
+        onRelease = function ()
+            self:gotoPreviousScene()
+        end
+    })
+    group:insert(self.backButton)
+    self.backButton.alpha = 0.5
 
     self.minY = -35
     getDeltaTime()

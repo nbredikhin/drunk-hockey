@@ -1,4 +1,4 @@
-DEBUG      = require("config.debugconfig")
+DEBUG = require("config.debugconfig")
 if not DEBUG then
     DEBUG = {}
 end
@@ -16,7 +16,7 @@ local function disableDebug()
 end
 
 -- Выключить режим отладки
-disableDebug()
+-- disableDebug()
 
 -- Глобальные настройки игры
 GameConfig = require("config.gameconfig")

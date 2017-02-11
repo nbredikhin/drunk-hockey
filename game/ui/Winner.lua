@@ -13,13 +13,9 @@ local function show(self, winner, score, shotsOnGoal, savesCount)
     self.isVisible = true
 
     self.winner = winner
-    self.button:setLabel(lang.getString("game_restart_button"))
 
     if winner == self.colorName then
         self.winnerText.text = lang.getString("game_you_win")
-        if not self.isMultiplayer then
-            self.button:setLabel(lang.getString("game_end_button"))
-        end
     else
         self.winnerText.text = lang.getString("game_you_lose")
     end
@@ -54,14 +50,19 @@ local function show(self, winner, score, shotsOnGoal, savesCount)
     self.infoText.xScale = 1
     self.infoText.yScale = 1
 
-    self.button.alpha = 1
-    self.button.xScale = 1
-    self.button.yScale = 1
+    self.continueButton.alpha = 1
+    self.continueButton.xScale = 1
+    self.continueButton.yScale = 1
 
-    transition.from(self.winnerText, { transition=easing.outBack, delay = 500, time = 500, alpha = 0, xScale = 0.5, yScale = 0.8 })
-    transition.from(self.scoreText, { transition=easing.outBack, delay = 1000, time = 500, alpha = 0, xScale = 0.5, yScale = 0.8 })
-    transition.from(self.infoText, { transition=easing.outBack, delay = 1500, time = 500, alpha = 0, xScale = 0.5, yScale = 0.8 })
-    transition.from(self.button, { transition=easing.outBack, delay = 2000, time = 500, alpha = 0, xScale = 0.3, yScale = 0.8 })
+    self.backButton.alpha = 1
+    self.backButton.xScale = 1
+    self.backButton.yScale = 1
+
+    transition.from(self.winnerText,     { transition = easing.outBack, delay = 500,  time = 500, alpha = 0, xScale = 0.5, yScale = 0.8 })
+    transition.from(self.scoreText,      { transition = easing.outBack, delay = 1000, time = 500, alpha = 0, xScale = 0.5, yScale = 0.8 })
+    transition.from(self.infoText,       { transition = easing.outBack, delay = 1500, time = 500, alpha = 0, xScale = 0.5, yScale = 0.8 })
+    transition.from(self.continueButton, { transition = easing.outBack, delay = 2000, time = 500, alpha = 0, xScale = 0.3, yScale = 0.8 })
+    transition.from(self.backButton,     { transition = easing.outBack, delay = 2500, time = 500, alpha = 0, xScale = 0.3, yScale = 0.8 })
 end
 
 local function hide(self)
@@ -75,9 +76,11 @@ local function hide(self)
     end
     transition.to(self.winnerText, state)
     transition.to(self.scoreText, state)
-    transition.to(self.button, { time = state.time, alpha = state.alpha, onComplete = function ()
+    transition.to(self.continueButton, state)
+    transition.to(self.backButton, { time = state.time, alpha = state.alpha, onComplete = function ()
         self.isVisible = false
     end})
+
 end
 
 local function constructor(isMultiplayer, bg, colorName)
@@ -106,11 +109,11 @@ local function constructor(isMultiplayer, bg, colorName)
     self.infoText:setFillColor(0.15, 0.4, 1)
     self:insert(self.infoText)
 
-    self.button = widget.newButton({
+    self.continueButton = widget.newButton({
         x = 0,
         y = 35,
         width = display.contentWidth,
-        height = display.contentHeight,
+        height = 10,
 
         font = "pixel_font.ttf",
         fontSize = 5,
@@ -121,25 +124,37 @@ local function constructor(isMultiplayer, bg, colorName)
 
         onRelease = function ()
             if ads.isLoaded(adsconfig.adType) then
-                DEBUG.Log("Show ad")
                 ads.show(adsconfig.adType, { testMode = adsconfig.testMode })
-            else
-                DEBUG.Log("Can't show ad. Ad is not loaded yet")
-            end
-
-            if not self.isMultiplayer and self.winner == "red" then
-                DEBUG.Log("SHIIIIET")
-                composer.gotoScene("scenes.menu", {time = 500, effect = "slideRight"})
-                return
             end
             local scene = composer.getScene(composer.getSceneName("current"))
             if scene and scene.shake then
-                DEBUG.Log("RESTARTING)")
                 scene:restartGame()
             end
         end
     })
-    self:insert(self.button)
+    self:insert(self.continueButton)
+
+    self.backButton = widget.newButton({
+        x = 0,
+        y = 45,
+        width = display.contentWidth,
+        height = 10,
+
+        font = "pixel_font.ttf",
+        fontSize = 5,
+        label = lang.getString("game_end_button"),
+        labelColor = { default = {1, 1, 1} },
+
+        defaultFile = "assets/empty.png",
+
+        onRelease = function ()
+            if ads.isLoaded(adsconfig.adType) then
+                ads.show(adsconfig.adType, { testMode = adsconfig.testMode })
+            end
+            composer.gotoScene("scenes.menu", {time = 500, effect = "slideRight"})
+        end
+    })
+    self:insert(self.backButton)
 
     self.isVisible = false
 
