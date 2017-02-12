@@ -81,7 +81,7 @@ local function commercialBrake(event)
 
     transition.from(self.commercialBrakeText, { transition=easing.outBack, delay = 500, time = 500, alpha = 0, xScale = 0.5, yScale = 0.8 })
 
-    local showAdTimer = timer.performWithDelay(3000, showAd)
+    local showAdTimer = timer.performWithDelay(1000, showAd)
     showAdTimer.params = event.source.params
 end
 
