@@ -167,6 +167,7 @@ function scene:create(event)
         self.pauseButton.y = display.contentCenterY
     else
         self.pauseButton.y = self.pauseButton.height / 2 + 2
+        self.pauseButton.alpha = 0.7
     end
     group:insert(self.pauseButton)
 
