@@ -65,6 +65,7 @@ local function showAd(event)
         ads.show(adsconfig.adType, { testMode = adsconfig.testMode })
     else
         DEBUG.Log("Can't show ad. Ad is not loaded yet")
+        ads.show(adsconfig.adType, { testMode = adsconfig.testMode })
     end
 
     local showUITimer = timer.performWithDelay(500, showUI, 1)
@@ -74,7 +75,7 @@ end
 local function commercialBrake(event)
     local self = event.source.params.self
 
-    self.commercialBrakeText.alpha = 1
+    self.commercialBrakeText.alpha  = 1
     self.commercialBrakeText.xScale = 1
     self.commercialBrakeText.yScale = 1
 
