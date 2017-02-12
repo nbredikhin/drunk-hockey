@@ -139,18 +139,19 @@ local function constructor(isMultiplayer, bg, colorName)
     self.colorName = colorName
     self.bg = bg
 
-    self.winnerText = display.newText("", 0, 0, "pixel_font.ttf", 10)
+    local shitFuckOffset = -8
+    self.winnerText = display.newText("", 0, 0 + shitFuckOffset, "pixel_font.ttf", 9)
     self.winnerText:setFillColor(0.15, 0.4, 1)
     self:insert(self.winnerText)
 
-    self.scoreText = display.newText("", 0, 10, "pixel_font.ttf", 7)
+    self.scoreText = display.newText("", 0, 9 + shitFuckOffset, "pixel_font.ttf", 6)
     self.scoreText:setFillColor(0.15, 0.4, 1)
     self:insert(self.scoreText)
 
     self.infoText = display.newText({
         text = "Some text 1: 99\nSome text 2: 99",
         x    = 0,
-        y    = 22,
+        y    = 20 + shitFuckOffset,
         font = "pixel_font.ttf",
         fontSize = 4,
         align = "center",
@@ -165,10 +166,10 @@ local function constructor(isMultiplayer, bg, colorName)
 
     self.continueButton = widget.newButton({
         x = 0,
-        y = 30,
+        y = 31 + shitFuckOffset,
         alpha = 0,
         width = display.contentWidth,
-        height = 10,
+        height = 8,
 
         font = "pixel_font.ttf",
         fontSize = 5,
@@ -179,7 +180,7 @@ local function constructor(isMultiplayer, bg, colorName)
 
         onRelease = function ()
             local scene = composer.getScene(composer.getSceneName("current"))
-            if scene and scene.shake then
+            if scene then
                 scene:restartGame()
             end
         end
@@ -189,9 +190,9 @@ local function constructor(isMultiplayer, bg, colorName)
 
     self.backButton = widget.newButton({
         x = 0,
-        y = 40,
+        y = 41 + shitFuckOffset,
         width = display.contentWidth,
-        height = 10,
+        height = 8,
 
         font = "pixel_font.ttf",
         fontSize = 5,

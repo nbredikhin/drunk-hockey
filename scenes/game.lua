@@ -487,6 +487,8 @@ if DEBUG.enableShortcuts then
                 scene:endRound("blue")
             elseif event.keyName == "0" then
                 scene:shake(5)
+            elseif event.keyName == "3" then
+                scene:endGame("red")
             end
         end
     end)
