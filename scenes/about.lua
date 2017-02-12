@@ -10,6 +10,9 @@ local aboutLines = {
     "Programming",
     "Evgeniy Morozov",
     "", "",
+    "iOS Developer",
+    "Vladimir Burmistrov",
+    "","",
     "Music",
     "Azureflux, mathgrant",
 }
@@ -46,7 +49,7 @@ function scene:create(event)
     local text = display.newText({
         text = table.concat(aboutLines, "\n"),
         x    = display.contentCenterX,
-        y    = display.contentCenterY + 50,
+        y    = display.contentCenterY + 40,
         font = "pixel_font.ttf",
         fontSize = 5,
         align = "center"
