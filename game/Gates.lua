@@ -1,5 +1,6 @@
 local physics  = require("physics")
 local composer = require("composer")
+local vibrator = require('plugin.vibrator')
 
 local function update(self, dt)
     local dx = (self.initialX - self.x) * self.returnForce * dt
@@ -18,6 +19,10 @@ local function collision(self, event)
                 end)
             elseif event.selfElement == 5 or event.selfElement == 6 then
                 scene:showGameText("close", event.other.x, event.other.y, self.colorName)
+                local haptic = vibrator.newHaptic('impact', 'medium')
+                if haptic then
+                    haptic:invoke()
+                end
             end
         end
     end

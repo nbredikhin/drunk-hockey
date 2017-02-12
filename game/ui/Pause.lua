@@ -12,13 +12,13 @@ local function show(self)
         alpha = 1,
     })
 
-    -- ads.show(adsconfig.bannerType, { testMode = adsconfig.testMode, appId = adsconfig.bannerId })
+    ads.show(adsconfig.bannerType, { testMode = adsconfig.testMode, appId = adsconfig.bannerId })
 end
 
 local function hide(self)
     self.isVisible = false
 
-    -- ads.hide()
+    ads.hide()
 end
 
 local function constructor()

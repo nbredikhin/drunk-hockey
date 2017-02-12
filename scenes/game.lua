@@ -1,21 +1,25 @@
-local composer = require("composer")
-local physics  = require("physics")
-local widget   = require("widget")
+local composer    = require("composer")
+local physics     = require("physics")
+local widget      = require("widget")
 
-local storage  = require("lib.storage")
-local utils    = require("lib.utils")
+local storage     = require("lib.storage")
+local utils       = require("lib.utils")
 
-local Area     = require("game.Area")
-local Player   = require("game.Player")
-local Puck     = require("game.Puck")
-local Gates    = require("game.Gates")
-local Joystick = require("game.Joystick")
-local Bot      = require("game.Bot")
-local Bottle   = require("game.Bottle")
+local Area        = require("game.Area")
+local Player      = require("game.Player")
+local Puck        = require("game.Puck")
+local Gates       = require("game.Gates")
+local Joystick    = require("game.Joystick")
+local Bot         = require("game.Bot")
+local Bottle      = require("game.Bottle")
 
-local GameUI   = require("game.ui.GameUI")
-local GameText = require("game.ui.GameText")
-local Pause    = require("game.ui.Pause")
+local GameUI      = require("game.ui.GameUI")
+local GameText    = require("game.ui.GameText")
+local Pause       = require("game.ui.Pause")
+local PauseButton = require("game.ui.PauseButton")
+
+local ads      = require("lib.ads")
+local vibrator = require('plugin.vibrator')
 
 physics.start()
 physics.setGravity(0, 0)
@@ -112,16 +116,16 @@ function scene:create(event)
     self.uiManagers = {}
     if event.params.gamemode == "multiplayer" then
         -- Два UI
+        self.uiManagers[1] = GameUI("red", true)
+        self.uiManagers[1].x = display.contentCenterX
+        self.uiManagers[1].y = display.contentCenterY * 1.3
+        group:insert(self.uiManagers[1])
+
         self.uiManagers[2] = GameUI("blue", true)
         self.uiManagers[2].x = display.contentCenterX
         self.uiManagers[2].y = display.contentCenterY * 0.7
         self.uiManagers[2].rotation = 180
         group:insert(self.uiManagers[2])
-
-        self.uiManagers[1] = GameUI("red", true)
-        self.uiManagers[1].x = display.contentCenterX
-        self.uiManagers[1].y = display.contentCenterY * 1.3
-        group:insert(self.uiManagers[1])
 
         -- Два джойстика
         self.joysticks[2] = Joystick()
@@ -156,8 +160,19 @@ function scene:create(event)
     self.pauseUI.y = display.contentCenterY
     group:insert(self.pauseUI)
 
+    -- Кнопка паузы
+    self.pauseButton = PauseButton()
+    self.pauseButton.x = display.contentWidth - self.pauseButton.width / 2 - 2
+    if self.gamemode == "multiplayer" then
+        self.pauseButton.y = display.contentCenterY
+    else
+        self.pauseButton.y = self.pauseButton.height / 2 + 2
+        self.pauseButton.alpha = 0.7
+    end
+    group:insert(self.pauseButton)
+
     -- Фоновая музыка
-    self.music = audio.loadStream("assets/music/action.ogg")
+    self.music = audio.loadStream("assets/music/game.mp3")
 
     -- Параметры тряски камеры
     self.currentShakeMultiplier = 0
@@ -257,6 +272,7 @@ function scene:restartGame()
     timer.performWithDelay(GameConfig.delayBeforeCountdown, function ()
         self:startCountdown()
     end)
+    self.pauseButton.isVisible = true
 end
 
 function scene:endGame(winner)
@@ -278,6 +294,7 @@ function scene:endGame(winner)
     for i, joystick in ipairs(self.joysticks) do
         joystick:hide()
     end
+    self.pauseButton.isVisible = false
     -- Отобразить экран победителя
     for i, ui in ipairs(self.uiManagers) do
         ui.winner:show(winner, self.score, self.players[i].goalShots, self.players[i].savesCount)
@@ -355,6 +372,8 @@ function scene:show(event)
         self.loaded = true
         Globals.analytics.startTimedEvent("Game screen", { gamemode = self.gamemode, difficulty = self.difficulty })
     end
+
+    ads.hide()
 end
 
 function scene:hide(event)
@@ -364,6 +383,8 @@ function scene:hide(event)
         Globals.analytics.endTimedEvent("Game screen", { gamemode = self.gamemode, difficulty = self.difficulty })
         timer.cancelAll()
     end
+
+    ads.hide()
 end
 
 function scene:enterFrame()
@@ -407,9 +428,15 @@ function scene:touch(event)
     for i, joystick in ipairs(self.joysticks) do
         joystick:touch(event)
     end
+    self.pauseButton:touch(event)
 end
 
 function scene:shake(mul)
+    local haptic = vibrator.newHaptic('impact', 'hard')
+    if haptic then
+        haptic:invoke()
+    end
+
     self.currentShakeMultiplier = mul
 end
 
@@ -428,12 +455,14 @@ function scene:gotoPreviousScene()
         if self.state == "running" then
             audio.play(self.music, { channel = 3, loops = -1 })
         end
+        self.pauseButton.isVisible = true
     elseif self.state ~= "ended" then
         self.pauseUI:show()
         timer.pauseAll()
         physics.pause()
         self.isPaused = true
         audio.stop(3)
+        self.pauseButton.isVisible = false
     end
 end
 
@@ -459,6 +488,8 @@ if DEBUG.enableShortcuts then
                 scene:endRound("blue")
             elseif event.keyName == "0" then
                 scene:shake(5)
+            elseif event.keyName == "3" then
+                scene:endGame("red")
             end
         end
     end)

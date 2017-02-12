@@ -1,4 +1,5 @@
 local composer = require("composer")
+local widget   = require("widget")
 
 local scene = composer.newScene()
 
@@ -9,6 +10,9 @@ local aboutLines = {
     "Programming",
     "Evgeniy Morozov",
     "", "",
+    "iOS Developer",
+    "Vladimir Burmistrov",
+    "","",
     "Music",
     "Azureflux, mathgrant",
 }
@@ -45,12 +49,26 @@ function scene:create(event)
     local text = display.newText({
         text = table.concat(aboutLines, "\n"),
         x    = display.contentCenterX,
-        y    = display.contentCenterY + 50,
+        y    = display.contentCenterY + 40,
         font = "pixel_font.ttf",
         fontSize = 5,
         align = "center"
     })
     self.scrollingGroup:insert(text)
+
+    self.backButton = widget.newButton({
+        x = 8,
+        y = display.contentHeight - 8,
+        width = 14,
+        height = 13,
+
+        defaultFile = "assets/ui/back_button.png",
+        onRelease = function ()
+            self:gotoPreviousScene()
+        end
+    })
+    group:insert(self.backButton)
+    self.backButton.alpha = 0.5
 
     self.minY = -35
     getDeltaTime()

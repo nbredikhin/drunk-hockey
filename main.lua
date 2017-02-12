@@ -1,4 +1,4 @@
-DEBUG      = require("config.debugconfig")
+DEBUG = require("config.debugconfig")
 if not DEBUG then
     DEBUG = {}
 end
@@ -122,13 +122,19 @@ end
 
 -- Реклама
 ads.init(adsconfig.provider, adsconfig.appId, function (event)
-    if event.isError or event.phase == "shown" then
-        ads.load(adsconfig.adType, { testMode = adsconfig.testMode })
-        -- ads.load(adsconfig.bannerType, { testMode = adsconfig.testMode, appId = adsconfig.bannerId })
+    local state = event.phase
+    if event.isError then
+        state = event.response
     end
+
+    if event.isError or event.phase == "shown" then
+        ads.load(adsconfig.adType, { testMode = adsconfig.testMode, appId = adsconfig.appId })
+    end
+
+    Globals.analytics.logEvent("Advertisment", { ad_type = event.type, ad_state = state })
+    DEBUG.Log("New state for advertisment (%s): %s", event.type, state)
 end)
-ads.load(adsconfig.adType, { testMode = adsconfig.testMode })
--- ads.load(adsconfig.bannerType, { testMode = adsconfig.testMode, appId = adsconfig.bannerId })
+ads.load(adsconfig.adType, { testMode = adsconfig.testMode, appId = adsconfig.appId })
 
 -- Аналитика
 if DEBUG.disableAnalytics or system.getInfo("environment") == "simulator" then

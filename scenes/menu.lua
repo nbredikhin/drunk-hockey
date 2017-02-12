@@ -152,13 +152,16 @@ function scene:create(event)
     -- Звуки и музыка
     self.selectSound = audio.loadSound("assets/sounds/select.wav")
     self.buttonSound = audio.loadSound("assets/sounds/button.wav")
-    self.menuTheme   = audio.loadStream("assets/music/menu.ogg")
+    self.menuTheme   = audio.loadStream("assets/music/menu.mp3")
 end
 
 function scene:show(event)
     if event.phase ~= "did" then
         return
     end
+
+    ads.hide()
+
     self.loaded = true
     audio.play(self.menuTheme, { channel = 1, loops = -1 })
     Globals.analytics.startTimedEvent("Main menu")
@@ -169,6 +172,8 @@ function scene:hide(event)
         Globals.analytics.endTimedEvent("Main menu")
         timer.cancelAll()
     end
+
+    ads.hide()
 end
 
 function scene:startGameWithDifficulty(difficultyName, fourPlayers)
