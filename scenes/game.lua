@@ -31,7 +31,6 @@ local scene = composer.newScene()
 
 local function spawnBottle(event)
     local scene = event.source.params.scene
-    scene:delayBottleSpawn()
     -- If not spawned
     if not scene.bottle.isVisible then
         scene.bottle.isVisible = true
@@ -39,6 +38,7 @@ local function spawnBottle(event)
         scene.bottle.y = scene.area.y + scene.area.height * (0.15 + math.random() * 0.7 - 0.5)
 
         Globals.analytics.logEvent("Bottle", { action = "Spawned" })
+        DEBUG.Log("Bottle spawned")
     end
 end
 
@@ -196,7 +196,7 @@ function scene:delayBottleSpawn()
     local spawnTimer = timer.performWithDelay(
         math.random(self.bottleSpawnDelayMin, self.bottleSpawnDelayMax),
         spawnBottle)
-
+    DEBUG.Log("Starting bootle spawn")
     spawnTimer.params = {
         scene = self
     }

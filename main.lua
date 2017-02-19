@@ -5,7 +5,7 @@ end
 
 DEBUG.Log = function (s, ...)
     local info = debug.getinfo(2, "Sl")
-    local pre_str = string.format("[%s]:%3d", info.source, info.currentline)
+    local pre_str = string.format("[%s:%3d]", info.source, info.currentline)
     local str = string.format(s, ...)
     print(pre_str .. " " .. str)
 end
@@ -16,7 +16,7 @@ local function disableDebug()
 end
 
 -- Выключить режим отладки
-disableDebug()
+-- disableDebug()
 
 -- Глобальные настройки игры
 GameConfig = require("config.gameconfig")

@@ -1,7 +1,7 @@
 return {
     -- Время, через которое спавнится новая бутылка
-    bottleSpawnDelayMin = 20,
-    bottleSpawnDelayMax = 30,
+    bottleSpawnDelayMin = 5,
+    bottleSpawnDelayMax = 10,
 
     -- Сила тряски камеры
     cameraShakePowerMultiplier = 4,

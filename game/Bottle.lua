@@ -18,6 +18,7 @@ local function collision(self, event)
             local phraseId = math.random(1, 7)
             scene:showGameText("phrase_bottle_"..phraseId, self.x, self.y, player.colorName)
         end
+        scene:delayBottleSpawn()        
     end
 end
 
