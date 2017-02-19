@@ -29,11 +29,15 @@ local function show(self)
     return 900 * 3
 end
 
-local function constructor(colorName)
+local function constructor(colorName, isMLG)
     local self = display.newGroup()
 
     self.sound1 = audio.loadSound("assets/sounds/countdown1.wav")
-    self.sound2 = audio.loadSound("assets/sounds/countdown2.wav")
+    local path = "assets/sounds/countdown2.wav"
+    if isMLG then
+        path = "assets/sounds/countdown_2_mlg.wav"
+    end
+    self.sound2 = audio.loadSound(path)
 
     self.numbers = {}
     local imageSheet = graphics.newImageSheet("assets/ui/numbers.png", {

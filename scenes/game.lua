@@ -61,12 +61,16 @@ function scene:create(event)
     self.isMLG = event.params.isMLG
 
     local group = self.view
-    local background = display.newImage("assets/background.png", display.contentCenterX, display.contentCenterY)
+    local path = "assets/background.png"
+    if self.isMLG then
+        path = "assets/background_mlg.png"
+    end
+    local background = display.newImage(path, display.contentCenterX, display.contentCenterY)
     background.width = display.contentWidth
     background.height = display.contentHeight
     group:insert(background)
 
-    self.area = Area()
+    self.area = Area(self.isMLG)
     group:insert(self.area)
 
     -- Шайба
@@ -90,25 +94,25 @@ function scene:create(event)
                 colorName = "blue"
                 rotation = 180
             end
-            self.players[i] = Player(colorName, i >= 2)
+            self.players[i] = Player(colorName, i >= 2, self.isMLG)
             self.players[i].rotation = rotation
             group:insert(self.players[i])
         end
     else
-        self.players[1] = Player("red")
+        self.players[1] = Player("red", false, self.isMLG)
         group:insert(self.players[1])
 
-        self.players[2] = Player("blue", self.gamemode == "singleplayer")
+        self.players[2] = Player("blue", self.gamemode == "singleplayer", self.isMLG)
         self.players[2].rotation = 180
         group:insert(self.players[2])
     end
 
     -- Ворота
     self.gates = {}
-    self.gates[1] = Gates("red", display.contentCenterX, display.contentCenterY + self.area.height * 0.38)
+    self.gates[1] = Gates("red", display.contentCenterX, display.contentCenterY + self.area.height * 0.38, self.isMLG)
     group:insert(self.gates[1])
 
-    self.gates[2] = Gates("blue", display.contentCenterX, display.contentCenterY - self.area.height * 0.38)
+    self.gates[2] = Gates("blue", display.contentCenterX, display.contentCenterY - self.area.height * 0.38, self.isMLG)
     self.gates[2].rotation = 180
     group:insert(self.gates[2])
 
@@ -139,30 +143,30 @@ function scene:create(event)
     group:insert(self.explosion)
 
     self.joysticks = {}
-    self.joysticks[1] = Joystick("full")
+    self.joysticks[1] = Joystick("full", self.isMLG)
     group:insert(self.joysticks[1])
 
     self.uiManagers = {}
     if event.params.gamemode == "multiplayer" then
         -- Два UI
-        self.uiManagers[1] = GameUI("red", true)
+        self.uiManagers[1] = GameUI("red", true, self.isMLG)
         self.uiManagers[1].x = display.contentCenterX
         self.uiManagers[1].y = display.contentCenterY * 1.3
         group:insert(self.uiManagers[1])
 
-        self.uiManagers[2] = GameUI("blue", true)
+        self.uiManagers[2] = GameUI("blue", true, self.isMLG)
         self.uiManagers[2].x = display.contentCenterX
         self.uiManagers[2].y = display.contentCenterY * 0.7
         self.uiManagers[2].rotation = 180
         group:insert(self.uiManagers[2])
 
         -- Два джойстика
-        self.joysticks[2] = Joystick()
+        self.joysticks[2] = Joystick("full", self.isMLG)
         group:insert(self.joysticks[2])
         self.joysticks[1].side = "bottom"
         self.joysticks[2].side = "top"
     elseif event.params.gamemode == "singleplayer" then
-        self.uiManagers[1] = GameUI("red")
+        self.uiManagers[1] = GameUI("red", false, self.isMLG)
         self.uiManagers[1].x = display.contentCenterX
         self.uiManagers[1].y = display.contentCenterY
         group:insert(self.uiManagers[1])
@@ -348,7 +352,6 @@ function scene:endRound(goalTo)
         self.explosion.y = gates.y
         self.explosion.isVisible = true
         self.explosion:play()
-        audio.play(self.explosion.audio, { channel = 15 })
     end
 
     -- Выключить музыку

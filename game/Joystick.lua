@@ -61,8 +61,12 @@ local function hide(self)
     self.xScale, self.yScale = self.targetScale, self.targetScale
 end
 
-local function constructor(side)
-    local self = display.newImage("assets/joystick_arrow.png")
+local function constructor(side, isMLG)
+    local path = "assets/joystick_arrow.png"
+    if isMLG then
+        path = "assets/joystick_arrow_mlg.png"
+    end
+    local self = display.newImage(path)
 
     self.alpha = 0
     self.targetAlpha = 0

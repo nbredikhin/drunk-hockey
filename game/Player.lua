@@ -9,6 +9,12 @@ local PUCK_DOWN_TIME = 1500
 
 local HEALTH_REGEN_SPEED = 0.3
 
+local function hideHitMark(event)
+    local self = event.source.params
+
+    self.hitmark.isVisible = false
+end
+
 local function increaseRotationSpeed(self, speedMultiplier, timeout)
     self.rotationSpeed = self.rotationSpeed * speedMultiplier
     self.isUsingBottle = true
@@ -31,6 +37,13 @@ local function collision(self, event)
         and event.selfElement == 1
         -- Игрок из другой команды
         and event.other.colorName ~= self.colorName then
+
+        self.hitmark.x = event.other.x
+        self.hitmark.y = event.other.y
+        self.hitmark.isVisible = true
+        local hideTimer = timer.performWithDelay(100, hideHitMark, 1)
+        hideTimer.params = self
+
         -- Если игрок с бутылкой
         if event.other.isUsingBottle then
             self:hurt(MAX_HEALTH)
@@ -126,19 +139,42 @@ local function move(self, x, y, dt)
     self:applyLinearImpulse(x * self.maxMovementSpeed * dt, y * self.maxMovementSpeed * dt, self.x, self.y)
 end
 
-local function constructor(colorName, isBot)
+local function constructor(colorName, isBot, isMLG)
     if not colorName then
         colorName = "blue"
     end
     local self = display.newGroup()
 
-    self.hurtSound = audio.loadSound("assets/sounds/hurt.wav")
+    local path = "assets/sounds/hurt.wav"
+    if isMLG then
+        path = "assets/sounds/hurt_mlg.wav"
+    end
+
+    self.hitmark = display.newImage("assets/hitmark.png")
+    self.hitmark.xScale = 0.5
+    self.hitmark.yScale = 0.5
+    self.hitmark.isVisible = false
+
+    self.hurtSound = audio.loadSound(path)
     self.health = MAX_HEALTH
 
-    self.shadow = display.newImage("assets/player_shadow.png")
+    local scaleX = 1
+    local scaleY = 1
+    local aplha = 1
+    local path = "assets/player_shadow.png"
+    if isMLG then
+        path = "assets/player_shadow_mlg.png"
+        scaleX = 0.1
+        scaleY = 0.1
+        alpha = 0.3
+    end
+    self.shadow = display.newImage(path)
+    self.shadow.xScale = scaleX
+    self.shadow.yScale = scaleY
+    self.shadow.alpha = alpha
     self:insert(self.shadow)
 
-    local path = "assets/player_".. colorName ..".png"
+    path = "assets/player_".. colorName ..".png"
     if isBot then
         path = "assets/player_".. colorName .."_bot.png"
     end

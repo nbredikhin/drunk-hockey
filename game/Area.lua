@@ -1,7 +1,11 @@
 local physics = require("physics")
 
-local function constructor()
-    local self = display.newImage("assets/area.png", display.contentCenterX, display.contentCenterY)
+local function constructor(isMLG)
+    local path = "assets/area.png"
+    if isMLG then
+        path = "assets/area_mlg.png"
+    end
+    local self = display.newImage(path, display.contentCenterX, display.contentCenterY)
 
     local cornerSize = 5.5
     local material = { friction = 0, bounce = 1 }
@@ -21,8 +25,8 @@ local function constructor()
     for i, box in ipairs(boxes) do
         table.insert(bodies, {
             friction = material.friction,
-            bounce   = material.bounce,  
-            filter = { groupIndex = -1 },          
+            bounce   = material.bounce,
+            filter = { groupIndex = -1 },
             box = {
                 x          = box[1],
                 y          = box[2],
@@ -35,6 +39,6 @@ local function constructor()
     -- Physics setup
     physics.addBody(self, "static", unpack(bodies))
     return self
-end 
+end
 
 return constructor

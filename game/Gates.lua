@@ -15,7 +15,7 @@ local function collision(self, event)
             if event.selfElement == 4 then
                 timer.performWithDelay(1, function ()
                     scene:endRound(self.colorName)
-                    audio.play(self.goalSound)
+                    audio.play(self.goalSound, { channel = 15})
                 end)
             elseif event.selfElement == 5 or event.selfElement == 6 then
                 scene:showGameText("close", event.other.x, event.other.y, self.colorName)
@@ -28,10 +28,14 @@ local function collision(self, event)
     end
 end
 
-local function constructor(colorName, x, y)
+local function constructor(colorName, x, y, isMLG)
     local self = display.newImage("assets/gate_".. colorName ..".png")
     self.colorName = colorName
-    self.goalSound = audio.loadSound("assets/sounds/goal.wav")
+    local path = "assets/sounds/goal.wav"
+    if isMLG then
+        path = "assets/sounds/explosion.wav"
+    end
+    self.goalSound = audio.loadSound(path)
 
     self.initialX = x
     self.initialY = y
