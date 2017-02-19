@@ -50,12 +50,15 @@ function scene:create(event)
     if not event.params.difficulty then
         event.params.difficulty = "medium"
     end
-
+    if not event.params.isMLG then
+        event.params.isMLG = true
+    end
     self.bottleSpawnDelayMin = GameConfig.bottleSpawnDelayMin * 1000
     self.bottleSpawnDelayMax = GameConfig.bottleSpawnDelayMax * 1000
 
     self.difficulty = event.params.difficulty
     self.gamemode = event.params.gamemode
+    self.isMLG = event.params.isMLG
 
     local group = self.view
     local background = display.newImage("assets/background.png", display.contentCenterX, display.contentCenterY)
@@ -71,7 +74,7 @@ function scene:create(event)
     group:insert(self.puck)
 
     -- Бутылка
-    self.bottle = Bottle()
+    self.bottle = Bottle(self.isMLG)
     group:insert(self.bottle)
     self.bottle.isVisible = false
     self:delayBottleSpawn()
@@ -108,6 +111,32 @@ function scene:create(event)
     self.gates[2] = Gates("blue", display.contentCenterX, display.contentCenterY - self.area.height * 0.38)
     self.gates[2].rotation = 180
     group:insert(self.gates[2])
+
+    -- Взрыв
+    local sprite = graphics.newImageSheet("assets/EXPLOSION.png",
+    {
+        width  = 480,
+        height = 270,
+        numFrames = 40,
+
+        sheetContentWidth  = 4800,
+        sheetContentHeight = 1080,
+    })
+    self.explosion = display.newSprite(sprite, { name = "explosion", start = 1, count = 40, time = 2500, loopCount = 1 })
+    self.explosion.xScale = 0.1
+    self.explosion.yScale = 0.1
+    self.explosion.x = display.contentCenterX
+    self.explosion.y = display.contentCenterY
+    self.explosion.isVisible = false
+    self.explosion.audio = audio.loadSound("assets/sounds/explosion.wav")
+    self.explosion:addEventListener("sprite", function(event)
+        if event.phase == "ended" then
+            self.explosion.isVisible = false
+            self.explosion:pause()
+            self.explosion:setFrame(1)
+        end
+    end )
+    group:insert(self.explosion)
 
     self.joysticks = {}
     self.joysticks[1] = Joystick("full")
@@ -308,6 +337,19 @@ function scene:endRound(goalTo)
     end
     self.state = "waiting"
     Globals.analytics.endTimedEvent("Game round", { gamemode = self.gamemode, difficulty = self.difficulty })
+
+    local gates = self.gates[1]
+    if goalTo == "blue" then
+        gates = self.gates[2]
+    end
+
+    if self.isMLG then
+        self.explosion.x = gates.x
+        self.explosion.y = gates.y
+        self.explosion.isVisible = true
+        self.explosion:play()
+        audio.play(self.explosion.audio, { channel = 15 })
+    end
 
     -- Выключить музыку
     audio.stop(3)
