@@ -49,6 +49,8 @@ display.setStatusBar(display.HiddenStatusBar)
 display.setDefault("magTextureFilter", "nearest")
 display.setDefault("minTextureFilter", "nearest")
 
+native.setProperty("androidSystemUiVisibility", "immersive")
+
 -- Поддержка кнопки "назад" на Android и WindowsPhone (или backspace на Windows)
 local platform = system.getInfo("platform")
 if platform == "android" or platform == "winphone" or platform == "win32" or platform == "macos" then

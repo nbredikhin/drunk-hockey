@@ -27,6 +27,7 @@ local function constructor(isMLG)
 
     if isMLG then
         self = display.newImage("assets/mnt_dew.png")
+        self.sound = audio.loadSound("assets/sounds/powerup_mlg.wav")
         self.xScale = 0.02
         self.yScale = 0.02
         physicsParameters = {
