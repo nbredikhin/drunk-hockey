@@ -193,6 +193,8 @@ function scene:create(event)
     self.pauseUI.y = display.contentCenterY
     group:insert(self.pauseUI)
 
+    self.tripleSound = audio.loadSound( "assets/sounds/triple.wav")
+
     -- Кнопка паузы
     self.pauseButton = PauseButton()
     self.pauseButton.x = display.contentWidth - self.pauseButton.width / 2 - 2
@@ -362,10 +364,16 @@ function scene:endRound(goalTo)
     scene:shake(GameConfig.goalCameraShakePower)
 
     -- Прибавление счёта
+    local winnerScore = self.score[1]
     if goalTo == "blue" then
         self.score[1] = self.score[1] + 1
     else
         self.score[2] = self.score[2] + 1
+        winnerScore = self.score[2]
+    end
+
+    if self.isMLG and winnerScore == 3 then
+        audio.play(self.tripleSound, { channel = 17 })
     end
 
     -- Скрыть джойстики
