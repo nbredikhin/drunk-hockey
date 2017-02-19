@@ -51,7 +51,7 @@ function scene:create(event)
         event.params.difficulty = "medium"
     end
     if not event.params.isMLG then
-        event.params.isMLG = true
+        event.params.isMLG = false
     end
     self.bottleSpawnDelayMin = GameConfig.bottleSpawnDelayMin * 1000
     self.bottleSpawnDelayMax = GameConfig.bottleSpawnDelayMax * 1000

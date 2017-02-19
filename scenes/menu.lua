@@ -81,17 +81,18 @@ function scene:create(event)
         { difficulty = "medium", label = lang.getString("menu_button_medium") },
         { difficulty = "hard",   label = lang.getString("menu_button_hard")   },
         { difficulty = "medium", label = lang.getString("menu_button_2vs2"), fourPlayers = true },
+        { difficulty = "medium", label = "MLG", isMLG = true },
     }
     -- Количество разблокированных уровней сложности
     local levelsUnlocked = storage.get("levels_unlocked", 1)
     if type(levelsUnlocked) ~= "number" then
         levelsUnlocked = 1
     end
-
+    self.isMLGUnlocked = levelsUnlocked >= 5
     buttonY = display.contentCenterY - 5 - buttonHeight - 1
     for i, b in ipairs(self.difficultyButtons) do
         local imagePath = buttonImagePath
-        if i > levelsUnlocked then
+        if i > levelsUnlocked or i == 5 then
             imagePath = buttonImageLockedPath
         end
         local button = widget.newButton({
@@ -110,7 +111,7 @@ function scene:create(event)
 
             defaultFile = imagePath,
             onRelease = function ()
-                scene:startGameWithDifficulty(b.difficulty, b.fourPlayers)
+                scene:startGameWithDifficulty(b.difficulty, b.fourPlayers, b.isMLG)
             end
         })
         buttonY = buttonY + buttonHeight + 1
@@ -176,7 +177,7 @@ function scene:hide(event)
     ads.hide()
 end
 
-function scene:startGameWithDifficulty(difficultyName, fourPlayers)
+function scene:startGameWithDifficulty(difficultyName, fourPlayers, isMLG)
     Globals.analytics.logEvent("Menu selection", {
         location  = "Main Menu",
         selection = "Singleplayer " .. tostring(difficultyName)
@@ -185,7 +186,8 @@ function scene:startGameWithDifficulty(difficultyName, fourPlayers)
     local params = {
         gamemode    = "singleplayer",
         difficulty  = difficultyName,
-        fourPlayers = fourPlayers
+        fourPlayers = fourPlayers,
+        isMLG       = isMLG
     }
     composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft", params = params})
     audio.play(self.buttonSound)
@@ -195,7 +197,7 @@ end
 function scene:menuButtonPressed(name)
     if name == "singleplayer" then
         transition.to(self.buttons[1].button, { transition=easing.outBack, time = 800, delta = true, y = -20, alpha = -1, xScale = 0.1})
-        transition.to(self.buttons[2].button, { transition=easing.outBack, time = 700, delta = true, y = 25.5})
+        transition.to(self.buttons[2].button, { transition=easing.outBack, time = 700, delta = true, y = 25.5, alpha = -1})
 
         for i, b in ipairs(self.difficultyButtons) do
             b.button.xScale = 0.1
@@ -212,6 +214,39 @@ function scene:menuButtonPressed(name)
         composer.gotoScene("scenes.game", {time = 500, effect = "slideLeft", params = { gamemode = "multiplayer" }})
         audio.play(self.buttonSound)
         audio.stop(1)
+    end
+end
+
+function hsvToRgb(h, s, v, a)
+    if not a then
+        a = 1
+    end
+    local r, g, b
+
+    local i = math.floor(h * 6);
+    local f = h * 6 - i;
+    local p = v * (1 - s);
+    local q = v * (1 - f * s);
+    local t = v * (1 - (1 - f) * s);
+
+    i = i % 6
+
+    if i == 0 then r, g, b = v, t, p
+    elseif i == 1 then r, g, b = q, v, p
+    elseif i == 2 then r, g, b = p, v, t
+    elseif i == 3 then r, g, b = p, q, v
+    elseif i == 4 then r, g, b = t, p, v
+    elseif i == 5 then r, g, b = v, p, q
+    end
+
+    return r, g, b, a
+end
+
+function scene:enterFrame()
+    if self.isMLGUnlocked  then
+        local progress = (system.getTimer() * 0.08 % 100) / 100
+        local r, g, b = hsvToRgb(progress, 1, 1)
+        self.difficultyButtons[5].button:setFillColor(r, g, b)
     end
 end
 
