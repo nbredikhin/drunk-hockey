@@ -38,11 +38,13 @@ local function collision(self, event)
         -- Игрок из другой команды
         and event.other.colorName ~= self.colorName then
 
-        self.hitmark.x = event.other.x
-        self.hitmark.y = event.other.y
-        self.hitmark.isVisible = true
-        local hideTimer = timer.performWithDelay(100, hideHitMark, 1)
-        hideTimer.params = self
+        if self.isMLG then
+            self.hitmark.x = event.other.x
+            self.hitmark.y = event.other.y
+            self.hitmark.isVisible = true
+            local hideTimer = timer.performWithDelay(100, hideHitMark, 1)
+            hideTimer.params = self
+        end
 
         -- Если игрок с бутылкой
         if event.other.isUsingBottle then
