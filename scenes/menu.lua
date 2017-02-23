@@ -206,6 +206,18 @@ function scene:menuButtonPressed(name)
         end
         transition.to(self.aboutButton, { time = 800, delay = 0, transition = easing.outBack, delta = true, y = self.aboutButton.height + 5})
         audio.play(self.selectSound)
+
+        if self.isMLGUnlocked then
+            timer.performWithDelay(1000, function ()
+                transition.to(self.difficultyButtons[5].button, {
+                    time = 600,
+                    xScale = 1.05,
+                    yScale = 1.05,
+                    iterations = 999,
+                    transition=easing.continuousLoop
+                })
+            end)
+        end
     elseif name == "multiplayer" then
         Globals.analytics.logEvent("Menu selection", {
             location="Main Menu",
