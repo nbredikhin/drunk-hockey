@@ -364,14 +364,15 @@ function scene:endRound(goalTo)
     scene:shake(GameConfig.goalCameraShakePower)
 
     -- Прибавление счёта
-    local winnerScore = self.score[1]
+    local winnerScore = 0;
     if goalTo == "blue" then
         self.score[1] = self.score[1] + 1
+        winnerScore   = self.score[1]
     else
         self.score[2] = self.score[2] + 1
-        winnerScore = self.score[2]
+        winnerScore   = self.score[2]
     end
-
+    DEBUG.Log(winnerScore)
     if self.isMLG and winnerScore == 3 then
         audio.play(self.tripleSound, { channel = 17 })
     end

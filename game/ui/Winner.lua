@@ -68,7 +68,7 @@ local function showAd(event)
         ads.show(adsconfig.adType, { testMode = adsconfig.testMode })
     end
 
-    local showUITimer = timer.performWithDelay(1000, showUI, 1)
+    local showUITimer = timer.performWithDelay(2000, showUI, 1)
     showUITimer.params = event.source.params
 end
 

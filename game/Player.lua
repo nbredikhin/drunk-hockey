@@ -42,6 +42,7 @@ local function collision(self, event)
             self.hitmark.x = event.other.x
             self.hitmark.y = event.other.y
             self.hitmark.isVisible = true
+            DEBUG.Log("Show hitmark")
             local hideTimer = timer.performWithDelay(100, hideHitMark, 1)
             hideTimer.params = self
         end
@@ -146,7 +147,7 @@ local function constructor(colorName, isBot, isMLG)
         colorName = "blue"
     end
     local self = display.newGroup()
-
+    self.isMLG = isMLG
     local path = "assets/sounds/hurt.wav"
     if isMLG then
         path = "assets/sounds/hurt_mlg.wav"
