@@ -31,7 +31,6 @@ local scene = composer.newScene()
 
 local function spawnBottle(event)
     local scene = event.source.params.scene
-    scene:delayBottleSpawn()
     -- If not spawned
     if not scene.bottle.isVisible then
         scene.bottle.isVisible = true
@@ -39,6 +38,7 @@ local function spawnBottle(event)
         scene.bottle.y = scene.area.y + scene.area.height * (0.15 + math.random() * 0.7 - 0.5)
 
         Globals.analytics.logEvent("Bottle", { action = "Spawned" })
+        DEBUG.Log("Bottle spawned")
     end
 end
 
@@ -50,20 +50,27 @@ function scene:create(event)
     if not event.params.difficulty then
         event.params.difficulty = "medium"
     end
-
+    if not event.params.isMLG then
+        event.params.isMLG = false
+    end
     self.bottleSpawnDelayMin = GameConfig.bottleSpawnDelayMin * 1000
     self.bottleSpawnDelayMax = GameConfig.bottleSpawnDelayMax * 1000
 
     self.difficulty = event.params.difficulty
     self.gamemode = event.params.gamemode
+    self.isMLG = event.params.isMLG
 
     local group = self.view
-    local background = display.newImage("assets/background.png", display.contentCenterX, display.contentCenterY)
+    local path = "assets/background.png"
+    if self.isMLG then
+        path = "assets/background_mlg.png"
+    end
+    local background = display.newImage(path, display.contentCenterX, display.contentCenterY)
     background.width = display.contentWidth
     background.height = display.contentHeight
     group:insert(background)
 
-    self.area = Area()
+    self.area = Area(self.isMLG)
     group:insert(self.area)
 
     -- Шайба
@@ -71,7 +78,7 @@ function scene:create(event)
     group:insert(self.puck)
 
     -- Бутылка
-    self.bottle = Bottle()
+    self.bottle = Bottle(self.isMLG)
     group:insert(self.bottle)
     self.bottle.isVisible = false
     self:delayBottleSpawn()
@@ -87,53 +94,79 @@ function scene:create(event)
                 colorName = "blue"
                 rotation = 180
             end
-            self.players[i] = Player(colorName, i >= 2)
+            self.players[i] = Player(colorName, i >= 2, self.isMLG)
             self.players[i].rotation = rotation
             group:insert(self.players[i])
         end
     else
-        self.players[1] = Player("red")
+        self.players[1] = Player("red", false, self.isMLG)
         group:insert(self.players[1])
 
-        self.players[2] = Player("blue", self.gamemode == "singleplayer")
+        self.players[2] = Player("blue", self.gamemode == "singleplayer", self.isMLG)
         self.players[2].rotation = 180
         group:insert(self.players[2])
     end
 
     -- Ворота
     self.gates = {}
-    self.gates[1] = Gates("red", display.contentCenterX, display.contentCenterY + self.area.height * 0.38)
+    self.gates[1] = Gates("red", display.contentCenterX, display.contentCenterY + self.area.height * 0.38, self.isMLG)
     group:insert(self.gates[1])
 
-    self.gates[2] = Gates("blue", display.contentCenterX, display.contentCenterY - self.area.height * 0.38)
+    self.gates[2] = Gates("blue", display.contentCenterX, display.contentCenterY - self.area.height * 0.38, self.isMLG)
     self.gates[2].rotation = 180
     group:insert(self.gates[2])
 
+    -- Взрыв
+    local sprite = graphics.newImageSheet("assets/EXPLOSION.png",
+    {
+        width  = 480,
+        height = 270,
+        numFrames = 40,
+
+        sheetContentWidth  = 4800,
+        sheetContentHeight = 1080,
+    })
+    self.explosion = display.newSprite(sprite, { name = "explosion", start = 1, count = 40, time = 2500, loopCount = 1 })
+    self.explosion.xScale = 0.1
+    self.explosion.yScale = 0.1
+    self.explosion.x = display.contentCenterX
+    self.explosion.y = display.contentCenterY
+    self.explosion.isVisible = false
+    self.explosion.audio = audio.loadSound("assets/sounds/explosion.wav")
+    self.explosion:addEventListener("sprite", function(event)
+        if event.phase == "ended" then
+            self.explosion.isVisible = false
+            self.explosion:pause()
+            self.explosion:setFrame(1)
+        end
+    end )
+    group:insert(self.explosion)
+
     self.joysticks = {}
-    self.joysticks[1] = Joystick("full")
+    self.joysticks[1] = Joystick("full", self.isMLG)
     group:insert(self.joysticks[1])
 
     self.uiManagers = {}
     if event.params.gamemode == "multiplayer" then
         -- Два UI
-        self.uiManagers[1] = GameUI("red", true)
+        self.uiManagers[1] = GameUI("red", true, self.isMLG)
         self.uiManagers[1].x = display.contentCenterX
         self.uiManagers[1].y = display.contentCenterY * 1.3
         group:insert(self.uiManagers[1])
 
-        self.uiManagers[2] = GameUI("blue", true)
+        self.uiManagers[2] = GameUI("blue", true, self.isMLG)
         self.uiManagers[2].x = display.contentCenterX
         self.uiManagers[2].y = display.contentCenterY * 0.7
         self.uiManagers[2].rotation = 180
         group:insert(self.uiManagers[2])
 
         -- Два джойстика
-        self.joysticks[2] = Joystick()
+        self.joysticks[2] = Joystick("full", self.isMLG)
         group:insert(self.joysticks[2])
         self.joysticks[1].side = "bottom"
         self.joysticks[2].side = "top"
     elseif event.params.gamemode == "singleplayer" then
-        self.uiManagers[1] = GameUI("red")
+        self.uiManagers[1] = GameUI("red", false, self.isMLG)
         self.uiManagers[1].x = display.contentCenterX
         self.uiManagers[1].y = display.contentCenterY
         group:insert(self.uiManagers[1])
@@ -159,6 +192,8 @@ function scene:create(event)
     self.pauseUI.x = display.contentCenterX
     self.pauseUI.y = display.contentCenterY
     group:insert(self.pauseUI)
+
+    self.tripleSound = audio.loadSound( "assets/sounds/triple.wav")
 
     -- Кнопка паузы
     self.pauseButton = PauseButton()
@@ -196,7 +231,7 @@ function scene:delayBottleSpawn()
     local spawnTimer = timer.performWithDelay(
         math.random(self.bottleSpawnDelayMin, self.bottleSpawnDelayMax),
         spawnBottle)
-
+    DEBUG.Log("Starting bootle spawn")
     spawnTimer.params = {
         scene = self
     }
@@ -309,6 +344,18 @@ function scene:endRound(goalTo)
     self.state = "waiting"
     Globals.analytics.endTimedEvent("Game round", { gamemode = self.gamemode, difficulty = self.difficulty })
 
+    local gates = self.gates[1]
+    if goalTo == "blue" then
+        gates = self.gates[2]
+    end
+
+    if self.isMLG then
+        self.explosion.x = gates.x
+        self.explosion.y = gates.y
+        self.explosion.isVisible = true
+        self.explosion:play()
+    end
+
     -- Выключить музыку
     audio.stop(3)
     -- Замедление игры в 10 раз
@@ -317,10 +364,17 @@ function scene:endRound(goalTo)
     scene:shake(GameConfig.goalCameraShakePower)
 
     -- Прибавление счёта
+    local winnerScore = 0;
     if goalTo == "blue" then
         self.score[1] = self.score[1] + 1
+        winnerScore   = self.score[1]
     else
         self.score[2] = self.score[2] + 1
+        winnerScore   = self.score[2]
+    end
+    DEBUG.Log(winnerScore)
+    if self.isMLG and winnerScore == 3 then
+        audio.play(self.tripleSound, { channel = 17 })
     end
 
     -- Скрыть джойстики

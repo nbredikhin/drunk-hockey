@@ -68,7 +68,7 @@ local function showAd(event)
         ads.show(adsconfig.adType, { testMode = adsconfig.testMode })
     end
 
-    local showUITimer = timer.performWithDelay(500, showUI, 1)
+    local showUITimer = timer.performWithDelay(2000, showUI, 1)
     showUITimer.params = event.source.params
 end
 
@@ -79,9 +79,9 @@ local function commercialBrake(event)
     self.commercialBrakeText.xScale = 1
     self.commercialBrakeText.yScale = 1
 
-    transition.from(self.commercialBrakeText, { transition=easing.outBack, delay = 500, time = 500, alpha = 0, xScale = 0.5, yScale = 0.8 })
+    transition.from(self.commercialBrakeText, { transition=easing.outBack, delay = 100, time = 300, alpha = 0, xScale = 0.5, yScale = 0.8 })
 
-    local showAdTimer = timer.performWithDelay(1000, showAd)
+    local showAdTimer = timer.performWithDelay(500, showAd, 1)
     showAdTimer.params = event.source.params
 end
 

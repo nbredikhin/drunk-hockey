@@ -5,7 +5,7 @@ end
 
 DEBUG.Log = function (s, ...)
     local info = debug.getinfo(2, "Sl")
-    local pre_str = string.format("[%s]:%3d", info.source, info.currentline)
+    local pre_str = string.format("[%s:%3d]", info.source, info.currentline)
     local str = string.format(s, ...)
     print(pre_str .. " " .. str)
 end
@@ -48,6 +48,8 @@ system.activate("multitouch")
 display.setStatusBar(display.HiddenStatusBar)
 display.setDefault("magTextureFilter", "nearest")
 display.setDefault("minTextureFilter", "nearest")
+
+native.setProperty("androidSystemUiVisibility", "immersive")
 
 -- Поддержка кнопки "назад" на Android и WindowsPhone (или backspace на Windows)
 local platform = system.getInfo("platform")

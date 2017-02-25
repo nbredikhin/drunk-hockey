@@ -1,4 +1,4 @@
-local function show(self, score1, score2)
+    local function show(self, score1, score2)
     if not score1 then
         score1 = 0
     end
@@ -38,7 +38,7 @@ local function constructor(colorName)
 
     self.numbers = {}
     local imageSheet = graphics.newImageSheet("assets/ui/numbers.png", {
-        width = 24, 
+        width = 24,
         height = 24,
         numFrames = 6
     })

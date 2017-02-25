@@ -2,7 +2,7 @@ local Score     = require("game.ui.Score")
 local Winner    = require("game.ui.Winner")
 local Countdown = require("game.ui.Countdown")
 
-local function constructor(colorName, isMultiplayer)
+local function constructor(colorName, isMultiplayer, isMLG)
     if not colorName then
         colorName = "red"
     end
@@ -18,7 +18,7 @@ local function constructor(colorName, isMultiplayer)
     self.score = Score(colorName)
     self:insert(self.score)
 
-    self.countdown = Countdown(colorName)
+    self.countdown = Countdown(colorName, isMLG)
     self:insert(self.countdown)
 
     self.winner = Winner(isMultiplayer, self.bg, colorName)

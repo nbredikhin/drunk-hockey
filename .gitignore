@@ -1,2 +1,4 @@
 adsconfig.lua
 debugconfig.lua
+
+*.sublime-*
