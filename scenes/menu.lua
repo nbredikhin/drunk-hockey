@@ -88,7 +88,7 @@ function scene:create(event)
     if type(levelsUnlocked) ~= "number" then
         levelsUnlocked = 1
     end
-    self.isMLGUnlocked = levelsUnlocked >= 5
+    self.isMLGUnlocked = true
     buttonY = display.contentCenterY - 5 - buttonHeight - 1
     for i, b in ipairs(self.difficultyButtons) do
         local imagePath = buttonImagePath
@@ -107,7 +107,7 @@ function scene:create(event)
             labelColor = { default = {1, 1, 1} },
             labelYOffset = -0.8,
 
-            isEnabled = i <= levelsUnlocked,
+            isEnabled = i <= levelsUnlocked or i == 5,
 
             defaultFile = imagePath,
             onRelease = function ()
