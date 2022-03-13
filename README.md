@@ -1,4 +1,5 @@
 # Drunk Hockey
-A weird and simple hockey game made using CoronaSDK
+[Gameplay Video](https://youtu.be/BwTVx9VNbf8), [Reddit Post](https://www.reddit.com/r/gaming/comments/5s5kwi/make_an_unusual_hockey_game_they_said/)
 
-![Gameplay](https://fat.gfycat.com/CornyInexperiencedHawk.gif "Gameplay")
+## Description
+A weird and simple hockey game made using CoronaSDK
